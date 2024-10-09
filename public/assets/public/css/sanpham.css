@@ -1,0 +1,206 @@
+
+
+.sidebar {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+    text-align: center;
+    transition: box-shadow 0.3s, transform 0.3s;
+    height: 400px;
+    background-color: #fff;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Nâng sản phẩm lên khi hover */
+}
+
+.product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover; 
+}
+
+.product-title {
+    margin-bottom: 3px;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: -0.02em;
+    transition: color ease 0.3s;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+    text-rendering: optimizeLegibility
+
+}
+.product-title:hover{
+   color: #f28500;
+
+}
+
+.product-price {
+    text-decoration: line-through;
+    color: red;
+}
+
+.product-sale-price {
+    vertical-align: baseline;
+    font-family: inherit;
+    font-size: 100%;
+    font-style: inherit;
+    font-weight: inherit;
+    color: #f24900;
+}
+
+.product-rating {
+    margin: 10px 0;
+}
+
+.product-stock {
+    font-size: 16px;
+    line-height: 30px;
+    letter-spacing: -0.02em;
+    transition: color ease 0.3s;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+    text-rendering: optimizeLegibility
+}
+
+.product-buttons {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0; 
+    transition: opacity 0.3s; 
+    position: absolute;
+    top: 190px; 
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.product-card:hover .product-buttons {
+    opacity: 1; /* Hiện nút khi hover */
+}
+
+.btn {
+    padding: 10px 15px;
+    border-radius: 22px; 
+    text-decoration: none;
+    color: #fff;
+    transition: background-color 0.3s;
+    
+}
+
+.btn-add-cart {
+    background-color: #080808;
+}
+
+.btn-add-cart:hover {
+    background-color: #f28500;
+    color: #fff;
+}
+.pagination {
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+}
+
+.page-item .page-link {
+    color: #fff;
+    background-color: #f24900;
+    border: none;
+    margin: 0 5px;
+    border-radius: 50%;
+    padding: 10px 15px;
+}
+
+.page-item .page-link:hover {
+    background-color: #f28500;
+}
+
+.page-item.active .page-link {
+    background-color: #f28500;
+    border-color: #f28500;
+}
+
+.page-item.disabled .page-link {
+    background-color: #ccc;
+    color: #fff;
+}
+.group-h5{
+    font-size: 20px;
+    line-height: 30px;
+    color: #222222;
+    margin: 0 0 21px 0;
+    font-weight: 700;
+    font-family: "Quicksand", sans-serif;
+}
+.list-group-item a{
+    color: #787878;
+    display: inline-block;
+    padding: 8px 0;
+    position: relative;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: "Quicksand", sans-serif;
+}
+.list-group-item a:hover{
+    color: #0a0a0a;
+    text-decoration: none; 
+}
+.banner-service {
+    position: relative;
+    background: url('../img/bg-featured-title.jpg') no-repeat center center;
+    background-size: cover;
+    height: 269px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.banner-service-text {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+}
+
+.breadcrumb-item.active {
+    color: #fff;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+   
+}

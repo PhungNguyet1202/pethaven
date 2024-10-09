@@ -1,0 +1,259 @@
+body {  
+    font-family: "Quicksand", sans-serif;
+}
+
+
+.banner-service {
+    position: relative;
+    background: url('../img/bg-featured-title.jpg') no-repeat center center;
+    background-size: cover;
+    height: 269px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.banner-service-text {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+}
+
+.breadcrumb-item.active {
+    color: #fff;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+   
+}
+
+.contact-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 20%;
+    margin-right: 20%;
+    
+}
+
+
+.map-container {
+    position: relative;
+    margin-top: 80px;
+    height: 400px;
+    width: 100%;
+}
+.map-embed {
+    flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+    width: 100%; /* Đảm bảo chiều rộng là 100% */
+    border: none; /* Không có viền */
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.address-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.social-icons a {
+    margin: 0 10px;
+    color: #6c757d;
+}
+
+.social-icons a:hover {
+    color: #495057;
+}
+.contact-info-box {
+    position: absolute;
+    top: -10%;
+    right: 5%;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    z-index: 10;
+}
+.contact-info-box h4 {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #f37321;
+}
+.contact-info-box p {
+    margin: 5px 0;
+}
+.contact-info-box i {
+    color: #f37321;
+    margin-right: 10px;
+}
+
+
+.contact-icons a {
+    font-size: 1.2rem;
+    margin-right: 10px;
+    color: #333;
+}
+.contact-icons a:hover {
+    color: #f37321;
+}
+.email-subscribe {
+    background-color: #f37321;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.email-subscribe input[type="email"] {
+    padding: 10px;
+    border-radius: 25px;
+    border: none;
+    width: 300px;
+    margin-right: 10px;
+}
+.email-subscribe button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #333;
+    color: white;
+}
+.email-subscribe button:hover {
+    background-color: #f37321;
+    color: #333;
+    border: 1px solid #333;
+}
+.btn-warning{
+margin-left:38%;
+line-height: 58px;
+font-size: 16px;
+border-radius: 40px;
+display:inline-block;
+background-color: #f47c2e;
+width:200px;
+color:#ffffff;
+font-weight: 300px;
+transition: all 0.3s ease;
+}
+.btn-warning:hover{
+    
+    background-color: #080808;
+    color:#ffffff;
+    border: none;
+   
+    }
+.form-control-contact{
+background-color: #FAF6F1;
+border-radius: 10px;
+border: 1px solid rgb(255, 255, 255);
+width:100%;
+height: 60px;
+font-size: 14px;
+padding-left: 10px;
+
+
+}
+
+.form-control-contact-textarea{
+background-color: #FAF6F1;
+border-radius: 10px;
+border: 1px solid rgb(255, 255, 255);
+width:100%;
+height: 150px;
+font-size: 14px;
+padding-left: 10px;
+padding-top: 10px;
+
+}
+/* css chỗ nhập email */
+.subscribe-container {
+    background-color: #f4b63a;
+    padding: 30px;
+    text-align: center;
+    border-radius: 15px;
+    margin-top: 30px;
+    color: white;
+}
+
+.subscribe-container i {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.subscribe-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.subscribe-form input[type="email"] {
+    border: none;
+    padding: 10px;
+    background-color: #f4b63a;;
+    color:#ffffff;
+    width: 300px;
+    border-radius: 5px;
+    border:solid 1px #f4b63a;
+}
+
+.subscribe-form button {
+    background-color:#f4b63a;
+    border: none;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.subscribe-form button:hover {
+    background-color: #f8502a;
+}
+.subscribe-container{
+margin-left: 10%;
+margin-right : 10%;
+position: relative;
+top:-100px;
+}
+.main-heading {
+    font-size: 50px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+.distance-contact{
+    margin-top: 50px;
+}

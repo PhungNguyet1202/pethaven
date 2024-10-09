@@ -1,0 +1,200 @@
+.banner-service {
+    position: relative;
+    background: url('../img/bg-featured-title.jpg') no-repeat center center;
+    background-size: cover;
+    height: 269px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.banner-service-text {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+}
+
+.breadcrumb-item.active {
+    color: #fff;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+    padding-top: 3px;
+}
+.img-radius{
+    border-radius: 20px 20px 20px 20px;
+}
+.service-description-margin{
+    margin-top: 70px;
+}
+
+.tittle {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    top: 50%;
+    font-size: 36px;
+    margin-bottom: 30px;
+    background-color: #FF642F;
+    height: 146px;
+    padding-top: 50px;
+}
+.main-content {
+    padding: 20px;
+}
+.sidebar {
+    background-color: white;
+    padding: 20px;
+    border-radius: 22px;
+    margin-bottom: 20px;
+}
+.accordion-button {
+    transition: background-color 0.3s;
+    border-radius: 22px;
+    border: none;
+    background-color: #f8f9fa;
+    font-size: 18px;
+    line-height: 30px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700px;
+}
+.accordion-button:hover {
+    background-color: #ff4500;
+    color: white;
+}
+.main-heading-contact{
+    font-size: 36px;
+    line-height: 40px;
+    font-weight: 700;
+    font-family: "Quicksand", sans-serif;
+    letter-spacing: -0.2px;
+}
+.main-heading-contact-text2{
+    font-size: 16px;
+    line-height: 30px;
+    font-weight: 400;
+    margin-bottom: 0;
+    font-family: "Quicksand", sans-serif;
+}
+.main-heading-service-description{
+    font-size: 50px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;   
+}
+.custom-description-service-item {
+    color: #241919;
+    font-size: 1rem;
+    padding-top: 10px;
+    
+}
+.custom-description-service-item{
+font-family: "Quicksand", sans-serif;
+}
+.fw-bold{
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
+    color: #fff;
+    font-family: "Quicksand", sans-serif;
+    letter-spacing: -0.2px;
+    margin-top: -4px;
+}
+.accordion-button::after {
+    transform: rotate(-90deg);
+}
+.accordion-item {
+    border-radius: 22px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.accordion-item:first-child {
+    border-radius: 22px;
+}
+.accordion-item:last-child {
+    border-radius: 22px;
+}
+.accordion-item:last-child .accordion-button {
+    border-radius: 22px;
+}
+.contact-box {
+    background-color: #00a2e9;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 308px;
+    margin-left: 20px;
+}
+.contact-box i {
+    font-size: 2rem;
+}
+.contact-box p {
+    margin: 0;
+}
+.highlight-text {
+    color: #ff4500;
+    font-weight: 700;
+    font-family: "Quicksand", sans-serif;
+
+}
+.service-benefits img {
+    width: 100%;
+    border-radius: 8px;
+}
+.service-benefits {
+    margin-top: 20px;
+}
+.icon-box {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+.icon-box i {
+    font-size: 2rem;
+    color: #28a745;
+    margin-right: 10px;
+}
+.accordion-button:not(.collapsed) {
+    color: #000;
+    background-color: #f8f9fa;
+}
+.btn-service-description{
+    font-size: 18px;
+    border-radius: 44px;
+    display:inline-block;
+    background-color: #008BA7;
+    width:200px;
+    color:#ffffff;
+    font-weight: 700px;
+    height: 60px;
+    font-family: "Quicksand", sans-serif;
+    transition: all 0.3s ease;
+}
+.btn-service-description:hover{
+    color:#ffffff;
+    background-color: #036c81;
+}

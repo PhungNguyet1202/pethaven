@@ -1,0 +1,41 @@
+body {
+    background-color: #fcecec;
+}
+.order-success {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.order-success span {
+    color: red;
+    font-weight: bold;
+}
+.order-details {
+    background-color: #fff;
+    padding: 20px;
+}
+.order-details h2 {
+    color: #2e3092;
+    font-weight: bold;
+}
+.order-details table {
+    width: 100%;
+    margin-top: 10px;
+}
+.order-details th, .order-details td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.order-details th {
+    text-align: left;
+    color: #666;
+}
+.order-details td {
+    color: #2e3092;
+}
+.order-details .text-right {
+    text-align: right;
+}
+.order-details .payment-method {
+    color: #666;
+}

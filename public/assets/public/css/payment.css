@@ -1,0 +1,90 @@
+#qr-code {
+    display: none;
+}
+
+.banner-service {
+    position: relative;
+    background: url('../img/bg-featured-title.jpg') no-repeat center center;
+    background-size: cover;
+    height: 269px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.banner-service-text {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+}
+
+.breadcrumb-item.active {
+    color: #fff;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+   
+}
+.main-heading-payment{
+font-size: 32px;
+letter-spacing: -0.02em;
+line-height: 1.2;
+font-family: "Quicksand", sans-serif;
+font-weight: 700;
+}
+.custom-description-payment-item {
+    color: #241919;
+    font-size: 1rem;
+    
+}
+.custom-description-payment-item{
+font-family: "Quicksand", sans-serif;
+}
+.content-cart{
+font-size: 18px;
+line-height: 1.25;
+font-family: "Quicksand", sans-serif;
+font-weight:700;
+}
+.content-payment{
+font-size: 24px;
+line-height: 1.25;
+font-family: "Quicksand", sans-serif;
+font-weight:700;
+}
+.custom-btn-cart{
+font-family: "Quicksand", sans-serif;
+font-weight: 500;
+background-color: #f8502a;
+border: none;
+color: #fff;
+transition: all 0.3s ease;
+
+}
+.custom-btn-cart:hover{
+background-color: #080808;
+color: #fff;
+
+}

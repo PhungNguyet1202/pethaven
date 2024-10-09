@@ -1,0 +1,129 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+}
+
+ 
+.profile-section {
+    width: 300px;
+    margin-right: 50px;
+}
+
+.profile-card {
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+.profile-info h2 {
+    margin-bottom: 5px;
+}
+
+.profile-info span {
+    color: blue;
+    cursor: pointer;
+}
+
+.profile-menu {
+    margin-top: 20px;
+    list-style: none;
+}
+
+.profile-menu li {
+    margin-bottom: 10px;
+}
+
+.profile-menu li a {
+    text-decoration: none;
+    color: blue;
+}
+
+.order-section {
+    width: 600px;
+}
+
+.order-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table th, .order-table td {
+    padding: 15px;
+    text-align: left;
+}
+
+.order-table th {
+    background-color: #3f51b5;
+    color: white;
+}
+
+.order-table tr:nth-child(odd) {
+    background-color: #f4f4f4;
+}
+
+.order-table tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.order-table td {
+    border-bottom: 1px solid #ddd;
+}
+
+.order-table td a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.status-preparing {
+    color: red;
+}
+
+.status-shipping {
+    color: orange;
+}
+
+.status-delivered {
+    color: green;
+}
+.profile-section h1 {
+    white-space: nowrap;
+    font-size: 24px; 
+    margin-bottom: 10px; 
+}

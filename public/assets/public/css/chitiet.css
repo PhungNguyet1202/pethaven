@@ -1,0 +1,228 @@
+.banner-service {
+    position: relative;
+    background: url('../img/bg-featured-title.jpg') no-repeat center center;
+    background-size: cover;
+    height: 269px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.banner-service-text {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+}
+
+.breadcrumb-item.active {
+    color: #fff;
+    font-size: 13px;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 300;
+   
+}
+
+
+.spring-h3{
+    color: #222222;
+    font-size: 45px;
+    line-height: 57px;
+    margin: 0 35px 7px 0;
+    display: inline-block;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+
+}
+.product-details img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.product-price {
+    color: #ff642f;
+    font-weight: 700;
+    font-size: 20px;
+    font-family: "Quicksand", sans-serif;
+}
+
+.star-rating {
+    color: gold;
+}
+
+
+.product-details {
+    margin-top: 70px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.quantity-wrapper label {
+    font-weight: 700;
+    margin-right: 15px;
+    margin-top: 5px;
+    font-family: "Quicksand", sans-serif;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.quantity-control input[type="number"] {
+    width: 40px; 
+    text-align: center;
+    border: none; 
+    outline: none; 
+    font-size: 1rem;
+    
+}
+
+.btn-quantity {
+    background-color: transparent;
+    border: none; 
+    width: 30px; 
+    height: 30px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-quantity:hover {
+    background-color: #f0f0f0; 
+}
+
+.btn-quantity:active {
+    background-color: #ddd; 
+}
+
+
+.quantity-control button:first-child {
+    border-right: 1px solid #ddd;
+}
+
+.quantity-control button:last-child {
+    border-left: 1px solid #ddd;
+}
+
+
+.add-to-cart-btn {
+  background-color: #FF642F;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 60px;
+    font-weight: 700;
+    padding: 0 50px;
+    margin-right: 10px;
+    margin-bottom: 30px;
+    color: #f0f0f0;
+    font-family: "Quicksand", sans-serif;
+    transition: all 0.3s ease;
+
+}
+
+.add-to-cart-btn:hover {
+    background-color: #080808;
+      border: none;
+     
+      color: #f0f0f0;
+     
+  
+  }
+
+.review-form {
+    margin-top: 20px;
+}
+
+.review-form input, .review-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+
+
+.product-description {
+    margin-top: 30px;
+}
+.product-details img {
+    width: 100%;
+    border-radius: 10px;
+   height: 100%;
+}
+.content-service {
+    font-size: 24px;
+    line-height: 1.25;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+.user-review{
+    font-size: 18px;
+    line-height: 1.25;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 700;
+}
+.description-product-review{
+    margin-left: 45px;
+}
+.add-review{
+    background-color: #FF642F;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 60px;
+    font-weight: 700;
+    padding: 0 50px;
+    margin-right: 10px;
+    margin-bottom: 30px;
+    color: #f0f0f0;
+    font-family: "Quicksand", sans-serif;
+    transition: all 0.3s ease;
+}
+.add-review:hover{
+    background-color: #080808;
+    border: none;
+   
+    color: #f0f0f0;
+}

@@ -1,0 +1,81 @@
+[
+    {
+        "name": "Áo len xám",
+        "image": "sp1.jpg",
+        "price":75000,
+        "sale_price": 50000
+    },
+    {
+        "name": "Ball on rope toy",
+        "image": "sp2.jpg",
+        "price":80000,
+        "sale_price": 50000
+    },
+    {
+        "name": "Blue ball for dog",
+        "image": "sp3.jpg",
+        "price":32000,
+        "sale_price": 29000
+    },
+    {
+        "name": "Hạt reflex cho chó",
+        "image": "sp4.jpg",
+        "price":520000,
+        "sale_price": 500000
+    },
+    {
+        "name": "Interactive toy",
+        "image": "sp5.jpg",
+        "price":350000,
+        "sale_price": 250000
+    }, {
+        "name": "Lysine tự nhiên cho thú cưng",
+        "image": "sp6.jpg",
+        "price":130000,
+        "sale_price": 100000
+    },
+    {
+        "name": "Multicolored rope",
+        "image": "sp7.jpg",
+        "price":75000,
+        "sale_price": 50000
+    },
+    {
+        "name": "Multispot pet food",
+        "image": "sp8.jpg",
+        "price":750000,
+        "sale_price": 500000
+    },
+    {
+        "name": "Pet food bowels",
+        "image": "sp9.jpg",
+        "price":420000,
+        "sale_price": 200000
+    },
+    {
+        "name": "Pik thực phẩm tự nhiên",
+        "image": "sp10.jpg",
+        "price":300000,
+        "sale_price": 250000
+    },
+    {
+        "name": "Thức ăn cho chó",
+        "image": "sp11.jpg",
+        "price":310000,
+        "sale_price": 250000
+    },
+    {
+        "name": "Thức ăn đặc biệt",
+        "image": "sp12.jpg",
+        "price":750000,
+        "sale_price": 500000
+    },
+    {
+        "name": "Toy for pets",
+        "image": "sp13.jpg",
+        "price":450000,
+        "sale_price": 250000
+    }
+  
+    
+]
