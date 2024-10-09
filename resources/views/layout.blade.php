@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="{{ asset('assets/public/css/dangky.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/dangnhap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/sanpham.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/public/css/chitiet.css') }}">
+
 
 
 </head>

@@ -13,4 +13,8 @@ class ProductController extends Controller
         //  return view('product.product');
          
       }
+      public function detail($slug){
+        $sp = Product::where('slug',$slug)->first();
+        return view('product.detail',compact(['sp']));
+      }
 }

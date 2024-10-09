@@ -33,3 +33,5 @@ Route::post('/logout',function(){
 })->name('logout');;
 
 Route::get('/product', [ProductController::class, 'product'])->name('product');
+
+Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
