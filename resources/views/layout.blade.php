@@ -20,11 +20,13 @@
     <link rel="stylesheet" href="{{ asset('assets/public/css/dangnhap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/sanpham.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/chitiet.css') }}">
+    <script src="{{ asset('js/angular.min.js') }}"></script>
+
 
 
 
 </head>
-<body>
+<body ng-app="tcApp" ng-controller="tcCtrl">
   <header>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
@@ -110,7 +112,10 @@
     </nav>
 </header>
 
-@yield('body')
+<div ng-controller="viewCtrl">
+    @yield('body')
+</div>
+
 
 
 
@@ -178,5 +183,18 @@
       }
   
      
+  </script>
+  <script>
+    var app= angular.module('tcApp',[]);
+    app.controller('tcCtrl',function($scope){
+
+    });
+    var viewFunction = function($scope){
+
+    }
+  </script>
+  @yield('viewFunction')
+  <script>
+    app.controller('viewCtrl',viewFunction);
   </script>
   </html>
