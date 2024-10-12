@@ -33,3 +33,14 @@ Route::post('/logout',function(){
 })->name('logout');;
 
 Route::get('/product', [ProductController::class, 'product'])->name('product');
+
+Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+
+
+
+
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
+Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
+
+

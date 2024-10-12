@@ -59,21 +59,32 @@
                     {{-- <img src="{{ asset('images/products/{{$sp->image}}') }}"> --}}
                     <img src="{{ asset('images/products/' . $sp->image) }}" alt="Product Image">
 
-                    <div class="product-title">{{$sp->name}}</div>
-                   
-                    <div class="product-sale-price">{{number_format($sp->price)}} VND</div>
-                    <div class="product-rating">
-                        @for ($i = 0; $i < $sp->rating; $i++)
-                        <span class="star">&#9733;&#9733;&#9733;&#9733;</span>
+                    <div class="product-title" href=""><a href="{{route('detail',['slug'=>$sp->slug])}}">{{$sp->name}}</a></div>
+                    <div class="product-sale-price">
+                        @if (isset($sp->sale_price) && $sp->sale_price > 0)
+                        <span> {{number_format($sp->sale_price)}} VND</span>
+                        <del> {{number_format($sp->price)}} VND</del>
+                        @else
+                        <span> {{number_format($sp->price)}} VND</span>
+                        @endif
+                        
+                       
 
-                        @endfor
-                        @for ($i = 0; $i <5-$sp->rating; $i++)
-                        <span class="star">&#9733;</span>
+                    </div>
+                    <div class="product-rating justify-content-center">
+                        <ul class="star-list ">
+                            @for ($i = 0; $i < floor($sp->rating); $i++)
+                            <li><i class="fa-solid fa-star"></i></li>
 
-                        @endfor
-                        <span class="star">&#9733;&#9733;&#9733;&#9733;&#9734;
-                            {{number_format($sp->rating,1)}}</span> Review(s)
-                        {{-- <li><i class="lni lni-star-filled"></i></li> --}}
+                            @endfor
+                            @for ($i = 0; $i <5- floor($sp->rating); $i++)
+                                <li><i class="fa-regular fa-star"></i></li>
+
+                            @endfor
+
+                           <li><span>{{number_format($sp->rating,1)}} Review(s)</span></li>
+                        </ul>
+                        {{-- <span>(3.5)</span> --}}
                     </div>
                     <div class="product-stock">Còn hàng</div>
                     <div class="product-buttons">
@@ -100,6 +111,8 @@
         </div>
     </div>
 </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
