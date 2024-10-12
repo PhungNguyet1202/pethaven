@@ -48,13 +48,8 @@
 }
 
 .product-price {
-    /* text-decoration: line-through; */
+    text-decoration: line-through;
     color: red;
-}
-.old-price {
-    text-decoration: line-through; /* Gạch ngang giá gốc */
-    /* color: gray; Màu xám cho giá gốc */
-    margin-left: 10px; /* Khoảng cách giữa giá gốc và giá khuyến mãi */
 }
 
 .product-sale-price {

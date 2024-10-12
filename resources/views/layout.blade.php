@@ -20,13 +20,11 @@
     <link rel="stylesheet" href="{{ asset('assets/public/css/dangnhap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/sanpham.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/chitiet.css') }}">
-    <script src="{{ asset('js/angular.min.js') }}"></script>
-
 
 
 
 </head>
-<body ng-app="tcApp" ng-controller="tcCtrl">
+<body>
   <header>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
@@ -83,6 +81,7 @@
                         <div class="dropdown-menu" id="login-dropdown" style="display: none;">
                             <a class="dropdown-item" href="{{route('login')}}">Đăng nhập</a>
                             <a class="dropdown-item" href="{{route('register')}}">Đăng ký</a>
+                          
                         </div>
                     </li>
 
@@ -93,6 +92,9 @@
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li>
+                            <a class="dropdown-item" href="{{route('profile')}}">
+                             Hồ sơ
+                         </a>
                               <a class="dropdown-item" href="{{ route('logout') }}"
                                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                   Đăng xuất
@@ -112,10 +114,7 @@
     </nav>
 </header>
 
-<div ng-controller="viewCtrl">
-    @yield('body')
-</div>
-
+@yield('body')
 
 
 
@@ -183,18 +182,5 @@
       }
   
      
-  </script>
-  <script>
-    var app= angular.module('tcApp',[]);
-    app.controller('tcCtrl',function($scope){
-
-    });
-    var viewFunction = function($scope){
-
-    }
-  </script>
-  @yield('viewFunction')
-  <script>
-    app.controller('viewCtrl',viewFunction);
   </script>
   </html>
