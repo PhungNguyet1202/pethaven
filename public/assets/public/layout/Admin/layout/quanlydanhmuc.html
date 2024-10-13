@@ -1,0 +1,231 @@
+<html>
+ <head>
+  <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <title>
+   Quản lý danh mục
+  </title>
+  <link rel="stylesheet" href="../css/quanlydanhmuc.css">
+ </head>
+ <body>
+  <div class="d-flex">
+   <div class="sidebar">
+    <div class="text-center mb-4">
+     <img alt="" height="200" src="../../../img/Red & Orange Simple Petshop Logo.png" width="200"/>
+     <h4>
+      PET HEAVEN
+     </h4>
+    </div>
+    <a class="active" href="../layout/quanlydanhmuc.html">
+     <i class="fas fa-users">
+     </i>
+     Quản lý danh mục
+    </a>
+    <a href="../layout/quanlykhachhang.html">
+     <i class="fas fa-shopping-cart">
+     </i>
+     Quản lý khách hàng
+    </a>
+    <a href="../layout/quanlysanpham.html">
+     <i class="fas fa-box">
+     </i>
+     Quản lý sản phẩm
+    </a>
+    <a href="../layout/thongkesanphamban.html">
+     <i class="fas fa-chart-bar">
+     </i>
+     Thống kê sản phẩm bán
+    </a>
+    <a href="../layout/baocaodoanhthu.html">
+     <i class="fas fa-envelope">
+     </i>
+     Báo cáo doanh thu
+    </a>
+   </div>
+   <div class="content flex-grow-1">
+    <div class="header">
+     <h4>
+      <b style="display: block;">
+       Quản lý danh mục
+      </b>
+     </h4>
+     <div class="d-flex align-items-center">
+      <div class="search-bar">
+       <input placeholder="Tìm tên hoặc mã danh mục" type="text"/>
+       <button>
+        <i class="fas fa-search">
+        </i>
+       </button>
+      </div>
+     </div>
+     <div class="user-info">
+      <i class="fas fa-bell" style="margin-right: 20px;">
+      </i>
+      <i class="fas fa-cog" style="margin-right: 20px;">
+      </i>
+      <img alt="User Avatar" height="40" src="../../../img/avatar-gt1.jpg" width="40"/>
+      <span>
+       Nguyễn Văn A
+      </span>
+     </div>
+    </div>
+    <div class="table-container mt-4">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         STT
+        </th>
+        <th>
+         Tên
+        </th>
+        <th class="actions">
+         Actions
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>
+         1
+        </td>
+        <td>
+         Danh mục 1
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 1')">
+         </i>
+        </td>
+       </tr>
+       <tr>
+        <td>
+         2
+        </td>
+        <td>
+         Danh mục 2
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 2')">
+         </i>
+        </td>
+       </tr>
+       <tr>
+        <td>
+         3
+        </td>
+        <td>
+         Danh mục 3
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 3')">
+         </i>
+        </td>
+       </tr>
+       <tr>
+        <td>
+         4
+        </td>
+        <td>
+         Danh mục 4
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 4')">
+         </i>
+        </td>
+       </tr>
+       <tr>
+        <td>
+         5
+        </td>
+        <td>
+         Danh mục 5
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 5')">
+         </i>
+        </td>
+       </tr>
+       <tr>
+        <td>
+         6
+        </td>
+        <td>
+         Danh mục 6
+        </td>
+        <td class="actions">
+         <i class="fas fa-trash">
+         </i>
+         <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editCategory('Danh mục 6')">
+         </i>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="form-container">
+     <h5>
+      Thêm danh mục
+     </h5>
+     <form>
+      <div class="form-group">
+       <label for="newCategoryName">
+        Tên danh mục
+       </label>
+       <input id="newCategoryName" name="newCategoryName" type="text"/>
+      </div>
+      <div class="form-group">
+       <button type="submit">
+        Thêm
+       </button>
+      </div>
+     </form>
+    </div>
+   </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h5 class="modal-title" id="editModalLabel">
+       Sửa danh mục
+      </h5>
+      <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button">
+      </button>
+     </div>
+     <div class="modal-body">
+      <form>
+       <div class="form-group">
+        <label for="editCategoryName">
+         Tên danh mục
+        </label>
+        <input id="editCategoryName" name="editCategoryName" type="text"/>
+       </div>
+       <div class="form-group mt-3">
+        <button class="btn btn-primary" type="submit">
+         Lưu
+        </button>
+       </div>
+      </form>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <script>
+   function editCategory(name) {
+            document.getElementById('editCategoryName').value = name;
+        }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qjzF0v5z5J6p6r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5e5r5

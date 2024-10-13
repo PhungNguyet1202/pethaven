@@ -1,0 +1,153 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+.sidebar {
+    background-color: #e3f2fd;
+    height: 100vh;
+    padding-top: 20px;
+}
+.sidebar a {
+    color: #000;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+.sidebar a:hover {
+    background-color: #d1ecf1;
+}
+.sidebar a.active {
+    background-color: #d1ecf1;
+    font-weight: bold;
+}
+.sidebar a i {
+    margin-right: 10px;
+}
+.content {
+    padding: 20px;
+}
+.header {
+    background-color: #e3f2fd;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.header .user-info {
+    display: flex;
+    align-items: center;
+}
+.header .user-info img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+.header .user-info i {
+    margin: 0 10px;
+    cursor: pointer;
+}
+.search-bar-container {
+    background-color: #e3f2fd;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.search-bar {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+.search-bar input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+.search-bar button {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.status-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+.status-indicators div {
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+}
+.status-indicators div span {
+    margin-left: 5px;
+}
+.table-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.table-container table {
+    width: 100%;
+}
+.table-container table th, .table-container table td {
+    text-align: center;
+    vertical-align: middle;
+}
+.table-container table th {
+    background-color: #f1f1f1;
+}
+.table-container table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+.table-container .actions i {
+    margin: 0 5px;
+    cursor: pointer;
+}
+.table-container .actions i:hover {
+    color: #007bff;
+}
+.status-dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.status-dot.green {
+    background-color: green;
+}
+.status-dot.red {
+    background-color: red;
+}
+.status-dot.yellow {
+    background-color: yellow;
+}
+.product-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+.product-actions button {
+    margin: 0 10px;
+}
+.form-inline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.form-inline input, .form-inline select, .form-inline button {
+    margin: 5px;
+}

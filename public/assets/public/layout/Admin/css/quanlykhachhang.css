@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+.sidebar {
+    background-color: #e3f2fd;
+    height: 100vh;
+    padding-top: 20px;
+}
+.sidebar a {
+    color: #000;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+.sidebar a:hover {
+    background-color: #d1ecf1;
+}
+.sidebar a.active {
+    background-color: #d1ecf1;
+    font-weight: bold;
+}
+.sidebar a i {
+    margin-right: 10px;
+}
+.content {
+    padding: 20px;
+}
+.header {
+    background-color: #e3f2fd;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header .search-bar {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+.header .search-bar input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+.header .search-bar button {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.header .user-info {
+    display: flex;
+    align-items: center;
+}
+.header .user-info img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+.header .user-info i {
+    margin: 0 10px;
+    cursor: pointer;
+}
+.table-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.table-container th, .table-container td {
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+.table-container th {
+    background-color: #f8f9fa;
+    text-align: left;
+}
+.table-container td {
+    text-align: left;
+}
+.table-container .actions {
+    text-align: right;
+}
+.table-container .actions i {
+    margin-left: 10px;
+    cursor: pointer;
+}
+.table-container .actions i.fa-trash {
+    color: red;
+}
+.table-container .actions i.fa-edit {
+    color: green;
+}
+.chart-container {
+    height: 300px;
+    width: 300px;
+    margin: auto;
+}
