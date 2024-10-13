@@ -48,9 +48,21 @@
 }
 
 .product-price {
-    text-decoration: line-through;
-    color: red;
+    /* Các thuộc tính khác của .product-price */
 }
+
+.sale-price {
+    color: red; /* Màu chữ cho giá bán */
+    font-weight: bold; /* Làm chữ đậm nếu cần */
+    text-decoration: none; /* Đảm bảo không có gạch chân */
+}
+
+.old-price {
+    color: red; /* Màu chữ cho giá cũ */
+    text-decoration: line-through; /* Gạch chân cho giá cũ */
+}
+
+
 
 .product-sale-price {
     vertical-align: baseline;

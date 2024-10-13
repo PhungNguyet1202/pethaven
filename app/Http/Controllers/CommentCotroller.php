@@ -43,7 +43,7 @@ class CommentCotroller extends Controller
     {
 
         $request->validate([
-            'product_id' => 'required|integer', // Ensure product_id is required and an integer
+            'product_id' => 'required|integer', 
             'content' => 'required|string',
             'rating' => 'required|integer|min:1|max:5',
         ]);

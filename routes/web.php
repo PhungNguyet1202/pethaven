@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\CommentCotroller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -33,11 +35,13 @@ Route::post('/logout',function(){
 })->name('logout');;
 
 Route::get('/product', [ProductController::class, 'product'])->name('product');
-
 Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
 
+Route::prefix('api')->group(function(){
+Route::get('/comments/product/{product_id}',[CommentCotroller::class,'product']);
+Route::resource('/comments', CommentCotroller::class);
 
-
+});
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
