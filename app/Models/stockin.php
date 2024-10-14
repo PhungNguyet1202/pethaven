@@ -5,17 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class stockin extends Model
+class Stockin extends Model // Sửa tên class thành Stockin
 {
     use HasFactory;
 
+    protected $table = 'stockin'; // Chỉ định tên bảng (nếu cần thiết)
+
     /**
-     * Lấy Customer mà ShoppingCart thuộc về.
+     * Lấy User mà Stockin thuộc về.
      */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function cartItems()
     {
         return $this->hasMany(CartItem::class, 'shoppingcart_id');
