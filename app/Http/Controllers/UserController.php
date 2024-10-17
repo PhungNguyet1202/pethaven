@@ -3,140 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-
 class UserController extends Controller
 {
-    
-    public function login(){
-        return view('user.login'); 
-    }
-
-  
-    public function register(){
+    public function register(Request $req) {
         return view('user.register'); 
     }
 
-    public function postregister(Request $req){
-        $email = $req->input('email');
-        $password =$req->input('password') ;
-        $repassword =  $req->input('repassword');
-        $name = $req->input('name');
-        $phone = $req->input('phone');
-        $address = $req->input('address');
-  
-        if($password!=$repassword){
-           session()->put('message','Mật khẩu nhập lại không trùng khớp!');
-           return back();
-        }
-  
-        $user = User::where('email',$email)->first();
-        if(isset($user)){
-           session()->put('message','Email đã tồn tại! Không thể đăng ký');
-           return back();
-        }
-  
-        $user = new User();
-        $user->name = $name;
-        // $user->password = $password;
-$user->password = Hash::make($password);
-        $user->email = $email;
-        $user->phone = $phone;
-        $user->address = $address;
-        $user->save();
-        return redirect()->route('login'); // dang ky thanh cong se chuy qua trang dang nhap
-  
-  
-  
-     }
-     public function postlogin(Request $req) {
-        $email = $req->input('email');
-        $password = $req->input('password');
-        
-        // Lấy người dùng dựa trên email
-        $user = User::where('email', $email)->first();
+    public function login(Request $req) {
+        return view('user.login'); 
+    }
+
+
+    public function postregister(Request $req)
+    {
+        try {
+            // Validate input
+            $req->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'phone' => 'required|string|max:15',
+                'address' => 'nullable|string|max:255',
+            ]);
     
-        // Kiểm tra xem người dùng có tồn tại không
-        if ($user) {
-            // Kiểm tra mật khẩu
-            if (Hash::check($password, $user->password)) {
-                // Đăng nhập thành công
-                Auth::login($user);
-                return redirect()->route('home');
-            }
-        }
+            // Create new user
+            $user = new User();
+            $user->name = $req->input('name');
+            $user->email = $req->input('email');
+            $user->password = Hash::make($req->input('password'));
+            $user->phone = $req->input('phone');
+            $user->address = $req->input('address');
+            $user->save();
     
-        // Nếu không đăng nhập được
-        session()->put('message', 'Email hoặc mật khẩu không đúng!');
-        return back();
+            // Redirect to login page with success message
+            return redirect()->route('login')->with('success', 'Đăng ký thành công. Vui lòng đăng nhập.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Registration failed', 'error' => $e->getMessage()], 500);
+        }
     }
     
 
-// public function postregister(Request $req) {
-//    $email = $req->input('email');
-//    $password = $req->input('password');
-//    $repassword = $req->input('repassword');
-//    $name = $req->input('name');
-//    $phone = $req->input('phone');
-//    $address = $req->input('address');
 
-//    if ($password != $repassword) {
-//        session()->put('message', 'Mật khẩu nhập lại không trùng khớp!');
-//        return back();
-//    }
+    public function postlogin(Request $req) {
+        // Validate input
+        $req->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+    
+        // Attempt to log in
+        if (Auth::attempt(['email' => $req->input('email'), 'password' => $req->input('password')])) {
+            // Redirect to homepage with success message
+            return redirect()->route('home')->with('success', 'Đăng nhập thành công');
+        }
+    
+        // If login fails, return back with error message
+        return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng!'])->withInput();
+    }
+    
+    
+    // public function postlogin(Request $req) {
+    //     // Validate input
+    //     $req->validate([
+    //         'email' => 'required|string|email',
+    //         'password' => 'required|string',
+    //     ]);
 
-//    $user = Customer::where('email', $email)->first();
-//    if (isset($user)) {
-//        session()->put('message', 'Email đã tồn tại! Không thể đăng ký');
-//        return back();
-//    }
+    //     // Attempt to log in
+    //     if (Auth::attempt(['email' => $req->input('email'), 'password' => $req->input('password')])) {
+    //         $user = Auth::user();
+    //         return response()->json(['message' => 'Đăng nhập thành công', 'user' => $user], 200);
+    //     }
 
-//    // Hash the password using Bcrypt before saving
-//    $user = new Customer();
-//    $user->name = $name;
-//    $user->password = Hash::make($password); // Hash the password with Bcrypt
-//    $user->email = $email;
-//    $user->phone = $phone;
-//    $user->address = $address;
-//    $user->save();
-
-//    return redirect()->route('login');
-// }
-// public function postlogin(Request $req) {
-//    $email = $req->input('email');
-//    $password = $req->input('password');
-
-//    $user = Customer::where('email', $email)->first();
-//    $canLogin = false;
-
-//    if (isset($user)) {
-//        // Check if the password is already Bcrypt-hashed
-//        if (strlen($user->password) === 60 && substr($user->password, 0, 4) === '$2y$') {
-//            // Use Bcrypt for comparison
-//            $canLogin = Hash::check($password, $user->password);
-//        } else {
-//            // For plaintext or other non-Bcrypt passwords, compare directly
-//            if ($password === $user->password) {
-//                $canLogin = true;
-
-//                // Rehash the password using Bcrypt and save it to the database
-//                $user->password = Hash::make($password);
-//                $user->save();
-//            }
-//        }
-//    }
-
-//    if ($canLogin) {
-//        Auth::login($user);
-//        return redirect()->route('home');
-//    } else {
-//        session()->put('message', 'Email hoặc mật khẩu không đúng!');
-//        return back();
-//    }
-// }
+    //     return response()->json(['message' => 'Email hoặc mật khẩu không đúng!'], 401);
+    // }
 
 }
