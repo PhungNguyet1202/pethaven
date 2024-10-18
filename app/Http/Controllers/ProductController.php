@@ -13,11 +13,11 @@ class ProductController extends Controller
         //  return view('product.product',compact(['dsSP']));
         //  return view('product.product');
         $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
-        $dsSP = Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
+        $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
         
         
         //return response()->json($dsSP);
-        return view('product.product', compact(['dsSP']));
+        return view('product.product', compact(['products']));
          
       }
 
@@ -38,19 +38,19 @@ class ProductController extends Controller
     
 
     public function productsByCategory($categorySlug) {
-      // Fetch the category by slug
-      $category = Category::where('slug', $categorySlug)->first();
-  
-      // If the category exists, fetch its products
-      if ($category) {
-          $products = Product::where('category_id', $category->id)->paginate(6); // Paginate 6 products
-  
-          // Return a view displaying the products and category
-          return view('product.products_by_category', compact('products', 'category'));
-      } else {
-          // If the category does not exist, redirect to home with an error
-          return redirect()->route('home')->with('error', 'Category not found');
-      }
+        // Fetch the category by slug
+        $category = Category::where('slug', $categorySlug)->first();
+    
+        // If the category exists, fetch its products
+        if ($category) {
+            $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
+            return view('product.product', compact('products', 'category'));
+        } else {
+            // If the category does not exist, redirect to home with an error
+            return redirect()->route('home')->with('error', 'Category not found');
+        }
+    }
+    
   }
   
   
@@ -76,4 +76,3 @@ class ProductController extends Controller
       //    }
      
       // }
-}

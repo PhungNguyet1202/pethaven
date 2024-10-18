@@ -9,7 +9,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{route('home')}}">Trang Chủ</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Sản phẩm</li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{{route('product')}}">Sản phẩm</li>
             </ol>
         </nav>
     </div>
@@ -28,8 +28,10 @@
                 </ul>
 
                 <ul class="list-group mb-4">
+                   
                     @foreach ($categories as $item)
                         <li class="list-group-item">
+                           
                             <a href="{{ route('category', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
                         </li>
                     @endforeach
@@ -50,7 +52,7 @@
         <div class="col-md-9">
             <h5 class="group-h5">25 loại sản phẩm</h5>
             <div class="row">
-              @foreach ($dsSP as $sp)
+              @foreach ($products as $sp)
               <div class="col-md-4">
                 <div class="product-card">
                     {{-- <img src="{{ asset('images/products/{{$sp->image}}') }}"> --}}

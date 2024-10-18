@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Áo len xám",
                 "image"=> "sp1.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>1,
+                "category_id"=>1,
                 "price"=>75000,
                 "sale_price"=> 50000
             ],
@@ -29,7 +29,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Ball on rope toy",
                 "image"=> "sp2.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>5,
+                "category_id"=>5,
                 "price"=>80000,
                 "sale_price"=> 50000
             ],
@@ -37,7 +37,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Blue ball for dog",
                 "image"=> "sp3.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>5,
+                "category_id"=>5,
                 "price"=>32000,
                 "sale_price"=> 29000
             ],
@@ -45,7 +45,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Hạt reflex cho chó",
                 "image"=> "sp4.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>2,
+                "category_id"=>2,
                 "price"=>520000,
                 "sale_price"=> 500000
             ],
@@ -53,14 +53,14 @@ class ProductSeeder extends Seeder
                 "name"=> "Interactive toy",
                 "image"=> "sp5.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>5,
+                "category_id"=>5,
                 "price"=>350000,
                 "sale_price"=> 250000
             ], [
                 "name"=> "Lysine tự nhiên cho thú cưng",
                 "image"=> "sp6.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>3,
+                "category_id"=>3,
                 "price"=>130000,
                 "sale_price"=> 100000
             ],
@@ -68,7 +68,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Multicolored rope",
                 "image"=> "sp7.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>5,
+                "category_id"=>5,
                 "price"=>75000,
                 "sale_price"=> 50000
             ],
@@ -76,7 +76,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Multispot pet food",
                 "image"=> "sp8.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>3,
+                "category_id"=>3,
                 "price"=>750000,
                 "sale_price"=> 500000
             ],
@@ -84,7 +84,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Pet food bowels",
                 "image"=> "sp9.jpg",
                 "instock"=>rand(10,100), 
-                "categories_id"=>2,  
+                "category_id"=>2,  
                 "price"=>420000,
                 "sale_price"=> 200000
             ],
@@ -92,7 +92,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Pik thực phẩm tự nhiên",
                 "image"=> "sp10.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>3,
+                "category_id"=>3,
                 "price"=>300000,
                 "sale_price"=> 250000
             ],
@@ -100,7 +100,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Thức ăn cho chó",
                 "image"=> "sp11.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>2,
+                "category_id"=>2,
                 "price"=>310000,
                 "sale_price"=> 250000
             ],
@@ -108,7 +108,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Thức ăn đặc biệt",
                 "image"=> "sp12.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>2,
+                "category_id"=>2,
                 "price"=>750000,
                 "sale_price"=> 500000
             ],
@@ -116,7 +116,7 @@ class ProductSeeder extends Seeder
                 "name"=> "Toy for pets",
                 "image"=> "sp13.jpg",
                 "instock"=>rand(10,100),
-                "categories_id"=>5,
+                "category_id"=>5,
                 "price"=>450000,
                 "sale_price"=> 250000
             ]
@@ -130,9 +130,10 @@ class ProductSeeder extends Seeder
             "slug"=>  Str::slug($sp['name']),
             "image"=>$sp['image'],
             "instock"=>$sp['instock'],
-            "categories_id"=>$sp['categories_id'],
+            "category_id"=>$sp['category_id'],
             "price"=>$sp['price'],
             "sale_price"=> $sp['sale_price'],
+            
         ]);
       }
     }
