@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlysanpham.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlydanhmuc.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlykhachhang.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlitheloaitintuc.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlitintuc.css') }}">
 </head>
 </head>
  <body>
@@ -34,6 +36,26 @@
         <a href="{{route('admin.product') }}" class="  {{ (Request::routeIs('admin.product'))?'active':'text-white' }}">
 
           <i class="fas fa-users"></i>Quan ly san pham
+         </a>
+         <a href="{{route('admin.product') }}" class="  {{ (Request::routeIs('admin.product'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly dich vu
+         </a>
+         <a href="{{route('admin.news') }}" class="  {{ (Request::routeIs('admin.news'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly tin tuc
+         </a>
+         <a href="{{route('admin.categoryNew') }}" class="  {{ (Request::routeIs('admin.categoryNew'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly loai tin tuc
+         </a>
+         <a href="{{route('admin.product') }}" class=" }">
+
+          <i class="fas fa-users"></i>Quan ly binh luan
+         </a>
+         <a href="{{route('admin.product') }}" class="  ">
+
+          <i class="fas fa-users"></i>Quan ly pet
          </a>
         <a href="../layout/thongkesanphamban.html">
          <i class="fas fa-chart-bar"></i> Thống kê sản phẩm bán

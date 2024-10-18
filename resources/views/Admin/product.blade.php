@@ -61,7 +61,7 @@
       </option>
      </select>
      <button class="btn btn-primary">
-      Thêm
+     <a href="{{  route('admin.product.add')  }}">Them</a>
      </button>
     </form>
     <div class="status-indicators">
