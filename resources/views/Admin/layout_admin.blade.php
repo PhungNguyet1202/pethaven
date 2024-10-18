@@ -9,6 +9,11 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/><link rel="stylesheet">
   <link rel="stylesheet" href="{{asset('/')}}layout/Admin/css/quanlysanpham.css">
   <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlysanpham.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlydanhmuc.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlykhachhang.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlitheloaitintuc.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/public/layout/Admin/css/quanlitintuc.css') }}">
+</head>
 </head>
  <body>
   <div class="d-flex">
@@ -17,16 +22,41 @@
       <img alt="" height="200" src="../../../img/Red & Orange Simple Petshop Logo.png" width="200"/>
       <h4>PET HEAVEN</h4>
      </div>
-     <a href="{{ route('admin.category') }}">
+     <a href="{{ route('admin.dashboard') }}" class=" ">
 
-         <i class="fas fa-users"></i> Quản lý danh mục
-        </a>
-        <a href="../layout/quanlykhachhang.html">
+      <i class="fas fa-users"></i>Dashboard
+     </a>
+     <a href="{{ route('admin.category') }}" class="   ">
+
+      <i class="fas fa-users"></i>quan ly danh muc
+     </a>
+     <a href="{{ route('admin.user') }}" class="  {{ (Request::routeIs('admin.user'))?'active':'text-white' }}">
          <i class="fas fa-shopping-cart"></i> Quản lý khách hàng
         </a>
-        <a href="{{ route('admin.product') }}">
-         <i class="fas fa-box"></i> Quản lý sản phẩm
-        </a>
+        <a href="{{route('admin.product') }}" class="  {{ (Request::routeIs('admin.product'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly san pham
+         </a>
+         <a href="{{route('admin.product') }}" class="  {{ (Request::routeIs('admin.product'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly dich vu
+         </a>
+         <a href="{{route('admin.news') }}" class="  {{ (Request::routeIs('admin.news'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly tin tuc
+         </a>
+         <a href="{{route('admin.categoryNew') }}" class="  {{ (Request::routeIs('admin.categoryNew'))?'active':'text-white' }}">
+
+          <i class="fas fa-users"></i>Quan ly loai tin tuc
+         </a>
+         <a href="{{route('admin.product') }}" class=" }">
+
+          <i class="fas fa-users"></i>Quan ly binh luan
+         </a>
+         <a href="{{route('admin.product') }}" class="  ">
+
+          <i class="fas fa-users"></i>Quan ly pet
+         </a>
         <a href="../layout/thongkesanphamban.html">
          <i class="fas fa-chart-bar"></i> Thống kê sản phẩm bán
         </a>

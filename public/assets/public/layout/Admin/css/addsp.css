@@ -1,0 +1,65 @@
+body {
+    background-color: #f8f9fa;
+    font-family: "Quicksand", sans-serif;
+}
+.sidebar {
+  background-color: #f28500; 
+  height: 1000px;
+  padding: 20px;
+}
+.sidebar .text-center {
+  margin-bottom: 20px;
+}
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding: 10px 20px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+.sidebar a:hover {
+  background-color: #f19b31;
+}
+.sidebar a.active {
+  background-color: #f19b31; 
+  font-weight: bold;
+}
+.main-heading-admin{
+font-size: 36px;
+letter-spacing: -0.02em;
+line-height: 1.2;
+font-family: "Quicksand", sans-serif;
+font-weight: 700;
+color: #fff;
+}
+.content {
+    padding: 20px;
+}
+.header {
+    background-color: #e3f2fd;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header .user-info {
+    display: flex;
+    align-items: center;
+}
+.header .user-info img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+.header .user-info i {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.form-addsp:focus {
+    border-color: #FF4500; 
+    outline: none; 
+    box-shadow: none; 
+}

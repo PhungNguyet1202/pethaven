@@ -10,7 +10,7 @@ class product extends Model
     use HasFactory;
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'categories_id');
     }
     public function reviews()
     {
@@ -28,10 +28,10 @@ class product extends Model
     /**
      * Lấy các StockIn thuộc về Product này.
      */
-    public function stockIns()
-    {
-        return $this->hasMany(StockIn::class, 'product_id');
+    public function stockIns() {
+        return $this->hasMany(Stockin::class, 'product_id'); // Sửa tên class thành Stockin
     }
+    
 
     /**
      * Lấy các Inventory thuộc về Product này.

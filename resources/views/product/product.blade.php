@@ -27,17 +27,14 @@
                     <li class="list-group-item"><a href="#">Sắp xếp giá thấp dần</a></li>
                 </ul>
 
-                <h5 class="group-h5">Danh mục</h5>
                 <ul class="list-group mb-4">
                     @foreach ($categories as $item)
-                    <li class="list-group-item"><a href="#">{{$item->name}}</a></li>
-                    {{-- <li class="list-group-item"><a href="#">Thức Ăn Cho Chó</a></li>
-                    <li class="list-group-item"><a href="#">Thực Phẩm Sức Khỏe</a></li>
-                    <li class="list-group-item"><a href="#">Chăm Sóc Thú Cưng</a></li>
-                    <li class="list-group-item"><a href="#">Thú Cưng Tự Nhiên</a></li>
-                    <li class="list-group-item"><a href="#">Đồ Chơi Thú Cưng</a></li> --}}
+                        <li class="list-group-item">
+                            <a href="{{ route('category', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
+                        </li>
                     @endforeach
                 </ul>
+                
 
                 <h5 class="group-h5">Giá</h5>
                 <ul class="list-group mb-4">

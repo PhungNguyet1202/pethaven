@@ -68,7 +68,7 @@
                                         mật khẩu</label>
                                     <input type="password"
                                         class="form-control"
-                                        id="confirmPassword" name="repassword"
+                                        id="confirmPassword" name="password_confirmation"
                                         placeholder="Nhập mật khẩu của bạn"
                                         required>
 

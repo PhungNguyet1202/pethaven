@@ -90,7 +90,7 @@
 
 <div class="reviews mt-5">
     <h4 class="content-service">Đánh giá</h4>
-    <div ng-repeat="bl in dsBL" class="review">
+    <div ng-repeat="bl in dsBL track by bl.id" class="review">
         <h5 class="user-review">@{{bl.user_fullname}}</h5>
         <p class="custom-description-cart-item"><span class="text-muted">@{{bl.created_at | date:'dd/MM/yyyy HH:mm:ss'}}</span></p>
         <p class="custom-description-cart-item">@{{bl.content}}</p>
@@ -113,42 +113,34 @@
 <div class="review-form">
     <h4 class="content-service">Thêm đánh giá</h4>
     <form action="/api/comments" method="post">
-       
-        @auth
-        <!-- This section is for authenticated users -->
-        <p>Welcome back, {{ Auth::user()->name }}!</p>
-        <!-- You can place any other content for authenticated users here -->
-    @endauth
-
-    @guest
-        <div class="alert alert-info">
-            Bạn cần <a href="{{ route('login') }}">đăng nhập</a> để đánh giá
-        </div>
-    @endguest
-
-    <form action="/api/comments" method="post">
         @csrf
+        
+        @auth
+            <p>Xin Chào, {{ Auth::user()->name }}!</p>
+        @endauth
+
+        @guest
+            <div class="alert alert-info">
+                Bạn cần <a href="{{ route('login') }}">đăng nhập</a> để đánh giá
+            </div>
+        @endguest
+
         <label for="rating">Đánh giá của bạn:</label>
-        {{-- <input type="number" id="rating" name="rating" max="5" min="1" required>
-        <textarea name="review" placeholder="Đánh giá của bạn..." required></textarea>
-        <button class="btn add-review">Gửi đánh giá</button> --}}
-        <select ng-model="rating" class="form-control" id="rating">
+        <select ng-model="rating" class="form-control" id="rating" required>
             <option value="5">5 Sao</option>
             <option value="4">4 Sao</option>
             <option value="3">3 Sao</option>
             <option value="2">2 Sao</option>
             <option value="1">1 Sao</option>
         </select>
+
         <textarea ng-model="content" name="review" placeholder="Đánh giá của bạn..." required></textarea>
-        <button ng-click="sendComment()" class="btn add-review">Gửi đánh giá</button>
+        <button type="submit" class="btn add-review" ng-click="sendComment()">Gửi đánh giá</button>
     </form>
 </div>
 </div>
 </div>
-
-    
 @endsection
-
 @section('viewFunction')
     <script>
         viewFunction = function($scope,$http){
@@ -175,7 +167,7 @@
 
             $scope.sendComment = function() {
     $http.post('/api/comments', {
-        'product_id': {{$sp->id}}, // Ensure this is set correctly
+        'product_id': {{$sp->id}},
         'content': $scope.content,
         'rating': $scope.rating,
     }).then(
