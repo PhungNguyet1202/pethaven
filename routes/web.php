@@ -5,7 +5,6 @@ use App\Http\Controllers\CommentCotroller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
-use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -35,8 +34,14 @@ Route::post('/logout',function(){
     return redirect()->route('register');
 })->name('logout');
 
+
 //Route::get('/product', [ProductController::class, 'product'])->name('product');
 //Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+
+Route::get('/product', [ProductController::class, 'product'])->name('product');
+
+Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+
 
 // Route::prefix('api')->group(function(){
 // Route::get('/comments/product/{product_id}',[CommentCotroller::class,'product']);
@@ -45,6 +50,7 @@ Route::post('/logout',function(){
 // Route::post('/register', [UserController::class,'postregister']);
 // }
 // );
+
 
 Route::prefix('api')->group(function() {
     Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
@@ -61,6 +67,9 @@ Route::prefix('api')->group(function() {
 });
 
 
+
+
+//cal
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
 Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
@@ -69,4 +78,5 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/product', [AdminController::class, 'product'])->name('product');
     Route::get('/category', [AdminController::class, 'category'])->name('category');
+    Route::get('/user', [AdminController::class, 'user'])->name('user');
 });
