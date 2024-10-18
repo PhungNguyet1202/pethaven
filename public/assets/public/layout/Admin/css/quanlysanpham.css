@@ -1,28 +1,37 @@
 body {
-    font-family: Arial, sans-serif;
     background-color: #f8f9fa;
+    font-family: "Quicksand", sans-serif;
 }
 .sidebar {
-    background-color: #e3f2fd;
-    height: 100vh;
-    padding-top: 20px;
-}
-.sidebar a {
-    color: #000;
+    background-color: #f28500; 
+    height: 1000px;
+    padding: 20px;
+  }
+  .sidebar .text-center {
+    margin-bottom: 20px;
+  }
+  .sidebar a {
+    color: #fff;
     text-decoration: none;
     display: block;
     padding: 10px 20px;
     font-size: 16px;
-}
-.sidebar a:hover {
-    background-color: #d1ecf1;
-}
-.sidebar a.active {
-    background-color: #d1ecf1;
+    transition: background-color 0.3s;
+  }
+  .sidebar a:hover {
+    background-color: #f19b31;
+  }
+  .sidebar a.active {
+    background-color: #f19b31; 
     font-weight: bold;
-}
-.sidebar a i {
-    margin-right: 10px;
+  }
+  .main-heading-admin{
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  color: #fff;
 }
 .content {
     padding: 20px;
@@ -32,7 +41,7 @@ body {
     padding: 10px 20px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 .header .user-info {
     display: flex;
@@ -50,10 +59,12 @@ body {
 }
 .search-bar-container {
     background-color: #e3f2fd;
-    padding: 10px 20px;
+   
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 60px;
+   
 }
 .search-bar {
     flex-grow: 1;
@@ -61,9 +72,10 @@ body {
     margin-right: 20px;
     display: flex;
     align-items: center;
+   
 }
 .search-bar input {
-    width: 100%;
+    width: 600px;
     padding: 5px 10px;
     border: 1px solid #ced4da;
     border-radius: 4px;
@@ -142,12 +154,31 @@ body {
 .product-actions button {
     margin: 0 10px;
 }
-.form-inline {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+
+.form-inline button {
+    margin-top: 15px;
+    background-color:#FF642F ;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    width: 200px;
+    border: none;
+    transition: ease 0.5s ;
+
 }
-.form-inline input, .form-inline select, .form-inline button {
-    margin: 5px;
+.form-inline button:hover {
+    
+    background-color:#080808 ;
+    color: #fff;
+    
+    border: none;
+    
+}
+.add-qlsp{
+    width: 900px;
+}
+.form-addsp:focus {
+    border-color: #FF4500; 
+    outline: none; 
+    box-shadow: none; 
 }

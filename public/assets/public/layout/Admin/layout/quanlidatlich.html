@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đặt Lịch</title>
+    <link rel="stylesheet" href="../css/quanlidichvu.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+       
+        <nav class="sidebar">
+            <div class="logo">
+                <img src="../../../img/Red & Orange Simple Petshop Logo.png" alt="Pet Haven Logo">
+            </div>
+            <ul class="menu">
+                <li><a href="#">Tổng quan</a></li>
+                <li><a href="#">Quản lý khách hàng</a></li>
+                <li><a href="quanlidichvu.html">Quản lý dịch vụ</a></li>
+                <li><a href="#">Quản lý sản phẩm</a></li>
+                <li><a href="quanlibinhluan.html">Quản lý bình luận</a></li>
+                <li><a href="#">Quản lý danh mục</a></li>
+                <li><a href="#">Quản lý thống kê</a></li>
+                <li><a href="quanlitintuc.html">Quản lý tin tức</a></li>
+                <li><a href="quanlitheloaitintuc.html">Quản lý loại tin tức</a></li>
+                <li><a href="quanlidatlich.html"class="active">Quản lý đặt lịch </a></li>
+                <li><a href="#">Thoát</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content">
+            <header>
+                <div class="search-bar">
+                    <input type="text" placeholder="Tìm tên hoặc mã đặt lịch">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </div>
+                <div class="user-info">
+                    <span>Nguyen Thu Phuong</span>
+                    <img src="../../../img/avt admin.jpg" alt="User Avatar">
+                </div>
+            </header>
+
+            <section class="table-section">
+                <h1>Danh sách đặt lịch</h1>
+              
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ngày Dịch Vụ</th>
+                            <th>SĐT</th>
+                            <th>Email</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>2024-10-14</td>
+                            <td>0123456789</td>
+                            <td>example1@mail.com</td>
+                            <td class="status">Chưa nhận</td>
+                            <td>
+                                <button class="action-btn edit" onclick="updateStatus(this)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2</td>
+                            <td>2024-10-15</td>
+                            <td>0123456790</td>
+                            <td>example2@mail.com</td>
+                            <td class="status">Chưa nhận</td>
+                            <td>
+                                <button class="action-btn edit" onclick="updateStatus(this)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2024-10-16</td>
+                            <td>0123456791</td>
+                            <td>example3@mail.com</td>
+                            <td class="status">Chưa nhận</td>
+                            <td>
+                                <button class="action-btn edit" onclick="updateStatus(this)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script src="../js/quanlidatlich.js"></script>
+
+</body>
+</html>
