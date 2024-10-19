@@ -63,7 +63,7 @@
             @endfor
         </span>
         ({{ $sp->rating }} / 5 từ {{ $sp->review_count }} đánh giá)</p>
-        <p class="custom-description-cart-item ">{{$sp->description}}</p>
+        {{-- <p class="custom-description-cart-item ">{{$sp->description}}</p> --}}
 
       
         <div class="quantity-wrapper mt-3 custom-description-cart-item ">
