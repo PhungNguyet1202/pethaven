@@ -56,7 +56,7 @@
                     {{-- <img src="{{ asset('images/products/{{$sp->image}}') }}"> --}}
                     <img src="{{ asset('images/products/' . $sp->image) }}" alt="Product Image">
 
-                    <div class="product-title" href=""><a href="{{route('detail',['slug'=>$sp->slug])}}">{{$sp->name}}</a></div>
+                    <div class="product-title" href=""><a href="#">{{$sp->name}}</a></div>
                     <div class="product-sale-price">
                         @if (isset($sp->sale_price) && $sp->sale_price > 0)
                         <span> {{number_format($sp->sale_price)}} VND</span>

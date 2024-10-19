@@ -28,6 +28,8 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'required|string|max:15',
                 'address' => 'nullable|string|max:255',
+                'dob' => 'required|date',
+                
             ]);
     
             // Create new user
@@ -37,6 +39,7 @@ class UserController extends Controller
             $user->password = Hash::make($req->input('password'));
             $user->phone = $req->input('phone');
             $user->address = $req->input('address');
+            $user->dob = $req->input('dob');
             $user->save();
     
             // Redirect to login page with success message
@@ -66,9 +69,74 @@ class UserController extends Controller
         // If login fails, return back with error message
         return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng!'])->withInput();
     }
+
+
+
+
+//////////
+   // Hiển thị thông tin người dùng hiện tại
+   public function profile() {
+    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
+    return view('user.profile', compact('user')); // Trả về view với thông tin người dùng
+}
+
+// Hiển thị thông tin người dùng hiện tại dưới dạng JSON
+public function showProfile() {
+    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
+    return response()->json($user); // Trả về thông tin người dùng dưới dạng JSON
+}
+
+// Cập nhật thông tin người dùng
+public function updateProfile(Request $req) {
+    $user = Auth::user(); // Lấy người dùng hiện tại
+
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
+    }
+
+    // Validate dữ liệu đầu vào
+    $validatedData = $req->validate([
+        'name' => 'nullable|string|max:255',
+        'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|min:6|confirmed',
+        'phone' => 'nullable|string|max:15',
+        'address' => 'nullable|string|max:255',
+        'img' => 'nullable|string|max:255',
+
+    ]);
+
+    // Cập nhật thông tin
+    $user->name = $validatedData['name'] ?? $user->name;
+    $user->email = $validatedData['email'] ?? $user->email;
+    $user->phone = $validatedData['phone'] ?? $user->phone;
+    $user->address = $validatedData['address'] ?? $user->address;
+    $user->img = $validatedData['img'] ?? $user->img;
+
+
+    // Cập nhật mật khẩu nếu có
+    if (!empty($validatedData['password'])) {
+        $user->password = Hash::make($validatedData['password']);
+    }
+
+    $user->save(); // Lưu thông tin cập nhật
+
+    return response()->json(['message' => 'User information updated successfully']);
+}
+
+
+
     
     
-    // public function postlogin(Request $req) {
+    
+
+}
+
+
+
+
+
+
+// public function postlogin(Request $req) {
     //     // Validate input
     //     $req->validate([
     //         'email' => 'required|string|email',
@@ -83,5 +151,3 @@ class UserController extends Controller
 
     //     return response()->json(['message' => 'Email hoặc mật khẩu không đúng!'], 401);
     // }
-
-}

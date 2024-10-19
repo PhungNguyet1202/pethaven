@@ -23,9 +23,9 @@ return new class extends Migration
             $table->unsignedBigInteger('service_id');
 
             // Thiết lập khóa ngoại
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  
-            $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade'); 
-            $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');        
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  
+            // $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade'); 
+            // $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');        
             // $table->foreign('customer_id')->references('customers')->onDelete('cascade');
             // $table->foreign('pet_id')->references('pets')->onDelete('cascade');
             // $table->foreign('service

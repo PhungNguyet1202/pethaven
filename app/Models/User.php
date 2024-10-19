@@ -118,4 +118,5 @@ class User extends Authenticatable
         return response()->json(['message' => 'User information updated successfully']);
     }
     
+    
 }

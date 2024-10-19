@@ -34,6 +34,11 @@
             </div>
             @endforeach
         </div>
+        
+        {{-- Pagination Links --}}
+        <div class="pagination-wrapper">
+            {{ $services->links() }} <!-- This will generate pagination links -->
+        </div>
     </div>
 </div>
 
