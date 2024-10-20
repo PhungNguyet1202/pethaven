@@ -42,6 +42,7 @@
                                     <input type="phone"
                                         class="form-control"
                                         id="phone" name="phone"
+                                         pattern="^0\d{9}$"
                                         placeholder="Nhập số điện thoai của bạn"
                                         required>
                                 </div>

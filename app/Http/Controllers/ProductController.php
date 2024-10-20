@@ -16,25 +16,53 @@ class ProductController extends Controller
         $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
         
         
-        //return response()->json($dsSP);
-        return view('product.product', compact(['products']));
+        if ($request->wantsJson()) {
+            return response()->json($products); //tả về json
+        }
+    
+        //tả về trang sp
+        return view('product.product', compact('products'));
          
       }
 
 
-      public function detail($slug) {
+    //   public function detail($slug) {
       
-        $sp = Product::where('slug', $slug)->first();
+    //     $sp = Product::where('slug', $slug)->first();
     
-       //kiểm tra sp tồn tại ko
-        if ($sp) {
-           // chuyển sang trang chi tiết
-            return view('product.detail', compact('sp'));
-        } else {
-           // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
-            return redirect()->route('home')->with('error', 'Product not found');
+    //    //kiểm tra sp tồn tại ko
+    //     if ($sp) {
+    //        // chuyển sang trang chi tiết
+    //         return view('product.detail', compact('sp'));
+    //     } else {
+    //        // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
+    //         return redirect()->route('home')->with('error', 'Product not found');
+    //     }
+
+    public function detail($slug)
+{
+    $sp = Product::where('slug', $slug)->first();
+    
+    // Check if the product exists
+    if ($sp) {
+        // If the request expects JSON, return the product as JSON
+        if (request()->wantsJson()) {
+            return response()->json($sp);
         }
+
+        // Otherwise, return the product detail view
+        return view('product.detail', compact('sp'));
+    } else {
+        // If the product is not found, return a 404 or redirect to home with an error
+        if (request()->wantsJson()) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return redirect()->route('home')->with('error', 'Product not found');
     }
+}
+
+    
     
 
     public function productsByCategory($categorySlug) {

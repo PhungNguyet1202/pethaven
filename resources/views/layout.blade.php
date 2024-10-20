@@ -43,7 +43,7 @@
                         <a class="nav-link" href="#">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('service')}}">Dịch vụ</a>
+                        <a class="nav-link" href="">Dịch vụ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('product')}}">Sản phẩm</a>
