@@ -8,22 +8,45 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function product(Request $request){
-        //  $dsSP = Product::limit(6)->get();
-        //  return view('product.product',compact(['dsSP']));
-        //  return view('product.product');
-        $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
-        $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
+    // public function product(Request $request){
+    //     //  $dsSP = Product::limit(6)->get();
+    //     //  return view('product.product',compact(['dsSP']));
+    //     //  return view('product.product');
+    //     $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
+    //     $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
         
         
-        if ($request->wantsJson()) {
-            return response()->json($products); //tả về json
-        }
+    //     if ($request->wantsJson()) {
+    //         return response()->json($products); //tả về json
+    //     }
     
-        //tả về trang sp
-        return view('product.product', compact('products'));
+    //     //tả về trang sp
+    //     return view('product.product', compact('products'));
          
-      }
+    //   } // chưa trả về json
+
+    public function product(Request $request)
+    {
+        // Get search query and pagination parameters
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 9); // Default to 10 items per page
+        $page = $request->input('page', 1);
+    
+        // Build the query
+        $query = Product::with('category')
+                        ->withSum('stockIns', 'Quantity');
+    
+        // Apply search filter
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%"); // Assuming product has 'code'
+        }
+        
+        // Get paginated results
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
+    
+        return response()->json($products, 200);
+    }
 
 
     //   public function detail($slug) {
@@ -39,30 +62,35 @@ class ProductController extends Controller
     //         return redirect()->route('home')->with('error', 'Product not found');
     //     }
 
-    public function detail($slug)
-{
-    $sp = Product::where('slug', $slug)->first();
+//     public function detail($slug)
+// {
+//     $sp = Product::where('slug', $slug)->first();
     
-    // Check if the product exists
-    if ($sp) {
-        // If the request expects JSON, return the product as JSON
-        if (request()->wantsJson()) {
-            return response()->json($sp);
-        }
+//     // ktra sp
+//     if ($sp) {
+//         // trả sp dưới dạng json
+//         if (request()->wantsJson()) {
+//             return response()->json($sp);
+//         }
 
-        // Otherwise, return the product detail view
-        return view('product.detail', compact('sp'));
-    } else {
-        // If the product is not found, return a 404 or redirect to home with an error
-        if (request()->wantsJson()) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
+//         // trả về trang ctsp
+//         return view('product.detail', compact('sp'));
+//     } else {
+//        // nếu ko thấy sp thì chuyển sang trang notfound
+//         if (request()->wantsJson()) {
+//             return response()->json(['error' => 'Product not found'], 404);
+//         }
 
-        return redirect()->route('home')->with('error', 'Product not found');
-    }
+//         return redirect()->route('home')->with('error', 'Product not found');
+//     }
+// }
+public function detail($id) {
+    // Tìm sản phẩm theo id và ném lỗi nếu không tìm thấy
+    $sp = Product::findOrFail($id);
+
+    // Trả về dữ liệu sản phẩm dưới dạng JSON
+    return response()->json($sp);
 }
-
-    
     
 
     public function productsByCategory($categorySlug) {
