@@ -43,7 +43,7 @@
                         <a class="nav-link" href="#">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('service')}}">Dịch vụ</a>
+                        <a class="nav-link" href="#">Dịch vụ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('product')}}">Sản phẩm</a>
@@ -69,7 +69,7 @@
                         </form>
                     </li>
                     <li class="nav-item user-relavity">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('cart.show') }}" class="nav-link">
                             <i class="fas fa-shopping-cart fa-xl"></i>
                             <span class="shopping-cart-items-count">0</span>
                         </a>
