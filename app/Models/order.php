@@ -36,4 +36,12 @@ class order extends Model
     {
         return $this->hasMany(Payment::class, 'order_id');
     }
+///////////
+
+    protected $fillable = ['order_id', 'product_id', 'quantity', 'price', 'total_price'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
