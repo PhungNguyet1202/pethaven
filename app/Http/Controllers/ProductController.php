@@ -8,35 +8,59 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function product(Request $request){
-        //  $dsSP = Product::limit(6)->get();
-        //  return view('product.product',compact(['dsSP']));
-        //  return view('product.product');
-        $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
-        $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
+    // public function product(Request $request){
+    //     //  $dsSP = Product::limit(6)->get();
+    //     //  return view('product.product',compact(['dsSP']));
+    //     //  return view('product.product');
+    //     $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
+    //     $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
         
         
-        //return response()->json($dsSP);
-        return view('product.product', compact(['products']));
+    //     //return response()->json($dsSP);
+    //     return view('product.product', compact(['products']));
          
-      }
+    //   }
 
 
-      public function detail($slug) {
+    //   public function detail($slug) {
       
-        $sp = Product::where('slug', $slug)->first();
+    //     $sp = Product::where('slug', $slug)->first();
     
-       //kiểm tra sp tồn tại ko
-        if ($sp) {
-           // chuyển sang trang chi tiết
-            return view('product.detail', compact('sp'));
-        } else {
-           // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
-            return redirect()->route('home')->with('error', 'Product not found');
-        }
-    }
+    //    //kiểm tra sp tồn tại ko
+    //     if ($sp) {
+    //        // chuyển sang trang chi tiết
+    //         return view('product.detail', compact('sp'));
+    //     } else {
+    //        // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
+    //         return redirect()->route('home')->with('error', 'Product not found');
+    //     }
+    // }
     
 
+   
+
+    public function product(Request $request)
+    {
+        // Get search query and pagination parameters
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 9); // Default to 10 items per page
+        $page = $request->input('page', 1);
+    
+        // Build the query
+        $query = Product::with('category')
+                        ->withSum('stockIns', 'Quantity');
+    
+        // Apply search filter
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%"); // Assuming product has 'code'
+        }
+        
+        // Get paginated results
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
+    
+        return response()->json($products, 200);
+    }
     public function productsByCategory($categorySlug) {
         // Fetch the category by slug
         $category = Category::where('slug', $categorySlug)->first();
@@ -51,6 +75,13 @@ class ProductController extends Controller
         }
     }
     
+    public function detail($id) {
+        // Tìm sản phẩm theo id và ném lỗi nếu không tìm thấy
+        $sp = Product::findOrFail($id);
+    
+        // Trả về dữ liệu sản phẩm dưới dạng JSON
+        return response()->json($sp);
+    }
   }
   
   

@@ -120,7 +120,7 @@ public function updateProfile(Request $req) {
 
     $user->save(); // Lưu thông tin cập nhật
 
-    return response()->json(['message' => 'User information updated successfully']);
+    return response()->json(['message' => 'Cập nhật thành công!']);
 }
 
 
