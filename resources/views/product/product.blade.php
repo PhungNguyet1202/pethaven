@@ -19,13 +19,22 @@
     <div class="row">
         <div class="col-md-3">
             <div class="sidebar">
-                <h5 class="group-h5">Tùy chọn</h5>
+                {{-- <h5 class="group-h5">Tùy chọn</h5>
                 <ul class="list-group mb-4">
                     <li class="list-group-item"><a href="#">Sắp xếp từ A - Z</a></li>
                     <li class="list-group-item"><a href="#">Sắp xếp từ Z - A</a></li>
                     <li class="list-group-item"><a href="#">Sắp xếp giá cao dần</a></li>
                     <li class="list-group-item"><a href="#">Sắp xếp giá thấp dần</a></li>
-                </ul>
+                </ul> --}}
+                <h5 class="group-h5">Tùy chọn</h5>
+<ul class="list-group mb-4" id="sortOptions">
+    <li class="list-group-item"><a href="#" data-sort="name_asc">Sắp xếp từ A - Z</a></li>
+    <li class="list-group-item"><a href="#" data-sort="name_desc">Sắp xếp từ Z - A</a></li>
+    <li class="list-group-item"><a href="#" data-sort="price_asc">Sắp xếp giá thấp dần</a></li>
+    <li class="list-group-item"><a href="#" data-sort="price_desc">Sắp xếp giá cao dần</a></li>
+</ul>
+
+<div id="searchResults"></div>
 
                 <ul class="list-group mb-4">
                    
@@ -38,14 +47,25 @@
                 </ul>
                 
 
-                <h5 class="group-h5">Giá</h5>
+                {{-- <h5 class="group-h5">Giá</h5>
                 <ul class="list-group mb-4">
                     <li class="list-group-item"><a href="#">100.000 - 1.000.000đ</a></li>
                     <li class="list-group-item"><a href="#">1.000.001 - 4.000.000đ</a></li>
                     <li class="list-group-item"><a href="#">4.000.001 - 6.000.000đ</a></li>
                     <li class="list-group-item"><a href="#">6.000.001 - 8.000.000đ</a></li>
                    
-                </ul>
+                </ul> --}}
+
+                <h5 class="group-h5">Giá</h5>
+<ul class="list-group mb-4" id="priceFilter">
+    <li class="list-group-item"><a href="#" data-min="100000" data-max="1000000">100.000 - 1.000.000đ</a></li>
+    <li class="list-group-item"><a href="#" data-min="1000001" data-max="4000000">1.000.001 - 4.000.000đ</a></li>
+    <li class="list-group-item"><a href="#" data-min="4000001" data-max="6000000">4.000.001 - 6.000.000đ</a></li>
+    <li class="list-group-item"><a href="#" data-min="6000001" data-max="8000000">6.000.001 - 8.000.000đ</a></li>
+</ul>
+
+<div id="searchResults"></div> <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
+
             </div>
         </div>
 
@@ -117,4 +137,78 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
+
+<script>
+    document.getElementById('priceFilter').addEventListener('click', function(event) {
+    event.preventDefault();  // Ngăn chặn hành động mặc định khi nhấn vào link
+    
+    if (event.target.tagName === 'A') {
+        const minPrice = event.target.getAttribute('data-min');
+        const maxPrice = event.target.getAttribute('data-max');
+
+        // Gửi yêu cầu lọc sản phẩm theo khoảng giá tới API
+        fetch(`/api/products?min_price=${minPrice}&max_price=${maxPrice}&perPage=9&page=1`)
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý dữ liệu trả về từ API
+                console.log(data);
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = ''; // Xóa kết quả cũ
+
+                // Hiển thị sản phẩm được trả về
+                data.data.forEach(product => {
+                    const productItem = `
+                        <div class="product-item">
+                            <h3>${product.name}</h3>
+                            <p>Price: ${product.price}</p>
+                            <p>Stock: ${product.stock_sum_quantity}</p>
+                            <p>Category: ${product.category.name}</p>
+                        </div>
+                    `;
+                    searchResults.innerHTML += productItem;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+});
+
+</script>
+<script>
+    document.getElementById('sortOptions').addEventListener('click', function(event) {
+    event.preventDefault();  // Ngăn chặn hành động mặc định khi nhấn vào link
+    
+    if (event.target.tagName === 'A') {
+        const sortOption = event.target.getAttribute('data-sort');
+
+        // Gửi yêu cầu sắp xếp sản phẩm tới API
+        fetch(`/api/products?sort=${sortOption}&perPage=9&page=1`)
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý dữ liệu trả về từ API
+                console.log(data);
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = ''; // Xóa kết quả cũ
+
+                // Hiển thị sản phẩm được trả về
+                data.data.forEach(product => {
+                    const productItem = `
+                        <div class="product-item">
+                            <h3>${product.name}</h3>
+                            <p>Price: ${product.price}</p>
+                            <p>Stock: ${product.stock_sum_quantity}</p>
+                            <p>Category: ${product.category.name}</p>
+                        </div>
+                    `;
+                    searchResults.innerHTML += productItem;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+});
+
+</script>
 @endsection

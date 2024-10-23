@@ -25,28 +25,110 @@ class ProductController extends Controller
          
     //   } // chưa trả về json
 
+
+    // load sp
+    // public function product(Request $request)
+    // {
+    //     // Get search query and pagination parameters
+    //     $search = $request->input('search');
+    //     $perPage = $request->input('perPage', 9); // Default to 10 items per page
+    //     $page = $request->input('page', 1);
+    
+    //     // Build the query
+    //     $query = Product::with('category')
+    //                     ->withSum('stockIns', 'Quantity');
+    
+    //     // Apply search filter
+    //     if ($search) {
+    //         $query->where('name', 'like', "%{$search}%")
+    //               ->orWhere('code', 'like', "%{$search}%"); // Assuming product has 'code'
+    //     }
+        
+    //     // Get paginated results
+    //     $products = $query->paginate($perPage, ['*'], 'page', $page);
+    
+    //     return response()->json($products, 200);
+    // }
     public function product(Request $request)
     {
-        // Get search query and pagination parameters
+        // Lấy các tham số tìm kiếm và phân trang
         $search = $request->input('search');
-        $perPage = $request->input('perPage', 9); // Default to 10 items per page
+        $perPage = $request->input('perPage', 9); // Số sản phẩm mỗi trang, mặc định là 9
         $page = $request->input('page', 1);
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $sort = $request->input('sort'); // Lấy tham số sắp xếp
     
-        // Build the query
+        // Xây dựng truy vấn
         $query = Product::with('category')
                         ->withSum('stockIns', 'Quantity');
     
-        // Apply search filter
+        // Áp dụng bộ lọc tìm kiếm
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%"); // Assuming product has 'code'
+                  ->orWhere('code', 'like', "%{$search}%"); 
         }
-        
-        // Get paginated results
+    
+        // Áp dụng bộ lọc giá
+        if ($minPrice) {
+            $query->where('price', '>=', $minPrice);
+        }
+    
+        if ($maxPrice) {
+            $query->where('price', '<=', $maxPrice);
+        }
+    
+        // Áp dụng sắp xếp theo yêu cầu
+        if ($sort) {
+            switch ($sort) {
+                case 'name_asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'name_desc':
+                    $query->orderBy('name', 'desc');
+                    break;
+                case 'price_asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                default:
+                    break;
+            }
+        }
+    
+        // Lấy kết quả phân trang
         $products = $query->paginate($perPage, ['*'], 'page', $page);
     
+        // Trả về kết quả dưới dạng JSON
         return response()->json($products, 200);
     }
+    
+
+//     public function product(Request $request)
+// {
+//     // Lấy từ khóa tìm kiếm và các tham số phân trang
+//     $search = $request->input('search');
+//     $perPage = $request->input('perPage', 9); // Số sản phẩm mỗi trang, mặc định là 9
+//     $page = $request->input('page', 1);
+
+//     // Xây dựng truy vấn
+//     $query = Product::with('category')  // Nếu sản phẩm có quan hệ với category
+//                     ->withSum('stockIns', 'Quantity');  // Nếu bạn có quan hệ stockIns
+
+//     // Áp dụng bộ lọc tìm kiếm
+//     if ($search) {
+//         $query->where('name', 'like', "%{$search}%")
+//               ->orWhere('code', 'like', "%{$search}%");  // Giả sử sản phẩm có mã code
+//     }
+
+//     // Lấy kết quả phân trang
+//     $products = $query->paginate($perPage, ['*'], 'page', $page);
+
+//     // Trả về dữ liệu dưới dạng JSON
+//     return response()->json($products, 200);
+// }
 
 
     //   public function detail($slug) {
