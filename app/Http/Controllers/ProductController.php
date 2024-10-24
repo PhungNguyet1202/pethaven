@@ -53,7 +53,6 @@ class ProductController extends Controller
     // }
     public function product(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'search' => 'nullable|string|max:255',
             'perPage' => 'nullable|integer|min:1',
@@ -63,7 +62,6 @@ class ProductController extends Controller
             'sort' => 'nullable|string|in:name_asc,name_desc,price_asc,price_desc',
         ]);
     
-        // Get search parameters and pagination settings
         $search = $request->input('search');
         $perPage = $request->input('perPage', 9);
         $page = $request->input('page', 1);
@@ -71,23 +69,18 @@ class ProductController extends Controller
         $maxPrice = $request->input('max_price');
         $sort = $request->input('sort');
     
-        // Build the query
         $query = Product::with('category')->withSum('stockIns', 'Quantity');
     
-        // Apply search filter (case insensitive)
-        Log::info('Product method accessed', ['search' => $search]);
-
         if ($search) {
+            Log::info('Search Query', ['search_term' => $search]);
             $query->where(function($q) use ($search) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%".strtolower($search)."%"])
-                  ->orWhereRaw('LOWER(code) LIKE ?', ["%".strtolower($search)."%"]);
+                $q->whereRaw('LOWER(name) LIKE ?', ["%".strtolower($search)."%"]);
             });
+            // Use direct LIKE instead of LOWER()
+            // $query->where('name', 'LIKE', "%$search%")
+            //       ->orWhere('code', 'LIKE', "%$search%");
         }
     
-        // Debug SQL query
-        Log::info('SQL Query: ' . $query->toSql(), $query->getBindings());
-    
-        // Apply price filters
         if ($minPrice) {
             $query->where('price', '>=', $minPrice);
         }
@@ -96,7 +89,6 @@ class ProductController extends Controller
             $query->where('price', '<=', $maxPrice);
         }
     
-        // Apply sorting
         if ($sort) {
             switch ($sort) {
                 case 'name_asc':
@@ -114,12 +106,10 @@ class ProductController extends Controller
             }
         }
     
-        // Get paginated results
         $products = $query->paginate($perPage, ['*'], 'page', $page);
-    
-        // Return results as JSON
         return response()->json($products, 200);
     }
+    
     
     
     
