@@ -43,7 +43,7 @@
                         <a class="nav-link" href="#">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Dịch vụ</a>
+                        <a class="nav-link" href="{{route('service')}}">Dịch vụ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('product')}}">Sản phẩm</a>
@@ -57,7 +57,7 @@
                 </ul>
 
                 <ul class="col-3 navbar-nav ml-auto icons-nav justify-content-evenly">
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <form class="search-container">
                             <a href="#" id="search-icon"><i class="fa-solid fa-magnifying-glass" style="color: #111212;"></i></a>
                             <div class="search-overlay" style="display: none;">
@@ -67,7 +67,26 @@
                                 </div>
                             </div>
                         </form>
-                    </li>
+                    </li> --}}
+                    <li class="nav-item">
+                      <form class="search-container" id="searchForm" method="GET" action="{{ route('product.search') }}">
+                        @csrf
+                          <a href="#" id="search-icon"><i class="fa-solid fa-magnifying-glass" style="color: #111212;"></i></a>
+                          <div class="search-overlay" style="display: none;">
+                              <div class="search-box">
+                                  <input type="text" name="search" id="searchInput" class="form-control" placeholder="Tìm kiếm...">
+                                  <input type="hidden" name="perPage" value="9">
+                                  <input type="hidden" name="page" value="1">
+                                  <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                              </div>
+                          </div>
+                      </form>
+                  </li>
+                  >
+                  
+                  
+                  <div id="searchResults"></div> 
+                  
                     <li class="nav-item user-relavity">
                         <a href="{{ route('cart.show') }}" class="nav-link">
                             <i class="fas fa-shopping-cart fa-xl"></i>
@@ -175,6 +194,44 @@
     </div>
   </footer>
   <script src="{{ asset('assets/public/js/app.js')}}"></script>
+ <script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Ngăn chặn hành động mặc định của form
+    
+    // Lấy giá trị từ ô input và mã hóa nó để phù hợp với URL
+    const searchValue = encodeURIComponent(document.getElementById('searchInput').value); 
+    
+    // Gửi yêu cầu tìm kiếm tới API với từ khóa đã mã hóa
+    fetch(`/api/products?search=${searchValue}&perPage=9&page=1`)
+        .then(response => response.json())
+        .then(data => {
+            // Xử lý kết quả trả về từ API
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';  // Xóa kết quả tìm kiếm cũ
+
+            if (data.data.length > 0) {
+                data.data.forEach(product => {
+                    const productItem = `
+                        <div class="product-item">
+                            <h3>${product.name}</h3>
+                            <p>Price: ${product.price}</p>
+                            <p>Stock: ${product.stock_sum_quantity}</p>
+                            <p>Category: ${product.category.name}</p>
+                        </div>
+                    `;
+                    searchResults.innerHTML += productItem;
+                });
+            } else {
+                searchResults.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+ </script>
+
+
   </body>
   <script>
         function xemChiTiet(imageUrl) {

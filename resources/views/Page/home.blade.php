@@ -10,7 +10,7 @@
             
             <div class="col-md-6">
                 <h2 class="custom-title">Chăm sóc<br> thú cưng.</h2>
-                <p class="custom-description">Morbi ullamcorper consectetur nisl at mattis.<br> Sed vestibulum accumsan urna vitae egestas.<br> Fusce et diam at nisi eleifend lipsum free efficitur.</p>
+                <p class="custom-description">Pethaven cung cấp các sản phẩm và dịch vụ chất lượng cho thú cưng như thức ăn, đồ chơi, phụ kiện, và dịch vụ chăm sóc thú cưng chuyên nghiệp như spa, grooming, và khám sức khỏe. Khách hàng có thể dễ dàng mua sắm trực tuyến với giao hàng tận nơi, đồng thời đặt lịch các dịch vụ chăm sóc trực tiếp cho thú cưng của mình.</p>
                 <button class="custom-button">Khám phá</button>
             </div>
     

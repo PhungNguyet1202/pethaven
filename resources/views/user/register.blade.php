@@ -30,8 +30,13 @@
                                     <input type="tel" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại của bạn" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="address">Địa chỉ</label>
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Nhập địa chỉ của bạn" required>
+                                    <label
+                                        for="phone">Phone</label>
+                                    <input type="phone"
+                                        class="form-control"
+                                        id="phone" name="phone"
+                                        placeholder="Nhập số điện thoai của bạn"
+                                        required>
                                 </div>
                                 <div class="form-group">
                                     <label for="dob">Ngày sinh</label>
