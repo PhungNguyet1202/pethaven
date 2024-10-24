@@ -14,7 +14,7 @@ class product extends Model
     }
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'product_id');
+        return $this->hasMany(Review::class, 'review_id');
     }
 
     /**
@@ -22,14 +22,14 @@ class product extends Model
      */
     public function cartItems()
     {
-        return $this->hasMany(CartItem::class, 'product_id');
+        return $this->hasMany(CartItem::class, 'cartitem_id');
     }
 
     /**
      * Lấy các StockIn thuộc về Product này.
      */
     public function stockIns() {
-        return $this->hasMany(Stockin::class, 'product_id'); // Sửa tên class thành Stockin
+        return $this->hasMany(Stockin::class, 'stockin_id'); // Sửa tên class thành Stockin
     }
     
 
@@ -38,7 +38,7 @@ class product extends Model
      */
     public function inventories()
     {
-        return $this->hasMany(Inventory::class, 'product_id');
+        return $this->hasMany(Inventory::class, 'inventory_id');
     }
 
     /**
@@ -46,12 +46,12 @@ class product extends Model
      */
     public function orderDetails()
     {
-        return $this->hasMany(OrderDetail::class, 'product_id');
+        return $this->hasMany(OrderDetail::class, 'orderdetail_id');
     }
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'comment_id');
     }
 
 }

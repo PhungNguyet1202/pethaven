@@ -21,6 +21,6 @@ class Stockin extends Model // Sửa tên class thành Stockin
 
     public function cartItems()
     {
-        return $this->hasMany(CartItem::class, 'shoppingcart_id');
+        return $this->hasMany(CartItem::class, 'cartitem_id');
     }
 }

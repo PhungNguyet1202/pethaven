@@ -19,8 +19,9 @@ class Service extends Model
 
     public function serviceBookings()
     {
-        return $this->hasMany(ServiceBooking::class, 'service_id');
+        return $this->hasMany(ServiceBooking::class, 'service_id'); // Chỉ định khóa ngoại là service_id
     }
+    
 
     public function category()
     {

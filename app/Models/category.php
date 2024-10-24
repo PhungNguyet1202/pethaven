@@ -18,7 +18,7 @@ class category extends Model
     
     public function services()
     {
-        return $this->hasMany(Service::class, 'category_id');
+        return $this->hasMany(Service::class, 'service_id');
     }
 
     /**
@@ -26,6 +26,6 @@ class category extends Model
      */
     public function products()
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Product::class, 'product_id');
     }
 }

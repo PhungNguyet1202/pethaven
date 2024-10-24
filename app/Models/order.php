@@ -18,7 +18,7 @@ class order extends Model
     }
     public function orderDetails()
     {
-        return $this->hasMany(OrderDetail::class, 'order_id');
+        return $this->hasMany(OrderDetail::class, 'orderdetail_id');
     }
 
     /**
@@ -26,7 +26,7 @@ class order extends Model
      */
     public function shippings()
     {
-        return $this->hasMany(Shipping::class, 'order_id');
+        return $this->hasMany(Shipping::class, 'shipping_id');
     }
 
     /**
@@ -34,6 +34,6 @@ class order extends Model
      */
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'order_id');
+        return $this->hasMany(Payment::class, 'payment_id');
     }
 }
