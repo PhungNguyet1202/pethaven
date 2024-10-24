@@ -93,7 +93,7 @@
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li>
-                            <a class="dropdown-item" href="{{route('profile')}}">
+                            <a class="dropdown-item" href="{{route('showProfile')}}">
                              Hồ sơ
                          </a>
                               <a class="dropdown-item" href="{{ route('logout') }}"

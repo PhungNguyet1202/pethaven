@@ -8,102 +8,77 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // public function product(Request $request){
-    //     //  $dsSP = Product::limit(6)->get();
-    //     //  return view('product.product',compact(['dsSP']));
-    //     //  return view('product.product');
-    //     $perPage = $request->input('per_page', 6); // mặc định 6 sản phẩm 1 trang
-    //     $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
-        
-        
-    //     //return response()->json($dsSP);
-    //     return view('product.product', compact(['products']));
-         
-    //   }
-
-
-    //   public function detail($slug) {
-      
-    //     $sp = Product::where('slug', $slug)->first();
-    
-    //    //kiểm tra sp tồn tại ko
-    //     if ($sp) {
-    //        // chuyển sang trang chi tiết
-    //         return view('product.detail', compact('sp'));
-    //     } else {
-    //        // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
-    //         return redirect()->route('home')->with('error', 'Product not found');
-    //     }
-    // }
-    
-
-   
-
+    // Hàm hiển thị danh sách sản phẩm với tính năng tìm kiếm và phân trang
     public function product(Request $request)
     {
-        // Get search query and pagination parameters
-        $search = $request->input('search');
-        $perPage = $request->input('perPage', 9); // Default to 10 items per page
-        $page = $request->input('page', 1);
-    
-        // Build the query
+        // Lấy thông tin tìm kiếm và phân trang từ yêu cầu của người dùng
+        $search = $request->input('search'); // Từ khóa tìm kiếm
+        $perPage = $request->input('perPage', 9); // Mặc định hiển thị 9 sản phẩm mỗi trang
+        $page = $request->input('page', 1); // Số trang hiện tại, mặc định là trang 1
+
+        // Xây dựng truy vấn sản phẩm, bao gồm thông tin danh mục và tính tổng số lượng tồn kho
         $query = Product::with('category')
-                        ->withSum('stockIns', 'Quantity');
-    
-        // Apply search filter
+                        ->withSum('stockIns', 'Quantity'); // Lấy tổng số lượng nhập kho
+
+        // Áp dụng bộ lọc tìm kiếm nếu người dùng có nhập từ khóa tìm kiếm
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%"); // Assuming product has 'code'
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%") // Tìm theo tên sản phẩm
+                  ->orWhere('code', 'like', "%{$search}%"); // Tìm theo mã sản phẩm
+            });
         }
-        
-        // Get paginated results
+
+        // Thực hiện truy vấn và phân trang kết quả
         $products = $query->paginate($perPage, ['*'], 'page', $page);
-    
+
+        // Trả kết quả về dưới dạng JSON với mã HTTP 200
         return response()->json($products, 200);
     }
-    public function productsByCategory($categorySlug) {
-        // Fetch the category by slug
+
+    // Hàm hiển thị chi tiết sản phẩm theo slug
+    public function detail($slug)
+    {
+        // Tìm sản phẩm theo slug (đường dẫn thân thiện)
+        $product = Product::where('slug', $slug)->first();
+
+        // Kiểm tra sản phẩm có tồn tại không
+        if ($product) {
+            return response()->json([
+                'status' => 'success',
+                'product' => $product
+            ], 200); // Trả về JSON sản phẩm với mã 200 (OK)
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Product not found'
+            ], 404); // Trả về lỗi nếu không tìm thấy sản phẩm với mã 404
+        }
+    }
+
+    // Hàm hiển thị sản phẩm theo danh mục
+    public function productsByCategory($categorySlug)
+    {
+        // Tìm danh mục theo slug
         $category = Category::where('slug', $categorySlug)->first();
-    
-        // If the category exists, fetch its products
+
+        // Kiểm tra nếu danh mục tồn tại
         if ($category) {
-            $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
+            // Lấy danh sách sản phẩm thuộc danh mục đó và phân trang (6 sản phẩm mỗi trang)
+            $products = Product::where('category_id', $category->id)->paginate(6);
             return view('product.product', compact('products', 'category'));
         } else {
-            // If the category does not exist, redirect to home with an error
+            // Chuyển hướng nếu không tìm thấy danh mục và thông báo lỗi
             return redirect()->route('home')->with('error', 'Category not found');
         }
     }
-    
-    public function detail($id) {
-        // Tìm sản phẩm theo id và ném lỗi nếu không tìm thấy
-        $sp = Product::findOrFail($id);
-    
-        // Trả về dữ liệu sản phẩm dưới dạng JSON
-        return response()->json($sp);
-    }
-  }
-  
-  
-      // public function detail($slug){
-      //   // $sp = Product::where('slug',$slug)->first();
-      //   // return view('product.detail',compact(['sp']));
-      //    // Fetch the product by slug
-      //    $product = Product::where('slug', $slug)->first();
 
-      //    // Check if the product exists
-      //    if ($product) {
-      //        // Return product details as a JSON response
-      //        return response()->json([
-      //            'status' => 'success',
-      //            'product' => $product
-      //        ], 200);
-      //    } else {
-      //        // Return an error response if the product is not found
-      //        return response()->json([
-      //            'status' => 'error',
-      //            'message' => 'Product not found'
-      //        ], 404);
-      //    }
-     
-      // }
+    // Hàm hiển thị chi tiết sản phẩm theo ID (nếu sử dụng)
+    public function detailById($id)
+    {
+        // Tìm sản phẩm theo ID và ném lỗi nếu không tìm thấy
+        $product = Product::findOrFail($id);
+
+        // Trả về dữ liệu sản phẩm dưới dạng JSON
+        return response()->json($product);
+    }
+}
