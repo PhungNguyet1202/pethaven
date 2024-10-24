@@ -36,12 +36,19 @@
 
 <div id="searchResults"></div>
 
-                <ul class="list-group mb-4">
+                {{-- <ul class="list-group mb-4">
                    
                     @foreach ($categories as $item)
                         <li class="list-group-item">
                            
                             <a href="{{ route('category', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
+                        </li>
+                    @endforeach
+                </ul> --}}
+                <ul class="list-group mb-4">
+                    @foreach ($categories as $item)
+                        <li class="list-group-item">
+                            <a href="#" class="category-link" data-slug="{{ $item->slug }}">{{ $item->name }}</a>
                         </li>
                     @endforeach
                 </ul>
@@ -64,7 +71,7 @@
     <li class="list-group-item"><a href="#" data-min="6000001" data-max="8000000">6.000.001 - 8.000.000đ</a></li>
 </ul>
 
-<div id="searchResults"></div> <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
+<div id="searchResults"></div> 
 
             </div>
         </div>
@@ -210,5 +217,51 @@
     }
 });
 
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all category links
+        document.querySelectorAll('.category-link').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                let categorySlug = this.getAttribute('data-slug');
+
+                // Fetch products by category using AJAX
+                fetch(`/api/category/${encodeURIComponent(categorySlug)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Update product list
+                            updateProductList(data.products);
+                        } else {
+                            console.error(data.message);
+                            document.getElementById('product-list').innerHTML = '<li class="list-group-item">Category not found</li>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching products:', error);
+                        document.getElementById('product-list').innerHTML = '<li class="list-group-item">Error loading products</li>';
+                    });
+            });
+        });
+    });
+
+    // Function to update product list in the DOM
+    function updateProductList(products) {
+        let productList = document.getElementById('product-list');
+        productList.innerHTML = '';  // Clear the current list
+
+        // Check if there are products
+        if (products.length > 0) {
+            products.forEach(product => {
+                let productItem = document.createElement('li');
+                productItem.className = 'list-group-item';
+                productItem.textContent = product.name;  // Adjust this to match your product display
+                productList.appendChild(productItem);
+            });
+        } else {
+            productList.innerHTML = '<li class="list-group-item">No products found</li>';
+        }
+    }
 </script>
 @endsection

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class ProductController extends Controller
 {
@@ -51,25 +53,41 @@ class ProductController extends Controller
     // }
     public function product(Request $request)
     {
-        // Lấy các tham số tìm kiếm và phân trang
+        // Validate the incoming request
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'perPage' => 'nullable|integer|min:1',
+            'page' => 'nullable|integer|min:1',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|min:0',
+            'sort' => 'nullable|string|in:name_asc,name_desc,price_asc,price_desc',
+        ]);
+    
+        // Get search parameters and pagination settings
         $search = $request->input('search');
-        $perPage = $request->input('perPage', 9); // Số sản phẩm mỗi trang, mặc định là 9
+        $perPage = $request->input('perPage', 9);
         $page = $request->input('page', 1);
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
-        $sort = $request->input('sort'); // Lấy tham số sắp xếp
+        $sort = $request->input('sort');
     
-        // Xây dựng truy vấn
-        $query = Product::with('category')
-                        ->withSum('stockIns', 'Quantity');
+        // Build the query
+        $query = Product::with('category')->withSum('stockIns', 'Quantity');
     
-        // Áp dụng bộ lọc tìm kiếm
+        // Apply search filter (case insensitive)
+        Log::info('Product method accessed', ['search' => $search]);
+
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%"); 
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%".strtolower($search)."%"])
+                  ->orWhereRaw('LOWER(code) LIKE ?', ["%".strtolower($search)."%"]);
+            });
         }
     
-        // Áp dụng bộ lọc giá
+        // Debug SQL query
+        Log::info('SQL Query: ' . $query->toSql(), $query->getBindings());
+    
+        // Apply price filters
         if ($minPrice) {
             $query->where('price', '>=', $minPrice);
         }
@@ -78,7 +96,7 @@ class ProductController extends Controller
             $query->where('price', '<=', $maxPrice);
         }
     
-        // Áp dụng sắp xếp theo yêu cầu
+        // Apply sorting
         if ($sort) {
             switch ($sort) {
                 case 'name_asc':
@@ -93,17 +111,18 @@ class ProductController extends Controller
                 case 'price_desc':
                     $query->orderBy('price', 'desc');
                     break;
-                default:
-                    break;
             }
         }
     
-        // Lấy kết quả phân trang
+        // Get paginated results
         $products = $query->paginate($perPage, ['*'], 'page', $page);
     
-        // Trả về kết quả dưới dạng JSON
+        // Return results as JSON
         return response()->json($products, 200);
     }
+    
+    
+    
     
 
 //     public function product(Request $request)
@@ -175,19 +194,49 @@ public function detail($id) {
 }
     
 
+    // public function productsByCategory($categorySlug) {
+    //     // Fetch the category by slug
+    //     $category = Category::where('slug', $categorySlug)->first();
+    
+    //     // If the category exists, fetch its products
+    //     if ($category) {
+    //         $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
+    //         return view('product.product', compact('products', 'category'));
+    //     } else {
+    //         // If the category does not exist, redirect to home with an error
+    //         return redirect()->route('home')->with('error', 'Category not found');
+    //     }
+    // }
     public function productsByCategory($categorySlug) {
         // Fetch the category by slug
         $category = Category::where('slug', $categorySlug)->first();
     
         // If the category exists, fetch its products
         if ($category) {
-            $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
-            return view('product.product', compact('products', 'category'));
+            // Fetch products related to the category
+            $products = Product::where('category_id', $category->id)->paginate(6);
+    
+            // Return the products and category as JSON
+            return response()->json([
+                'status' => 'success',
+                'category' => $category,
+                'products' => $products->items(),  // Get paginated items
+                'pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                ]
+            ]);
         } else {
-            // If the category does not exist, redirect to home with an error
-            return redirect()->route('home')->with('error', 'Category not found');
+            // Return an error message if the category is not found
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Category not found'
+            ], 404);
         }
     }
+    
+    
+
     
   }
   
