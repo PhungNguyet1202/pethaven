@@ -14,7 +14,7 @@ class servicebooking extends Model
      */
     public function user()
     {
-        return $this->belongsTo(Customer::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
    
 

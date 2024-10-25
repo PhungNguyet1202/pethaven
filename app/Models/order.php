@@ -26,14 +26,14 @@ class order extends Model
      */
     public function shippings()
     {
-        return $this->hasMany(Shipping::class, 'order_id');
+        return $this->hasOne(Shipping::class, 'shipping_id');
     }
 
     /**
-     * Lấy các Payment thuộc về Order này.
+     * Lấy các Payment thuộc về Order này.  
      */
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'order_id');
+        return $this->hasOne(Payment::class, 'payment_id');
     }
 }

@@ -10,6 +10,6 @@ class shipping extends Model
     use HasFactory;
     public function order()
     {
-        return $this->belongsTo(Order::class, 'order_id');
+        return $this->belongsTo(Order::class, 'shipping_id');
     }
 }
