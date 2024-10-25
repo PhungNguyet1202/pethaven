@@ -60,6 +60,7 @@ class ProductController extends Controller
             'min_price' => 'nullable|numeric|min:0',
             'max_price' => 'nullable|numeric|min:0',
             'sort' => 'nullable|string|in:name_asc,name_desc,price_asc,price_desc',
+            'category_id' => 'nullable|integer',
         ]);
     
         $search = $request->input('search');
@@ -68,7 +69,8 @@ class ProductController extends Controller
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
         $sort = $request->input('sort');
-    
+        $categoryId = $request->input('category_id');
+        $productId = $request->input('product_id');  
         $query = Product::with('category')->withSum('stockIns', 'Quantity');
     
         if ($search) {
@@ -80,6 +82,12 @@ class ProductController extends Controller
             // $query->where('name', 'LIKE', "%$search%")
             //       ->orWhere('code', 'LIKE', "%$search%");
         }
+
+        // Khởi tạo truy vấn cho các sản phẩm liên quan dựa trên danh mục
+    $query = Product::where('category_id', $categoryId)
+    ->where('id', '<>', $productId) // Loại bỏ sản phẩm hiện tại
+    ->withSum('stockIns', 'Quantity');
+
     
         if ($minPrice) {
             $query->where('price', '>=', $minPrice);
@@ -109,6 +117,26 @@ class ProductController extends Controller
         $products = $query->paginate($perPage, ['*'], 'page', $page);
         return response()->json($products, 200);
     }
+    
+    public function getRelatedProducts(Request $request, $productId)
+    {
+        // Lấy sản phẩm dựa trên ID
+        $product = Product::findOrFail($productId);
+    
+        // Lấy sản phẩm liên quan
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '<>', $productId)
+            ->take(4)
+            ->get();
+    
+        // Kiểm tra nếu không có sản phẩm liên quan
+        if ($relatedProducts->isEmpty()) {
+            return response()->json(['message' => 'No related products found'], 404);
+        }
+    
+        return response()->json($relatedProducts, 200);
+    }
+    
     
     
     
