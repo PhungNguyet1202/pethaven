@@ -16,7 +16,11 @@ class ServiceBooking extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id'); // Kết nối với bảng customers thông qua user_id
+
+        // return $this->belongsTo(User::class, 'user_id'); // Kết nối với bảng customers thông qua user_id
+
+        return $this->belongsTo(User::class, 'user_id');
+
     }
 
     /**

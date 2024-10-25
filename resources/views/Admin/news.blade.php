@@ -36,7 +36,7 @@
             </thead>
             <tbody>
                 @foreach ($dsNew as $news)
-                <tr>
+                <tr>    
                     <td>  {{$news->id}}</td>
                     <td>
                         <img alt="Product Image 1" height="50" src="{{ asset('images/products/' . $news->image) }}" width="50"/>

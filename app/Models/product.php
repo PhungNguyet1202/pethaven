@@ -5,25 +5,38 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class product extends Model
+class Product extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'categories_id',
+        'price',
+        'instock',
+        'sale_price',
+        'image',
+    ];
+
+    // Quan hệ giữa Product và Category
     public function category()
     {
         return $this->belongsTo(Category::class, 'categories_id');
     }
+
+    // Quan hệ giữa Product và Review
     public function reviews()
     {
         return $this->hasMany(Review::class, 'review_id');
     }
 
-    /**
-     * Lấy các CartItem thuộc về Product này.
-     */
+    // Quan hệ giữa Product và CartItem
     public function cartItems()
     {
         return $this->hasMany(CartItem::class, 'cartitem_id');
     }
+
 
     /**
      * Lấy các StockIn thuộc về Product này.
@@ -31,27 +44,28 @@ class product extends Model
     public function stockIns() {
         return $this->hasMany(Stockin::class, 'stockin_id'); // Sửa tên class thành Stockin
     }
-    
+    // Quan hệ giữa Product và StockIn
+    // public function stockIns()
+    // {
+    //     return $this->hasMany(Stockin::class, 'product_id'); // Đảm bảo tên class là Stockin
 
-    /**
-     * Lấy các Inventory thuộc về Product này.
-     */
+    // }
+
+    // Quan hệ giữa Product và Inventory
     public function inventories()
     {
         return $this->hasMany(Inventory::class, 'inventory_id');
     }
 
-    /**
-     * Lấy các OrderDetail thuộc về Product này.
-     */
+    // Quan hệ giữa Product và OrderDetail
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class, 'orderdetail_id');
     }
 
+    // Quan hệ giữa Product và Comment
     public function comments()
     {
         return $this->hasMany(Comment::class, 'comment_id');
     }
-
 }

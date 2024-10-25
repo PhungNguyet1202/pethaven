@@ -10,6 +10,6 @@ class payment extends Model
     use HasFactory;
     public function order()
     {
-        return $this->belongsTo(Order::class, 'order_id');
+        return $this->belongsTo(Order::class, 'payment_id');
     }
 }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> @yield('title') | PET HAVENT</title>
@@ -43,7 +44,7 @@
                         <a class="nav-link" href="#">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">Dịch vụ</a>
+                        <a class="nav-link" href="{{route('service')}}">Dịch vụ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('product')}}">Sản phẩm</a>
@@ -69,7 +70,7 @@
                         </form>
                     </li> --}}
                     <li class="nav-item">
-                      <form class="search-container" id="searchForm" method="GET" action="{{ route('product.search') }}">
+                      <form class="search-container" id="searchForm" method="GET" action="#">
                         @csrf
                           <a href="#" id="search-icon"><i class="fa-solid fa-magnifying-glass" style="color: #111212;"></i></a>
                           <div class="search-overlay" style="display: none;">
@@ -88,7 +89,7 @@
                   <div id="searchResults"></div> 
                   
                     <li class="nav-item user-relavity">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('cart.show') }}" class="nav-link">
                             <i class="fas fa-shopping-cart fa-xl"></i>
                             <span class="shopping-cart-items-count">0</span>
                         </a>
@@ -112,7 +113,7 @@
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li>
-                            <a class="dropdown-item" href="{{route('profile')}}">
+                            <a class="dropdown-item" href="{{route('showProfile')}}">
                              Hồ sơ
                          </a>
                               <a class="dropdown-item" href="{{ route('logout') }}"
