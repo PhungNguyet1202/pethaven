@@ -69,7 +69,7 @@
                         </form>
                     </li> --}}
                     <li class="nav-item">
-                      <form class="search-container" id="searchForm" method="GET" action="{{ route('product.search') }}">
+                      <form class="search-container" id="searchForm" method="GET" action="#">
                         @csrf
                           <a href="#" id="search-icon"><i class="fa-solid fa-magnifying-glass" style="color: #111212;"></i></a>
                           <div class="search-overlay" style="display: none;">
