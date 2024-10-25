@@ -24,7 +24,10 @@ return new class extends Migration
             $table->integer('instock');// so luong ton kho
             $table->float('rating')->default(0); // danh gia
             //$table->boolean('status')->default(1); // Trạng thái sản phẩm (1: có sẵn, 0: ngừng bán)
-            $table->foreignId('categories_id')->constrained('categories')->onDelete('cascade'); // Khóa ngoại đến bảng categories
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            
+            //$table->foreignId('categories_id')->constrained('categories')->onDelete('cascade'); // Khóa ngoại đến bảng categories
             $table->timestamps(); // Timestamps cho created_at và updated_at
      
         });

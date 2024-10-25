@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 class UserController extends Controller
 {
+
     use HasApiTokens, Notifiable;
 
     protected $fillable = [
@@ -23,16 +24,26 @@ class UserController extends Controller
     ];
 
     // Phương thức trả về view đăng ký
+
+    // Hiển thị form đăng ký
+
     public function register(Request $req) {
         return view('user.register'); 
     }
 
     // Phương thức trả về view đăng nhập
+
+    // Hiển thị form đăng nhập
+
     public function login(Request $req) {
         return view('user.login'); 
     }
 
+
     // Phương thức xử lý đăng ký
+
+    // Xử lý đăng ký người dùng
+
     public function postregister(Request $req)
     {
         try {
@@ -43,8 +54,11 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'required|string|size:10|regex:/^0\d{9}$/',  
                 'address' => 'nullable|string|max:255',
+                'dob' => 'required|date',
+                
             ]);
     
+
             // Tạo người dùng mới
             User::create([
                 'name' => $req->input('name'),
@@ -53,6 +67,17 @@ class UserController extends Controller
                 'phone' => $req->input('phone'),
                 'address' => $req->input('address'),
             ]);
+
+            // Create new user
+            $user = new User();
+            $user->name = $req->input('name');
+            $user->email = $req->input('email');
+            $user->password = Hash::make($req->input('password'));
+            $user->phone = $req->input('phone');
+            $user->address = $req->input('address');
+            $user->dob = $req->input('dob');
+            $user->save();
+
     
             // Trả về phản hồi thành công
             return response()->json(['success' => true, 'message' => 'Đăng ký thành công. Vui lòng đăng nhập.']);
@@ -67,7 +92,11 @@ class UserController extends Controller
 
     // Phương thức xử lý đăng nhập
     public function postlogin(Request $req) {
+
         // Xác thực dữ liệu đầu vào
+
+       
+
         $req->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
@@ -110,6 +139,85 @@ class UserController extends Controller
             ], 401);
         }
     }
-    
-    
+
+
+
+
+//////////
+   // Hiển thị thông tin người dùng hiện tại
+   public function profile() {
+    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
+    return view('user.profile', compact('user')); // Trả về view với thông tin người dùng
 }
+
+// Hiển thị thông tin người dùng hiện tại dưới dạng JSON
+public function showProfile() {
+    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
+    return response()->json($user); // Trả về thông tin người dùng dưới dạng JSON
+}
+
+// Cập nhật thông tin người dùng
+public function updateProfile(Request $req) {
+    $user = Auth::user(); // Lấy người dùng hiện tại
+
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
+    }
+
+    // Validate dữ liệu đầu vào
+    $validatedData = $req->validate([
+        'name' => 'nullable|string|max:255',
+        'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|min:6|confirmed',
+        'phone' => 'nullable|string|max:15',
+        'address' => 'nullable|string|max:255',
+        'img' => 'nullable|string|max:255',
+
+    ]);
+
+    // Cập nhật thông tin
+    $user->name = $validatedData['name'] ?? $user->name;
+    $user->email = $validatedData['email'] ?? $user->email;
+    $user->phone = $validatedData['phone'] ?? $user->phone;
+    $user->address = $validatedData['address'] ?? $user->address;
+    $user->img = $validatedData['img'] ?? $user->img;
+
+
+    // Cập nhật mật khẩu nếu có
+    if (!empty($validatedData['password'])) {
+        $user->password = Hash::make($validatedData['password']);
+    }
+
+    $user->save(); // Lưu thông tin cập nhật
+
+    return response()->json(['message' => 'User information updated successfully']);
+}
+
+
+
+}
+
+    
+
+
+
+
+
+
+
+
+// public function postlogin(Request $req) {
+    //     // Validate input
+    //     $req->validate([
+    //         'email' => 'required|string|email',
+    //         'password' => 'required|string',
+    //     ]);
+
+    //     // Attempt to log in
+    //     if (Auth::attempt(['email' => $req->input('email'), 'password' => $req->input('password')])) {
+    //         $user = Auth::user();
+    //         return response()->json(['message' => 'Đăng nhập thành công', 'user' => $user], 200);
+    //     }
+
+    //     return response()->json(['message' => 'Email hoặc mật khẩu không đúng!'], 401);
+    // }
