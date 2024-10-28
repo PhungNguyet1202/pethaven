@@ -14,8 +14,10 @@ class Service extends Model
         'description',
         'price',
         'img',
+
         'imgdetail',
         'categories_id',
+
     ];
 
     public function serviceBookings()
@@ -24,8 +26,10 @@ class Service extends Model
     }
 
 
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'categories_id');
     }
 }
+
