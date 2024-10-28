@@ -7,7 +7,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentAdminController;
 use App\Http\Controllers\ServiceAdminController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\NewAdminController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\AdminApiController;
 use App\Http\Controllers\UserAdminController;
@@ -34,40 +36,71 @@ Route::post('/test-csrf', function () {
     return response()->json(['message' => 'CSRF token is valid!']);
 });
 Route::prefix('api')->group(function() {
-    Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
+//     Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
+//     Route::resource('/comments', CommentCotroller::class);
+//     Route::post('/login', [UserController::class, 'postlogin']);
+//     Route::post('/register', [UserController::class, 'postregister']);
+//     Route::get('/product', [ProductController::class, 'product'])->name('product');
+//    // Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+//    //Route::get('/detail/{slug}', [ProductController::class, 'detail'])->name('product.detail');
+//    Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('product.detail');
+//     Route::get('/register', [UserController::class, 'register'])->name('register');
+//     Route::get('/login', [UserController::class, 'login'])->name('login');
+//     // Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
+//     Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
+Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
     Route::resource('/comments', CommentCotroller::class);
     Route::post('/login', [UserController::class, 'postlogin']);
     Route::post('/register', [UserController::class, 'postregister']);
     Route::get('/product', [ProductController::class, 'product'])->name('product');
-    Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+    Route::get('/products', [ProductController::class, 'product']);
+    Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('product.detail');
     Route::get('/register', [UserController::class, 'register'])->name('register');
     Route::get('/login', [UserController::class, 'login'])->name('login');
-    // Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
-    Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
-
+    Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('api.category');
+    Route::get('/product/search', [ProductController::class, 'product']);
+    Route::get('/product/{productId}/related', [ProductController::class, 'getRelatedProducts']);
+    Route::get('/product/{id}/related', [ProductController::class, 'getRelatedProducts']);
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
+//dichvu
+Route::get('/services', [ServiceController::class, 'index'])->name('service');
+Route::get('/services/{identifier}', [ServiceController::class, 'show']); // Lấy chi tiết dịch vụ theo id hoặc slug
+//tin tuc
+Route::get('/news', [NewsController::class, 'news'])->name('news');
+Route::get('/news/{id}', [NewsController::class, 'newsDetail']);
 });
+
 //cal
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
 Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
 // Nhongj
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/product-category', [AdminApiController::class, 'productCategory'])->name('product-category'); // Form thêm sản phẩm mới    
-   
+    Route::get('/product-category', [AdminApiController::class, 'productCategory'])->name('product-category'); // Form thêm sản phẩm mới
+
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [AdminApiController::class, 'dashboard'])->name('index'); // Danh sách sản phẩm
-      
+
     });
 
     // Product Routes
     Route::prefix('product')->name('product.')->group(function () {
         Route::get('/', [AdminApiController::class, 'product'])->name('index'); // Danh sách sản phẩm
         Route::get('/{id}', [AdminApiController::class, 'getProductById'])->name('show');
-       
+
         Route::post('/add', [AdminApiController::class, 'postproductAdd'])->name('add'); // Thêm sản phẩm mới
         Route::put('/update/{id}', [AdminApiController::class, 'updateProduct'])->name('update'); // Cập nhật sản phẩm
         Route::delete('/delete/{id}', [AdminApiController::class, 'deleteProduct'])->name('delete'); // Xóa sản phẩm
     });
+
+    Route::prefix('api')->group(function () {
+        Route::get('/cart', [CartController::class, 'getCart']);
+        Route::post('/cart/add', [CartController::class, 'addToCart']);
+        Route::put('/cart/update/{id}', [CartController::class, 'updateCart']);
+        Route::delete('/cart/remove/{id}', [CartController::class, 'removeFromCart']);
+    });
+
 
     // Category Routes
     Route::prefix('category')->name('category.')->group(function () {
@@ -84,7 +117,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminApiController::class, 'users'])->name('index'); // Danh sách user
         Route::get('/{id}', [AdminApiController::class, 'getUserById'])->name('show');
         Route::put('/update/{id}', [AdminApiController::class, 'updateUser'])->name('update'); // Cập nhật user
-       
+
     });
 
     // CategoryNew Routes
@@ -120,7 +153,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Comment Routes
     Route::prefix('comment')->name('comment.')->group(function () {
         Route::get('/', [AdminApiController::class, 'comment'])->name('index'); // Danh sách comment
-    
+
         Route::delete('/delete/{id}', [AdminApiController::class, 'deleteComment'])->name('delete'); // Xóa comment
     });
 
@@ -135,29 +168,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
     Route::prefix('order')->name('order.')->group(function () {
         Route::get('/', [AdminApiController::class, 'orders'])->name('index'); // Danh sách comment
-    
+
         Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('servicebooking')->name('servicebooking.')->group(function () {
         Route::get('/', [AdminApiController::class, 'serviceBooking'])->name('index'); // Danh sách comment
-    
+
         Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('stockin')->name('stockin.')->group(function () {
         Route::get('/', [AdminApiController::class, 'stockin'])->name('index'); // Danh sách comment
-    
+
         Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('revenue')->name('revenue.')->group(function () {
         Route::get('/{year}', [AdminApiController::class, 'getAnnualRevenue'])->name('index'); // Danh sách comment
-    
-      
+
+
     });
 
 
- 
 });
 
- 
 
- 
+
+
+
+
