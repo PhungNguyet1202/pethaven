@@ -25,6 +25,9 @@ class Stockin extends Model // Sửa tên class thành Stockin
     // }
     public function products()
     {
+
         return $this->belongsTo(Product::class, 'product_id');
+
+ 
     }
 }

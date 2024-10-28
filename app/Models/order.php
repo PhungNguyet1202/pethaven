@@ -20,7 +20,7 @@ class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo 
 
     public function orderDetails()
     {
-        return $this->hasMany(OrderDetail::class, 'order_id');
+        return $this->hasMany(OrderDetail::class, 'orderdetail_id');
     }
 
     /**
@@ -28,14 +28,19 @@ class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo 
      */
     public function shippings()
     {
+
         return $this->hasOne(Shipping::class, 'id'); // Giả sử 'id' là khóa chính trong bảng Shipping
+
+
     }
 
     /**
-     * Lấy các Payment thuộc về Order này.  
+     * Lấy các Payment thuộc về Order này.
      */
     public function payments()
     {
+
         return $this->hasOne(Payment::class, 'id'); // Giả sử 'id' là khóa chính trong bảng Payment
+
     }
 }
