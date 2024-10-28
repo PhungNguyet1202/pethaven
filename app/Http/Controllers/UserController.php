@@ -54,7 +54,7 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'required|string|size:10|regex:/^0\d{9}$/',  
                 'address' => 'nullable|string|max:255',
-                'dob' => 'required|date',
+             
                 
             ]);
     
@@ -75,7 +75,7 @@ class UserController extends Controller
             $user->password = Hash::make($req->input('password'));
             $user->phone = $req->input('phone');
             $user->address = $req->input('address');
-            $user->dob = $req->input('dob');
+          
             $user->save();
 
     

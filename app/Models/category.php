@@ -16,10 +16,7 @@ class category extends Model
 
     ];
     
-    public function services()
-    {
-        return $this->hasMany(Service::class, 'category_id');
-    }
+
 
     /**
      * Lấy các Product thuộc về Category này.

@@ -14,7 +14,7 @@ class Service extends Model
         'description',
         'price',
         'img',
-        'categories_id', // Sử dụng tên trường chính xác
+         
     ];
 
     public function serviceBookings()
@@ -22,8 +22,5 @@ class Service extends Model
         return $this->hasMany(ServiceBooking::class, 'service_id');
     }
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class, 'categories_id'); 
-    }
+  
 }

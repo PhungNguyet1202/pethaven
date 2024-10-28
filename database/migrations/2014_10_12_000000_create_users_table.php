@@ -22,7 +22,8 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->rememberToken();
             $table->enum('gender', ['male', 'female', 'other']);
-            $table->date('dob'); // Date of birth
+            $table->date('dob')->nullable(); // Date of birth cho phép null
+
             $table->string('img'); // Profile image
             $table->boolean('is_action')->default(0); // 0: Active, 1: Blocked
             $table->timestamps();
