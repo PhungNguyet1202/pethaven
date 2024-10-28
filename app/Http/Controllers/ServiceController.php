@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Models\ServiceBooking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
 {
@@ -116,4 +120,106 @@ class ServiceController extends Controller
             'message' => 'Service deleted successfully'
         ], 200);
     }
+
+    // public function serviceBooking(Request $request)
+    // {
+    //     // Xác thực dữ liệu đầu vào
+    //     $validator = Validator::make($request->all(), [
+    //         'pet_id' => 'required|integer|exists:pets,id',
+    //         'service_id' => 'required|integer|exists:services,id',
+    //         'booking_date' => 'required|date|after_or_equal:today',
+    //     ]);
+    
+    //     // Nếu xác thực thất bại, trả về lỗi
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Xác thực thất bại',
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+    
+    //     // Lấy thông tin người dùng hiện tại
+    //     $user = Auth::user();
+    
+    //     // Kiểm tra xem người dùng đã xác thực chưa
+    //     if (!$user) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'User is not authenticated.'
+    //         ], 401);
+    //     }
+    
+    //     // Tạo đặt dịch vụ mới
+    //     $booking = ServiceBooking::create([
+    //         'user_id' => $user->id, // Kế thừa user_id từ người dùng đã xác thực
+    //         'pet_id' => $request->input('pet_id'),
+    //         'service_id' => $request->input('service_id'),
+    //         'booking_date' => $request->input('booking_date'),
+    //         'phone' => $user->phone, // Giả sử có trường phone trong bảng users
+    //         'email' => $user->email, // Giả sử có trường email trong bảng users
+    //     ]);
+        
+    //     Log::info('User ID: ' . $user->id);
+    //     Log::info('Input Data: ', $request->all());
+    
+    //     // Trả về xác nhận đặt dịch vụ
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Đặt dịch vụ thành công',
+    //         'data' => $booking
+    //     ], 201);
+    // }
+    public function serviceBooking(Request $request)
+{
+    // Xác thực dữ liệu đầu vào
+    $validator = Validator::make($request->all(), [
+        'pet_id' => 'required|integer|exists:pets,id',
+        'service_id' => 'required|integer|exists:services,id',
+        'booking_date' => 'required|date|after_or_equal:today',
+    ]);
+
+    // Nếu xác thực thất bại, trả về lỗi
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Xác thực thất bại',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    // Lấy thông tin người dùng hiện tại
+    $user = Auth::user();
+
+    // Kiểm tra xem người dùng đã xác thực chưa
+    if (!$user) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'User is not authenticated.'
+        ], 401);
+    }
+
+    // Tạo đặt dịch vụ mới
+    $booking = ServiceBooking::create([
+        'user_id' => $user->id,
+        'pet_id' => $request->input('pet_id'),
+        'service_id' => $request->input('service_id'),
+        'booking_date' => $request->input('booking_date'),
+        'phone' => $user->phone,
+        'email' => $user->email,
+    ]);
+
+    // Log dữ liệu booking
+    Log::info('Booking Data:', $booking->toArray());
+
+    // Trả về xác nhận đặt dịch vụ
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Đặt dịch vụ thành công',
+        'data' => $booking,  // Trả về booking
+    ], 200);  // Trả về trạng thái 200 OK
+}
+
+    
+    
 }
