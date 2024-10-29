@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -26,20 +25,6 @@ return new class extends Migration
             $table->string('img'); // Profile image
             $table->boolean('is_action')->default(0); // 0: Active, 1: Blocked
             $table->timestamps();
-        // Schema::create('users', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('name');
-        //     $table->string('email')->unique();
-        //     $table->string('phone');
-        //     $table->string('address');
-        //     $table->string('password');
-        //     $table->enum('role', ['admin', 'user'])->default('user');
-        //     $table->rememberToken();
-        //     $table->enum('gender', ['male', 'female', 'other'])->nullable(); 
-        //     $table->date('dob')->nullable(); // Tạo cột ngày sinh
-        //     $table->string('img')->nullable(); // 
-        //     $table->boolean('is_action',['0', '1'])->default('0'); // 0: Hoạt động, 1: Bị khóa
-        //     $table->timestamps();
         });
     }
 

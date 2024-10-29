@@ -18,15 +18,10 @@ class ProductController extends Controller
     //     $products= Product::paginate($perPage); // sử dụng get nếu ko muốn phan trang
         
         
-    //     if ($request->wantsJson()) {
-    //         return response()->json($products); //tả về json
-    //     }
-    
-    //     //tả về trang sp
-    //     return view('product.product', compact('products'));
+    //     //return response()->json($dsSP);
+    //     return view('product.product', compact(['products']));
          
-    //   } // chưa trả về json
-
+      
 
     // load sp
     // public function product(Request $request)
@@ -174,81 +169,31 @@ class ProductController extends Controller
 
 
     //   public function detail($slug) {
+
+      public function detail($slug) {
+
       
-    //     $sp = Product::where('slug', $slug)->first();
+        $sp = Product::where('slug', $slug)->first();
     
-    //    //kiểm tra sp tồn tại ko
-    //     if ($sp) {
-    //        // chuyển sang trang chi tiết
-    //         return view('product.detail', compact('sp'));
-    //     } else {
-    //        // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
-    //         return redirect()->route('home')->with('error', 'Product not found');
-    //     }
-
-//     public function detail($slug)
-// {
-//     $sp = Product::where('slug', $slug)->first();
-    
-//     // ktra sp
-//     if ($sp) {
-//         // trả sp dưới dạng json
-//         if (request()->wantsJson()) {
-//             return response()->json($sp);
-//         }
-
-//         // trả về trang ctsp
-//         return view('product.detail', compact('sp'));
-//     } else {
-//        // nếu ko thấy sp thì chuyển sang trang notfound
-//         if (request()->wantsJson()) {
-//             return response()->json(['error' => 'Product not found'], 404);
-//         }
-
-//         return redirect()->route('home')->with('error', 'Product not found');
-//     }
-// }
-public function detail($id) {
-    // Tìm sản phẩm theo id và ném lỗi nếu không tìm thấy
-    $sp = Product::findOrFail($id);
-
-    // Trả về dữ liệu sản phẩm dưới dạng JSON
-    return response()->json($sp);
-}
+       //kiểm tra sp tồn tại ko
+        if ($sp) {
+           // chuyển sang trang chi tiết
+            return view('product.detail', compact('sp'));
+        } else {
+           // Chuyển hướng hoặc hiển thị trang 404 nếu không tìm thấy sản phẩm
+            return redirect()->route('home')->with('error', 'Product not found');
+        }
+    }
     
 
-    // public function productsByCategory($categorySlug) {
-    //     // Fetch the category by slug
-    //     $category = Category::where('slug', $categorySlug)->first();
-    
-    //     // If the category exists, fetch its products
-    //     if ($category) {
-    //         $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
-    //         return view('product.product', compact('products', 'category'));
-    //     } else {
-    //         // If the category does not exist, redirect to home with an error
-    //         return redirect()->route('home')->with('error', 'Category not found');
-    //     }
-    // }
     public function productsByCategory($categorySlug) {
         // Fetch the category by slug
         $category = Category::where('slug', $categorySlug)->first();
-    
-        // If the category exists, fetch its products
+
+        // Kiểm tra nếu danh mục tồn tại
         if ($category) {
-            // Fetch products related to the category
-            $products = Product::where('category_id', $category->id)->paginate(6);
-    
-            // Return the products and category as JSON
-            return response()->json([
-                'status' => 'success',
-                'category' => $category,
-                'products' => $products->items(),  // Get paginated items
-                'pagination' => [
-                    'current_page' => $products->currentPage(),
-                    'last_page' => $products->lastPage(),
-                ]
-            ]);
+            $products = Product::where('category_id', $category->id)->paginate(6); // Correct the category ID
+            return view('product.product', compact('products', 'category'));
         } else {
             // Return an error message if the category is not found
             return response()->json([
@@ -257,9 +202,6 @@ public function detail($id) {
             ], 404);
         }
     }
-    
-    
-
     
   }
   

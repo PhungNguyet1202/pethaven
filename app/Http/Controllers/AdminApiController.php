@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
@@ -16,20 +17,25 @@ use App\Models\Pet;
 use App\Models\Service;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 class AdminApiController extends Controller
 {
     public function dashboard()
     {
         $soDonHang = Order::count();
+        $soDichVu = Service::count();
         $soSanPham = Product::count();
         $soKhachHang = User::where('role', 'user')->count();
-        $doanhThu = Order::where('status', 'success')->sum('total_money');
+        $doanhThu = Order::where('status', 'pending')->sum('total_money');
+
         $dsDH = Order::orderBy('created_at', 'DESC')->limit(5)->get();
         $dsBL = Comment::orderBy('created_at', 'DESC')->limit(5)->get();
         
         return response()->json([
             'soDonHang' => $soDonHang,
             'soSanPham' => $soSanPham,
+            'soDichVu' => $soDichVu,
             'soKhachHang' => $soKhachHang,
             'doanhThu' => $doanhThu,
             'dsDH' => $dsDH,
@@ -52,8 +58,7 @@ class AdminApiController extends Controller
         // Apply search filter with grouped conditions
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%");
             });
         }
     
@@ -159,8 +164,7 @@ public function users(Request $request)
     // Áp dụng tìm kiếm theo tên hoặc email nếu có từ khóa tìm kiếm
     if ($search) {
         $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
+            $q->where('name', 'like', "%{$search}%")    ;
         });
     }
 
@@ -313,7 +317,6 @@ public function deleteCategoryNew($id)
     return response()->json(['message' => 'Xóa danh mục thành công'], 200);
 }
 
-
 public function news(Request $request)
 {
     // Lấy thông tin tìm kiếm và phân trang từ request
@@ -321,103 +324,215 @@ public function news(Request $request)
     $perPage = $request->input('perPage', 10); // Mặc định là 10 bản ghi trên mỗi trang
     $page = $request->input('page', 1);
 
-    // Tạo truy vấn cơ bản cho News, liên kết với CategoryNew
-    $query = news::with('categorynew');
+    // Tạo truy vấn cho News với liên kết đến CategoryNew
+    $query = News::with('categorynew');
 
     // Áp dụng tìm kiếm theo tiêu đề hoặc nội dung nếu có từ khóa tìm kiếm
     if ($search) {
         $query->where(function ($q) use ($search) {
-            $q->where('title', 'like', "%{$search}%")
-              ->orWhere('content', 'like', "%{$search}%");
+            $q->where('title', 'like', "%{$search}%");
         });
     }
 
     // Lấy kết quả phân trang
-    $news = $query->paginate($perPage, ['*'], 'page', $page);
+    $newsItems = $query->paginate($perPage, ['*'], 'page', $page);
 
-    // Trả về kết quả
-    return response()->json($news, 200);
+    // Định dạng lại dữ liệu để bao gồm tên danh mục, image và description
+    $formattedNews = $newsItems->getCollection()->map(function ($news) {
+        return [
+            'id' => $news->id,
+            'title' => $news->title,
+            'content' => $news->content,
+            'categorynew_id' => $news->categorynew ? $news->categorynew->id : null,
+            'category_name' => $news->categorynew ? $news->categorynew->name : null, // Lấy tên danh mục
+            'created_at' => $news->created_at,
+            'updated_at' => $news->updated_at,
+            'image' => $news->image, // Thêm trường image
+            'description1' => $news->description1, // Thêm trường description
+            'description2' => $news->description2,
+        ];
+    });
+
+    // Cập nhật lại tổng số trang cho response
+    $newsItems->setCollection($formattedNews);
+
+    return response()->json($newsItems, 200);
 }
+
+public function newCategory(Request $request)
+{
+    $dsCT = CategoryNew::get();
+    if ($dsCT->isEmpty()) {
+        return response()->json(['message' => 'No categories found'], 404);
+    }
+    return response()->json($dsCT, 200);
+}
+
+
 public function getNewById($id)
 {
-    // Tìm sản phẩm theo ID
-    $category = News::get()->find($id);
+    // Tìm bài viết theo ID, đồng thời lấy thông tin danh mục
+    $news = News::with('categorynew')->find($id);
     
-    // Kiểm tra xem sản phẩm có tồn tại không
-    if (!$category) {
-        return response()->json(['message' => 'Sản phẩm không tồn tại'], 404);
-    }
-
-    return response()->json($category, 200);
-}
-public function postNewsAdd(Request $request)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'title' => 'required|string',
-        'content' => 'required|string',
-        'category_new_id' => 'required|exists:category_news,id',
-        'image' => 'nullable|image|max:2048', // Xác thực hình ảnh
-    ]);
-
-    // Tạo bài viết mới
-    $news = new News();
-    $news->title = $request->title;
-    $news->content = $request->content;
-    $news->category_new_id = $request->category_new_id;
-
-    // Lưu bài viết
-    $news->save();
-
-    // Kiểm tra và lưu hình ảnh nếu có
-    if ($request->hasFile('image')) {
-        $img = $request->file('image');
-        $imgName = "{$news->id}." . $img->getClientOriginalExtension();
-        $img->move(public_path('images/news/'), $imgName);
-        $news->image = $imgName;
-        $news->save();
-    }
-
-    return response()->json(['message' => 'Thêm bài viết thành công'], 201);
-}
-public function updateNews(Request $request, $id)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'title' => 'sometimes|required|string',
-        'content' => 'sometimes|required|string',
-        'category_new_id' => 'sometimes|required|exists:category_news,id',
-        'image' => 'sometimes|nullable|image|max:2048', // Hình ảnh mới
-    ]);
-
-    // Tìm bài viết
-    $news = News::find($id);
+    // Kiểm tra xem bài viết có tồn tại không
     if (!$news) {
         return response()->json(['message' => 'Bài viết không tồn tại'], 404);
     }
 
+    // Định dạng dữ liệu trả về
+    $newsData = [
+        'id' => $news->id,
+        'title' => $news->title,
+        'content' => $news->content,
+        'image' => $news->image ,
+        'description1'  => $news->description1,
+        'description2'  => $news->description2,
+        'categorynew_id' => $news->categorynew ? $news->categorynew->id : null,
+        'category_name' => $news->categorynew ? $news->categorynew->name : null, // Lấy tên danh mục
+    ];
+
+    return response()->json($newsData, 200);
+}
+public function postNewsAdd(Request $request)
+{
+    try {
+        // Xác thực dữ liệu
+        $validatedData = $request->validate([
+            'title' => 'required|string',
+            'content' => 'required|string',
+            'categorynew_id' => 'required|exists:categorynews,id', // Giả sử id là khóa chính
+            'user_id' => 'required|exists:users,id', // Xác thực user_id
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Xác thực hình ảnh
+            'description1' => 'nullable|string',
+            'description2' => 'nullable|string|max:200',
+        ]);
+
+        // Tạo bài viết mới
+        $news = new News();
+        $news->title = $validatedData['title'];
+        $news->content = $validatedData['content'];
+        $news->categorynew_id = $validatedData['categorynew_id'];
+        $news->user_id = $validatedData['user_id']; // Gán user_id cho bài viết
+        $news->description1 = $validatedData['description1'];
+        $news->description2 = $validatedData['description2'];
+
+        // Đường dẫn lưu ảnh
+        $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+        $imgName = 'default-image.jpg'; // Giá trị mặc định
+
+        // Kiểm tra và lưu hình ảnh nếu có
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imgName = time() . '.' . $file->getClientOriginalExtension();
+            $file->move($destinationPath, $imgName);
+            $news->image = $imgName; // Lưu tên hình ảnh vào bài viết
+        }
+
+        // Lưu bài viết vào database
+        $news->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Thêm bài viết thành công.'], 201);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Thêm bài viết thất bại.', 'error' => $e->getMessage()], 500);
+    }
+}
+
+
+
+
+public function updateNews(Request $request, $id)
+{
+    // Ghi log dữ liệu nhận từ front-end
+    Log::info('Data received from front-end for update:', $request->all());
+
+    // Xác thực dữ liệu
+    try {
+        $request->validate([
+            'title' => 'sometimes|required|string',
+            'content' => 'sometimes|required|string',
+            'categorynew_id' => 'exists:CategoryNew,id',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'image' => 'sometimes|nullable|image|max:2048',
+            'description1' => 'sometimes|nullable|string',
+            'description2' => 'sometimes|nullable|string|max:200',
+        ]);
+        Log::info('Validation passed.');
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error('Validation failed: ', $e->errors());
+        return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
+    }
+
+    // Tìm bài viết
+    $news = News::find($id);
+    if (!$news) {
+        Log::error("News with ID {$id} not found.");
+        return response()->json(['message' => 'Bài viết không tồn tại'], 404);
+    }
+    
+    Log::info('Original News data:', $news->toArray());
+
     // Cập nhật thông tin bài viết
     $news->title = $request->title ?? $news->title;
     $news->content = $request->content ?? $news->content;
-    $news->category_new_id = $request->category_new_id ?? $news->category_new_id;
+        $news->categorynew_id = $request->categorynew_id ?? $news->categorynew_id;
+    
+    if (isset($request->user_id)) {
+        $news->user_id = $request->user_id;
+        Log::info('User ID updated to: ' . $news->user_id);
+    }
+
+    $news->description1 = $request->description1 ?? $news->description1;
+    $news->description2 = $request->description2 ?? $news->description2;
+
+    Log::info('Updated News data (before save):', $news->toArray());
 
     // Xử lý hình ảnh mới nếu có
     if ($request->hasFile('image')) {
-        if ($news->image && file_exists(public_path('images/news/' . $news->image))) {
-            unlink(public_path('images/news/' . $news->image));
+        $destinationPath = public_path('img1');
+        
+        // Kiểm tra và xóa ảnh cũ nếu có
+        if ($news->image && file_exists($destinationPath . '/' . $news->image)) {
+            Log::info("Deleting old image: " . $destinationPath . '/' . $news->image);
+            if (!unlink($destinationPath . '/' . $news->image)) {
+                Log::error("Failed to delete old image for news ID {$news->id}");
+            } else {
+                Log::info("Old image deleted successfully.");
+            }
         }
 
+        // Upload ảnh mới
         $img = $request->file('image');
         $imgName = "{$news->id}." . $img->getClientOriginalExtension();
-        $img->move(public_path('images/news/'), $imgName);
-        $news->image = $imgName;
+        if ($img->move($destinationPath, $imgName)) {
+            Log::info("New image uploaded: " . $destinationPath . '/' . $imgName);
+            $news->image = $imgName;
+        } else {
+            Log::error("Failed to upload new image for news ID {$news->id}");
+        }
     }
 
-    // Lưu thay đổi
-    $news->save();
+    // Kiểm tra sự thay đổi trước khi lưu
+    if ($news->isDirty()) {
+        Log::info('Data has changed, saving...');
+        try {
+            $news->save();
+            Log::info("News ID {$news->id} updated successfully.");
+        } catch (\Exception $e) {
+            Log::error("Failed to save news: " . $e->getMessage());
+            return response()->json(['message' => 'Lỗi khi lưu dữ liệu'], 500);
+        }
+    } else {
+        Log::info('No changes detected, not saving.');
+    }
 
-    return response()->json(['message' => 'Cập nhật bài viết thành công'], 200);
+    // Trả về phản hồi với dữ liệu cập nhật
+    return response()->json([
+        'message' => 'Cập nhật bài viết thành công',
+        'updated_news' => $news->fresh() // Lấy dữ liệu mới nhất từ cơ sở dữ liệu
+    ], 200);
 }
+
+
 public function deleteNews($id)
 {
     $news = News::find($id);
@@ -451,7 +566,7 @@ public function pet(Request $request)
     if ($search) {
         $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%");
+               ;
         });
     }
 
@@ -464,7 +579,7 @@ public function pet(Request $request)
 public function getPetById($id)
     {
         // Tìm sản phẩm theo ID
-        $category = Category::get()->find($id);
+        $category = pet::get()->find($id);
         
         // Kiểm tra xem sản phẩm có tồn tại không
         if (!$category) {
@@ -473,52 +588,39 @@ public function getPetById($id)
     
         return response()->json($category, 200);
     }
-public function postPetAdd(Request $request)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'name' => 'required|string',
-        'description' => 'nullable|string',
-      
-    ]);
-
-    // Tạo pet mới
-    $pet = new Pet();
-    $pet->name = $request->name;
-    $pet->description = $request->description;
-
-    // Lưu pet
-    $pet->save();
-
-
-    return response()->json(['message' => 'Thêm pet thành công'], 201);
-}
-public function updatePet(Request $request, $id)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'name' => 'sometimes|required|string',
-        'description' => 'nullable|string',
-        
-    ]);
-
-    // Tìm pet theo ID
-    $pet = Pet::find($id);
-    if (!$pet) {
-        return response()->json(['message' => 'Pet không tồn tại'], 404);
+    
+    public function postPetAdd(Request $request)
+    {
+        $pet = new Pet();
+        $pet->name = $request->input('name');
+        $pet->user_id = $request->input('userId'); // Lấy userId từ request
+        $pet->save();
+    
+        return response()->json(['message' => 'Pet added successfully'], 200);
     }
-
-    // Cập nhật thông tin
-    $pet->name = $request->name ?? $pet->name;
-    $pet->description = $request->description ?? $pet->description;
-
-
-
-    // Lưu thay đổi
-    $pet->save();
-
-    return response()->json(['message' => 'Cập nhật pet thành công'], 200);
-}
+    public function updatePet(Request $request, $id)
+    {
+        // Xác thực dữ liệu
+        $request->validate([
+            'name' => 'sometimes|required|string',
+            'userId' => 'required|integer', // Thêm xác thực cho userId
+        ]);
+    
+        // Tìm pet theo ID
+        $pet = Pet::find($id);
+        if (!$pet) {
+            return response()->json(['message' => 'Pet không tồn tại'], 404);
+        }
+    
+        // Cập nhật thông tin
+        $pet->name = $request->name ?? $pet->name;
+        $pet->user_id = $request->input('userId'); // Cập nhật userId từ request
+    
+        // Lưu thay đổi
+        $pet->save();
+    
+        return response()->json(['message' => 'Cập nhật pet thành công'], 200);
+    }
 public function deletePet($id)
 {
     $pet = Pet::find($id);
@@ -606,8 +708,8 @@ public function service(Request $request)
     // Áp dụng tìm kiếm theo tên dịch vụ hoặc mô tả nếu có từ khóa tìm kiếm
     if ($search) {
         $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%");
+            $q->where('name', 'like', "%{$search}%");
+            
         });
     }
 
@@ -620,7 +722,7 @@ public function service(Request $request)
 public function getServiceById($id)
     {
         // Tìm sản phẩm theo ID
-        $category = Category::get()->find($id);
+        $category = service::get()->find($id);
         
         // Kiểm tra xem sản phẩm có tồn tại không
         if (!$category) {
@@ -629,75 +731,103 @@ public function getServiceById($id)
     
         return response()->json($category, 200);
     }
-public function postServiceAdd(Request $request)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'name' => 'required|string',
-        'description' => 'nullable|string',
-        'price' => 'required|numeric', // Giá dịch vụ
-        'image' => 'nullable|image|max:2048', // Xác thực hình ảnh nếu có
-    ]);
-
-    // Tạo service mới
-    $service = new Service();
-    $service->name = $request->name;
-    $service->description = $request->description;
-    $service->price = $request->price;
-
-    // Lưu service
-    $service->save();
-
-    // Kiểm tra và lưu hình ảnh nếu có
-    if ($request->hasFile('image')) {
-        $img = $request->file('image');
-        $imgName = "{$service->id}." . $img->getClientOriginalExtension();
-        $img->move(public_path('images/services/'), $imgName);
-        $service->image = $imgName;
+    public function postServiceAdd(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image|max:2048',
+        ]);
+    
+        $service = new Service();
+        $service->name = $request->name;
+        $service->description = $request->description;
+        $service->price = $request->price;
         $service->save();
-    }
-
-    return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
-}
-
-public function updateService(Request $request, $id)
-{
-    // Xác thực dữ liệu
-    $request->validate([
-        'name' => 'sometimes|required|string',
-        'description' => 'nullable|string',
-        'price' => 'sometimes|required|numeric',
-        'image' => 'sometimes|nullable|image|max:2048', // Hình ảnh mới
-    ]);
-
-    // Tìm service theo ID
-    $service = Service::find($id);
-    if (!$service) {
-        return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
-    }
-
-    // Cập nhật thông tin
-    $service->name = $request->name ?? $service->name;
-    $service->description = $request->description ?? $service->description;
-    $service->price = $request->price ?? $service->price;
-
-    // Xử lý hình ảnh nếu có
-    if ($request->hasFile('image')) {
-        if ($service->image && file_exists(public_path('images/services/' . $service->image))) {
-            unlink(public_path('images/services/' . $service->image));
+    
+        // Đường dẫn lưu ảnh
+        $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+    
+        if ($request->hasFile('image')) {
+            $img = $request->file('image');
+            $imgName = "{$service->id}." . $img->getClientOriginalExtension();
+            $img->move($destinationPath, $imgName);
+            $service->img = $imgName;
+            $service->save();   
         }
-
-        $img = $request->file('image');
-        $imgName = "{$service->id}." . $img->getClientOriginalExtension();
-        $img->move(public_path('images/services/'), $imgName);
-        $service->image = $imgName;
+    
+        return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
     }
+    public function updateService(Request $request, $id)
+    {
+        // Log bắt đầu của hàm
+        Log::info("Starting updateService for service ID: $id");
+    
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'name' => 'sometimes|required|string',
+            'description' => 'nullable|string',
+            'price' => 'sometimes|required|numeric',
+            'img' => 'sometimes|nullable|img|max:2048',
+        ]);
+    
+        // Tìm dịch vụ theo ID
+        $service = Service::find($id);
+        if (!$service) {
+            Log::warning("Service not found for ID: $id");
+            return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
+        }
+    
+        // Log dữ liệu dịch vụ hiện tại trước khi cập nhật
+        Log::info('Original Service data: ', $service->toArray());
+    
+        // Cập nhật thông tin dịch vụ
+        $service->name = $request->name ?? $service->name;
+        $service->description = $request->description ?? $service->description;
+        $service->price = $request->price ?? $service->price;
+    
+        // Đường dẫn lưu ảnh
+        $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+    
+        try {
+            // Kiểm tra xem có file hình ảnh được gửi lên không
+            if ($request->hasFile('img')) {
+                Log::info('img upload detected for service ID: ' . $id);
+    
+    
+                // Upload ảnh mới
+                $img = $request->file('img');
+                if (!$img->isValid()) {
+                    Log::error('img upload failed for service ID: ' . $id);
+                    return response()->json(['message' => 'img upload failed'], 400);
+                }
+    
+                $imgName = "{$service->id}." . $img->getClientOriginalExtension();
+                $img->move($destinationPath, $imgName);
+                $service->img = $imgName; // Gán tên file ảnh mới
+                Log::info('img updated successfully for service ID: ' . $id);
+            } else {
+                // Nếu không có tệp hình ảnh, giữ nguyên hình ảnh hiện tại
+                Log::info('No new img uploaded for service ID: ' . $id . ', keeping the current img: ' . $service->img);
+                // Không cần gán lại, đã có giá trị cũ
+            }
+    
+            // Lưu dịch vụ
+            $service->save();
+            Log::info('Service updated successfully for service ID: ' . $id);
+    
+            return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
+    
+        } catch (\Exception $e) {
+            // Ghi log lỗi và trả về thông báo lỗi chi tiết
+            Log::error('Failed to update service ID: ' . $id . ' Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Cập nhật dịch vụ thất bại', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
 
-    // Lưu thay đổi
-    $service->save();
-
-    return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
-}
+    
 public function deleteService($id)
 {
     $service = Service::find($id);
@@ -706,8 +836,8 @@ public function deleteService($id)
     }
 
     // Xóa hình ảnh nếu có
-    if ($service->image && file_exists(public_path('images/services/' . $service->image))) {
-        unlink(public_path('images/services/' . $service->image));
+    if ($service->img && file_exists(public_path('images/services/' . $service->image))) {
+        unlink(public_path('images/services/' . $service->img));
     }
 
     // Xóa dịch vụ
@@ -740,8 +870,7 @@ public function product(Request $request)
         // Áp dụng tìm kiếm nếu có
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%"); // Giả định sản phẩm có 'code'
+                $q->where('name', 'like', "%{$search}%"); // Giả định sản phẩm có 'code'
             });
         }
     
@@ -770,126 +899,150 @@ public function product(Request $request)
     }
     
     public function getProductById($id)
-    {
-        // Tìm sản phẩm theo ID
-        $product = Product::with('category')->find($id);
-        
-        // Kiểm tra xem sản phẩm có tồn tại không
-        if (!$product) {
-            return response()->json(['message' => 'Sản phẩm không tồn tại'], 404);
-        }
-    
-        // Định dạng lại sản phẩm để bao gồm category_name
-        $productData = [
-            'id' => $product->id,
-            'name' => $product->name,
-            'code' => $product->code,
-            'price' => $product->price,
-            'sale_price' => $product->sale_price,
-            'image' => $product->image,
-            'category_name' => $product->category ? $product->category->name : null, // Lấy tên danh mục
-            'instock' => $product->instock,
-            // Thêm các thuộc tính khác nếu cần
-        ];
-    
-        return response()->json($productData, 200);
-    }
-public function postproductAdd(Request $request)
 {
-    try {
-        // Validate dữ liệu, bao gồm file image
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Xử lý upload ảnh
-        $imageName = 'default-image.jpg'; // Giá trị mặc định
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $imageName = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img1'), $imageName);
-        }
-
-        // Lưu thông tin sản phẩm vào database
-        $product = new Product([
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'description' => $request->input('description'),
-            'categories_id' => $request->input('category_id'),
-            'price' => $request->input('price'),
-            'instock' => $request->input('instock'),
-            'sale_price' => $request->input('sale_price'),
-            'image' => $imageName,
-        ]);
-        $product->save();
-
-        return response()->json(['status' => 'success', 'message' => 'Product added successfully.'], 200);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => 'Failed to add product.', 'error' => $e->getMessage()], 500);
+    $product = Product::with('category')->find($id);
+    
+    if (!$product) {
+        return response()->json(['message' => 'Sản phẩm không tồn tại'], 404);
     }
+
+  
+
+    $productData = [
+        'id' => $product->id,
+        'name' => $product->name,
+        'price' => $product->price,
+        'sale_price' => $product->sale_price,
+        'image' =>$product->image, // URL đầy đủ cho hình ảnh
+        'category_name' => $product->category ? $product->category->name : null,
+        'instock' => $product->instock,
+        'category_id' => $product->category ? $product->category->id : null,
+        'description' => $product->description,
+    ];
+
+    return response()->json($productData, 200);
 }
 
-
-
-
-public function updateProduct(Request $request, $id)
-{
-    // Xác thực dữ liệu từ request
-    $request->validate([
-        'name' => 'sometimes|required|string',
-        'description1' => 'nullable|string',
-        'category_id' => 'sometimes|required|integer',
-        'price' => 'sometimes|required|numeric',
-        'instock' => 'sometimes|required|integer',
-        'sale_price' => 'sometimes|nullable|numeric',
-        'image' => 'sometimes|nullable|image|max:2048' // Xác thực hình ảnh
-    ]);
-
-    // Tìm sản phẩm theo ID
-    $product = Product::find($id);
-    if (!$product) {
-        return response()->json(['message' => 'Product not found'], 404);
-    }
-
-    // Cập nhật thông tin sản phẩm
-    $product->name = $request->name ?? $product->name;
-    $product->slug = $request->name ? Str::slug($request->name) : $product->slug;
-    $product->description = $request->description1 ?? $product->description;
-    $product->categories_id = $request->category_id ?? $product->categories_id;
-    $product->price = $request->price ?? $product->price;
-    $product->instock = $request->instock ?? $product->instock;
-    $product->sale_price = $request->sale_price ?? $product->sale_price;
-
-    // Xử lý hình ảnh nếu có upload hình mới
-    if ($request->hasFile('image')) {
-        // Kiểm tra và xóa ảnh cũ nếu có
-        if ($product->image && file_exists(public_path('img1/' . $product->image))) {
-            unlink(public_path('img1/' . $product->image)); // Xóa ảnh cũ
+    public function postproductAdd(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required',
+                'description' => 'required',
+                'price' => 'required|numeric',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+    
+            // Đường dẫn lưu ảnh
+            $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+            $imageName = 'default-image.jpg'; // Giá trị mặc định
+    
+            // Xử lý upload ảnh
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = time() . '.' . $file->getClientOriginalExtension();
+                $file->move($destinationPath, $imageName);
+            }
+    
+            // Lưu thông tin sản phẩm vào database
+            $product = new Product([
+                'name' => $request->input('name'),
+                'slug' => Str::slug($request->input('name')),
+                'description' => $request->input('description'),
+                'categories_id' => $request->input('category_id'),
+                'price' => $request->input('price'),
+                'instock' => $request->input('instock'),
+                'sale_price' => $request->input('sale_price'),
+                'image' => $imageName,
+            ]);
+            $product->save();
+    
+            return response()->json(['status' => 'success', 'message' => 'Product added successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to add product.', 'error' => $e->getMessage()], 500);
         }
-
-        // Upload ảnh mới
-        $img = $request->file('image');
-        $imgName = "{$product->id}." . $img->getClientOriginalExtension();
+    }
+    public function updateProduct(Request $request, $id)
+    {
+        // Log bắt đầu của hàm
+        Log::info("Starting updateProduct for product ID: $id");
         
-        // Đường dẫn lưu ảnh
+        // Ghi log tất cả dữ liệu yêu cầu
+        Log::info('Request data: ', $request->all());
+    
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'name' => 'sometimes|required|string',
+            'description' => 'nullable|string',
+            'category_id' => 'sometimes|required|integer',
+            'price' => 'sometimes|required|numeric',
+            'instock' => 'sometimes|required|integer',
+            'sale_price' => 'sometimes|nullable|numeric',
+        ]);
+    
+        // Tìm sản phẩm theo ID
+   
+        $product = Product::find($id);
+        if (!$product) {
+            Log::warning("Product not found for ID: $id");
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    
+        // Log dữ liệu sản phẩm hiện tại trước khi cập nhật
+        Log::info('Original Product data: ', $product->toArray());
+    
+        // Cập nhật thông tin sản phẩm
+        $product->name = $request->name ?? $product->name;
+        $product->slug = $request->name ? Str::slug($request->name) : $product->slug;
+        $product->description = $request->description ?? $product->description;
+        $product->categories_id = $request->input('category_id', $product->categories_id);
+        $product->price = $request->price ?? $product->price;
+        $product->instock = $request->instock ?? $product->instock;
+        $product->sale_price = $request->sale_price ?? $product->sale_price;
+    
+        // Đường dẫn để lưu hình ảnh
         $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
-        
-        // Di chuyển file ảnh đến đường dẫn đã chỉ định
-        $img->move($destinationPath, $imgName);
-
-            // Gán tên file ảnh mới vào cơ sở dữ liệu
-            $product->image = $imgName;
+    
+        try {
+            // Kiểm tra quyền truy cập thư mục
+            if (!is_writable($destinationPath)) {
+                Log::error('Destination path is not writable: ' . $destinationPath);
+                return response()->json(['message' => 'Destination path is not writable'], 500);
+            }
+    
+            if ($request->hasFile('image')) {
+                // Kiểm tra xem có file được gửi lên không
+                if (!$request->file('image')->isValid()) {
+                    Log::error('Image upload failed for product ID: ' . $id);
+                    return response()->json(['message' => 'Image upload failed'], 400);
+                }
+    
+                // Upload ảnh mới
+                $image = $request->file('image');
+                $imageName = "{$product->id}." . $image->getClientOriginalExtension();
+                $image->move($destinationPath, $imageName);
+    
+                // Gán tên file ảnh mới
+                $product->image = $imageName;
+                Log::info('Image updated successfully for product ID: ' . $id);
+            } else {
+                Log::info('No image uploaded for product ID: ' . $id);
+            }
+    
+            // Lưu sản phẩm
+            $product->save();
+            Log::info('Product updated successfully for product ID: ' . $id);
+    
+            return response()->json(['message' => 'Product updated successfully'], 200);
+    
+        } catch (\Exception $e) {
+            // Ghi log lỗi và trả về thông báo lỗi chi tiết
+            Log::error('Failed to update product ID: ' . $id . ' Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
         }
-
-        // Lưu lại sản phẩm sau khi cập nhật thông tin và ảnh
-        $product->save();
-
-        // Trả về phản hồi
-        return response()->json(['message' => 'Product updated successfully'], 200);
     }
+    
+    
 
     public function deleteProduct($id)
     {
@@ -914,14 +1067,13 @@ public function updateProduct(Request $request, $id)
       $page = $request->input('page', 1);
   
       // Tạo truy vấn với các mối quan hệ
-      $query = Order::with(['user', 'payment', 'shipping']); // Đảm bảo rằng các mối quan hệ được định nghĩa đúng
+      $query = Order::with(['user', 'payments', 'shippings']); // Đảm bảo rằng các mối quan hệ được định nghĩa đúng
   
       // Áp dụng tìm kiếm nếu có
       if ($search) {
           $query->where(function ($q) use ($search) {
-              $q->where('user_fullname', 'like', "%{$search}%")
-                ->orWhere('user_email', 'like', "%{$search}%")
-                ->orWhere('user_phone', 'like', "%{$search}%");
+              $q->where('user_fullname', 'like', "%{$search}%");
+          
           });
       }
   
@@ -932,14 +1084,14 @@ public function updateProduct(Request $request, $id)
       $formattedOrders = $orders->getCollection()->map(function ($order) {
           return [
               'id' => $order->id,
-              'user_fullname' => $order->user->fullname ?? null, // Thay 'fullname' theo cột thực tế
-              'user_email' => $order->user->email ?? null, // Thay 'email' theo cột thực tế
-              'user_phone' => $order->user->phone ?? null, // Thay 'phone' theo cột thực tế
+              'user_fullname' => $order->user->name ?? null,
+              'user_email' => $order->user->email ?? null,
+              'user_phone' => $order->user->phone ?? null,
               'total_money' => $order->total_money,
               'total_quantity' => $order->total_quantity,
               'status' => $order->status,
-              'payment_method' => $order->payment ? $order->payment->method_name : null, // Thay 'method_name' theo cột thực tế
-              'shipping_method' => $order->shipping ? $order->shipping->method_name : null, // Thay 'method_name' theo cột thực tế
+              'payment_method' => $order->payments->payment_method ?? null, // Kiểm tra phương thức thanh toán
+              'shipping_method' => $order->shippings->shipping_method ?? null, // Kiểm tra phương thức vận chuyển
               'created_at' => $order->created_at,
           ];
       });
@@ -948,9 +1100,7 @@ public function updateProduct(Request $request, $id)
       $orders->setCollection($formattedOrders);
   
       return response()->json($orders, 200);
-  }
-  
-
+    }
   // Lấy chi tiết đơn hàng dựa trên order_id
   public function orderDetail($order_id)
   {
@@ -1103,37 +1253,37 @@ public function updateProduct(Request $request, $id)
         $search = $request->input('search');
         $perPage = $request->input('perPage', 10); // Mặc định là 10 bản ghi trên mỗi trang
         $page = $request->input('page', 1);
-
+    
         // Tạo truy vấn cơ bản cho Stockin
-        $query = Stockin::with(['product']); // Giả sử có quan hệ với bảng product
-
+        $query = Stockin::with(['products']); // Giả sử có quan hệ với bảng product
+    
         // Áp dụng tìm kiếm nếu có từ khóa tìm kiếm
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('stockin_date', 'like', "%{$search}%") // Tìm theo ngày nhập kho
-                  ->orWhere('Quantity', 'like', "%{$search}%")     // Tìm theo số lượng
+                  ->orWhere('quantity', 'like', "%{$search}%")     // Tìm theo số lượng
                   ->orWhereHas('product', function ($q) use ($search) {
                       $q->where('name', 'like', "%{$search}%");  // Tìm theo tên sản phẩm
                   });
             });
         }
-
+    
         // Lấy kết quả phân trang
         $stockEntries = $query->paginate($perPage, ['*'], 'page', $page);
-
+    
         // Định dạng lại dữ liệu trả về với tên sản phẩm
         $formattedEntries = $stockEntries->getCollection()->map(function ($entry) {
             return [
                 'id' => $entry->id,
                 'product_id' => $entry->product_id,
                 'stockin_date' => $entry->stockin_date,
-                'Quantity' => $entry->Quantity,
+                'quantity' => $entry->Quantity,
                 'created_at' => $entry->created_at,
                 'updated_at' => $entry->updated_at,
-                'product_name' => $entry->product ? $entry->product->name : null, // Lấy tên sản phẩm
+                'product_name' => $entry->products ? $entry->products->name : null, // Lấy tên sản phẩm
             ];
         });
-
+    
         // Trả về kết quả dưới dạng JSON
         return response()->json([
             'data' => $formattedEntries,
@@ -1143,8 +1293,7 @@ public function updateProduct(Request $request, $id)
             'total' => $stockEntries->total(),
         ], 200);
     }
-
- 
+    
     /**
      * Tính tổng doanh thu của cả năm và chia doanh thu cho từng tháng.
      *
@@ -1163,7 +1312,7 @@ public function updateProduct(Request $request, $id)
             $totalAnnualRevenue = Order::whereYear('created_at', $year)->sum('total_money');
             
             // Ghi nhận tổng doanh thu để kiểm tra
-            \Log::info("Total Annual Revenue for year {$year}: {$totalAnnualRevenue}");
+          Log::info("Total Annual Revenue for year {$year}: {$totalAnnualRevenue}");
     
             // Tạo mảng doanh thu cho từng tháng
             $monthlyRevenue = [];
@@ -1178,7 +1327,7 @@ public function updateProduct(Request $request, $id)
             ->get();
     
             // Ghi nhận doanh thu hàng tháng để kiểm tra
-            \Log::info("Monthly Orders for year {$year}: ", $monthlyOrders->toArray());
+          Log::info("Monthly Orders for year {$year}: ", $monthlyOrders->toArray());
     
             // Gán doanh thu vào mảng theo từng tháng
             for ($month = 1; $month <= 12; $month++) {
@@ -1194,7 +1343,7 @@ public function updateProduct(Request $request, $id)
             ]);
         } catch (\Exception $e) {
             // Ghi nhận lỗi nếu có
-            \Log::error("Error fetching annual revenue: " . $e->getMessage());
+            Log::error("Error fetching annual revenue: " . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

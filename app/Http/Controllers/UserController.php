@@ -149,6 +149,7 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'required|string|size:10|regex:/^0\d{9}$/',
                 'address' => 'nullable|string|max:255',
+
             ]);
     
             // Create new user
@@ -158,6 +159,7 @@ class UserController extends Controller
             $user->password = Hash::make($req->input('password'));
             $user->phone = $req->input('phone');
             $user->address = $req->input('address');
+
             $user->save();
     
             return redirect()->route('login')->with('success', 'Đăng ký thành công. Vui lòng đăng nhập.');

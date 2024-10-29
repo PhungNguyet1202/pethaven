@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class news extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'content', 'categorynew_id', 'user_id'];
+    protected $fillable = ['title', 'content', 'categorynew_id', 'image', 'description1', 'description2'];
 
     // Một tin tức thuộc về một loại tin tức (categorynew)
     public function categorynew()

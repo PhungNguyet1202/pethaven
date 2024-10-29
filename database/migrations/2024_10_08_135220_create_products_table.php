@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name',255); // Tên sản phẩm
             $table->string('slug',255);
             $table->string('image',255); // Đường dẫn hình ảnh
-            $table->text('description')->nullable(); // Mô tả sản phẩm
+            $table->text('description'); // Mô tả sản phẩm
+
            // $table->integer('quantity'); // Số lượng sản phẩm
             $table->decimal('price', 10, 2); // Giá sản phẩm
             $table->decimal('sale_price', 10, 2); // Giá sản phẩm

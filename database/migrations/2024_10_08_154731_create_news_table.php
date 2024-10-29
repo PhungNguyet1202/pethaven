@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('content'); // Nội dung tin tức
             $table->text('description'); // Mô tả sản phẩm
             $table->string('image',255); // Đường dẫn hình ảnh
-            $table->string('detail')->nullable(); // Đường dẫn hình ảnh
+            $table->string('detail')->nullable(); // Chi tiet tin tuc
 
             $table->foreignId('categorynew_id')->constrained()->onDelete('cascade'); // Khóa ngoại tới bảng categorynew
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Khóa ngoại tới bảng users

@@ -14,16 +14,16 @@ class CartController extends Controller
     // Lấy tất cả sản phẩm trong giỏ hàng của người dùng
     public function getCart()
     {
-        $userId = Auth::id(); 
+        $userId = Auth::id();
         Log::info('User ID: ' . $userId); // Ghi lại ID người dùng
-        
+
         $cartItems = CartItem::with('product')
                              ->whereHas('shoppingcart', function($query) use ($userId) {
                                  $query->where('user_id', $userId);
                              })->get();
-    
-        Log::info('Cart Items: ', $cartItems->toArray()); // Ghi lại thông tin giỏ hàng
-    
+
+        Log::info('Cart Items: ', $cartItems->toArray()); 
+
         return response()->json([
             'status' => 'success',
             'cart' => $cartItems

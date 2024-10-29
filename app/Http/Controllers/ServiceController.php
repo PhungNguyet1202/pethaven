@@ -30,7 +30,7 @@ class ServiceController extends Controller
     {
         // Tìm dịch vụ theo id hoặc slug
         $service = Service::where('id', $identifier)
-                          ->orWhere('slug', $identifier)
+                      
                           ->first();
 
         // Nếu không tìm thấy dịch vụ, trả về lỗi 404
@@ -95,7 +95,7 @@ class ServiceController extends Controller
         // Trả về thông tin dịch vụ đã cập nhật
         return response()->json([
             'status' => 'success',
-            'data' => $service
+'data' => $service
         ], 200);
     }
 

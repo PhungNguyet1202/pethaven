@@ -19,8 +19,15 @@ class Stockin extends Model // Sửa tên class thành Stockin
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function cartItems()
+    // public function cartItems()
+    // {
+    //     return $this->hasMany(CartItem::class, 'shoppingcart_id');
+    // }
+    public function products()
     {
-        return $this->hasMany(CartItem::class, 'cartitem_id');
+
+        return $this->belongsTo(Product::class, 'product_id');
+
+ 
     }
 }
