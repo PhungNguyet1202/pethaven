@@ -23,6 +23,7 @@ class pet extends Model
      */
     public function serviceBookings()
     {
-        return $this->hasMany(ServiceBooking::class, 'pet_id');
+        return $this->hasMany(ServiceBooking::class, 'pet_id'); // Chỉ định khóa ngoại là pet_id
     }
+    
 }

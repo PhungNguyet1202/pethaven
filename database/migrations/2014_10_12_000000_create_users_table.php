@@ -20,10 +20,10 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->rememberToken();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable(); // Có thể null
-            $table->date('dob'); // Ngày sinh
-            $table->string('img')->nullable(); // Cho phép img có giá trị null
-            $table->boolean('is_action')->default(0); // 0: Hoạt động, 1: Bị khóa
+            $table->enum('gender', ['male', 'female', 'other']);
+            $table->date('dob'); // Date of birth
+            $table->string('img'); // Profile image
+            $table->boolean('is_action')->default(0); // 0: Active, 1: Blocked
             $table->timestamps();
         });
     }
@@ -36,4 +36,3 @@ return new class extends Migration
         Schema::dropIfExists('users');
     }
 };
-

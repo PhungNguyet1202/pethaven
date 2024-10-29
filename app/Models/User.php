@@ -50,39 +50,43 @@ class User extends Authenticatable
     // Định nghĩa các quan hệ với các model khác
     public function serviceBookings()
     {
-        return $this->hasMany(ServiceBooking::class, 'user_id');
+        return $this->hasMany(ServiceBooking::class, 'user_id'); // Chỉ định khóa ngoại là user_id
     }
+    
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'user_id');
+        return $this->hasMany(Order::class, 'order_id');
     }
 
     public function pets()
     {
-        return $this->hasMany(Pet::class, 'user_id');
+        return $this->hasMany(Pet::class, 'pets_id');
     }
 
     public function shoppingCarts()
     {
-        return $this->hasMany(ShoppingCart::class, 'user_id');
+        return $this->hasMany(ShoppingCart::class, 'shoppingcart_id');
     }
 
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'user_id');
+        return $this->hasMany(Review::class, 'review_id');
     }
 
     public function news()
     {
-        return $this->hasMany(News::class);
+        return $this->hasMany(News::class, 'new_id');
     }
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'comment_id');
     }
 
+
+
+  
 
     public function updateProfile(Request $req) {
         $user = Auth::user(); // Lấy người dùng hiện tại
@@ -118,5 +122,6 @@ class User extends Authenticatable
         return response()->json(['message' => 'Cập nhật thành công!']);
     }
     
+
     
 }

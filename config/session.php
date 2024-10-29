@@ -29,9 +29,9 @@ return [
     | to be allowed to remain idle before it expires. If you want them
     | to immediately expire on the browser closing, set that option.
     |
-    */
+    */  
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+   'lifetime' => 120,
 
     'expire_on_close' => false,
 

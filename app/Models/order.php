@@ -1,13 +1,14 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class order extends Model
+class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo quy tắc PSR-1
 {
     use HasFactory;
+
+    protected $fillable = ['user_id', 'total_money', 'total_quantity', 'status', 'created_at']; // Thêm các cột cần thiết vào đây
 
     /**
      * Lấy Customer mà Order thuộc về.
@@ -16,9 +17,10 @@ class order extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function orderDetails()
     {
-        return $this->hasMany(OrderDetail::class, 'order_id');
+        return $this->hasMany(OrderDetail::class, 'orderdetail_id');
     }
 
     /**
@@ -26,7 +28,10 @@ class order extends Model
      */
     public function shippings()
     {
-        return $this->hasMany(Shipping::class, 'order_id');
+
+        return $this->hasOne(Shipping::class, 'id'); // Giả sử 'id' là khóa chính trong bảng Shipping
+
+
     }
 
     /**
@@ -34,14 +39,8 @@ class order extends Model
      */
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'order_id');
-    }
-///////////
 
-    protected $fillable = ['order_id', 'product_id', 'quantity', 'price', 'total_price'];
+        return $this->hasOne(Payment::class, 'id'); // Giả sử 'id' là khóa chính trong bảng Payment
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 }
