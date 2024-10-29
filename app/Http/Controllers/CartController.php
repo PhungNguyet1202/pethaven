@@ -30,6 +30,7 @@ class CartController extends Controller
         ]);
     }
     
+    
 
     // Thêm sản phẩm vào giỏ hàng
     public function addToCart(Request $request)
