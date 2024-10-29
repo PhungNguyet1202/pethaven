@@ -18,29 +18,14 @@
     <div class="row">
         <div class="col-md-3">
             <div class="sidebar">
-                {{-- <h5 class="group-h5">Tùy chọn</h5>
-                <ul class="list-group mb-4">
-                    <li class="list-group-item"><a href="#">Sắp xếp từ A - Z</a></li>
-                    <li class="list-group-item"><a href="#">Sắp xếp từ Z - A</a></li>
-                    <li class="list-group-item"><a href="#">Sắp xếp giá cao dần</a></li>
-                    <li class="list-group-item"><a href="#">Sắp xếp giá thấp dần</a></li>
-                </ul> --}}
                 <h5 class="group-h5">Tùy chọn</h5>
-<ul class="list-group mb-4" id="sortOptions">
-    <li class="list-group-item"><a href="#" data-sort="name_asc">Sắp xếp từ A - Z</a></li>
-    <li class="list-group-item"><a href="#" data-sort="name_desc">Sắp xếp từ Z - A</a></li>
-    <li class="list-group-item"><a href="#" data-sort="price_asc">Sắp xếp giá thấp dần</a></li>
-    <li class="list-group-item"><a href="#" data-sort="price_desc">Sắp xếp giá cao dần</a></li>
-</ul>
+                <ul class="list-group mb-4" id="sortOptions">
+                    <li class="list-group-item"><a href="#" data-sort="name_asc">Sắp xếp từ A - Z</a></li>
+                    <li class="list-group-item"><a href="#" data-sort="name_desc">Sắp xếp từ Z - A</a></li>
+                    <li class="list-group-item"><a href="#" data-sort="price_asc">Sắp xếp giá thấp dần</a></li>
+                    <li class="list-group-item"><a href="#" data-sort="price_desc">Sắp xếp giá cao dần</a></li>
+                </ul>
 
-                <ul class="list-group mb-4">
-                   
-                    @foreach ($categories as $item)
-                        <li class="list-group-item">
-                            <a href="{{ route('category', ['slug' => $item->slug]) }}">{{ $item->name }}</a>
-                        </li>
-                    @endforeach
-                </ul> --}}
                 <ul class="list-group mb-4">
                     @foreach ($categories as $item)
                         <li class="list-group-item">
@@ -48,45 +33,31 @@
                         </li>
                     @endforeach
                 </ul>
-
-                {{-- <h5 class="group-h5">Giá</h5>
-                <ul class="list-group mb-4">
-                    <li class="list-group-item"><a href="#">100.000 - 1.000.000đ</a></li>
-                    <li class="list-group-item"><a href="#">1.000.001 - 4.000.000đ</a></li>
-                    <li class="list-group-item"><a href="#">4.000.001 - 6.000.000đ</a></li>
-                    <li class="list-group-item"><a href="#">6.000.001 - 8.000.000đ</a></li>
-                   
-                </ul>
             </div>
         </div>
 
         <div class="col-md-9">
             <h5 class="group-h5">25 loại sản phẩm</h5>
-            <div class="row">
+            <div class="row" id="product-list">
                 @foreach ($products as $sp)
                 <div class="col-md-4">
                     <div class="product-card">
                         <img src="{{ asset('images/products/' . $sp->image) }}" alt="Product Image">
-
-                    <div class="product-title" href=""><a href="#">{{$sp->name}}</a></div>
-                    <div class="product-sale-price">
-                        @if (isset($sp->sale_price) && $sp->sale_price > 0)
-                        <span> {{number_format($sp->sale_price)}} VND</span>
-                        <del> {{number_format($sp->price)}} VND</del>
-                        @else
-                        <span> {{number_format($sp->price)}} VND</span>
-                        @endif
-                        
-                       
-
-                    </div>
-                    <div class="product-rating justify-content-center">
-                        <ul class="star-list ">
-                            @for ($i = 0; $i < floor($sp->rating); $i++)
-                            <li><i class="fa-solid fa-star"></i></li>
-
-                            @endfor
-                            @for ($i = 0; $i <5- floor($sp->rating); $i++)
+                        <div class="product-title" href=""><a href="#">{{$sp->name}}</a></div>
+                        <div class="product-sale-price">
+                            @if (isset($sp->sale_price) && $sp->sale_price > 0)
+                            <span> {{number_format($sp->sale_price)}} VND</span>
+                            <del> {{number_format($sp->price)}} VND</del>
+                            @else
+                            <span> {{number_format($sp->price)}} VND</span>
+                            @endif
+                        </div>
+                        <div class="product-rating justify-content-center">
+                            <ul class="star-list ">
+                                @for ($i = 0; $i < floor($sp->rating); $i++)
+                                <li><i class="fa-solid fa-star"></i></li>
+                                @endfor
+                                @for ($i = 0; $i < 5 - floor($sp->rating); $i++)
                                 <li><i class="fa-regular fa-star"></i></li>
                                 @endfor
                                 <li><span>{{number_format($sp->rating, 1)}} Review(s)</span></li>
@@ -117,109 +88,18 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
-
-    //     addToCartButtons.forEach(button => {
-    //         button.addEventListener('click', function(event) {
-    //             event.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
-    //             const productId = this.getAttribute('data-product-id');
-
-    //             fetch('/api/cart', {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //                 },
-    //                 body: JSON.stringify({
-    //                     product_id: productId,
-    //                     quantity: 1
-    //                 })
-    //             })
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 console.log(data);
-    //                 if (data.status === 'success') {
-    //                     alert('Sản phẩm đã được thêm vào giỏ hàng!');
-    //                 } else {
-    //                     alert('Có lỗi xảy ra: ' + data.message);
-    //                 }
-    //             })
-    //             .catch(error => {
-    //                 console.error('Lỗi khi thêm sản phẩm vào giỏ:', error);
-    //             });
-    //         });
-    //     });
-    // });
-</script>
-
 
 <script>
-    document.getElementById('priceFilter').addEventListener('click', function(event) {
-    event.preventDefault();  // Ngăn chặn hành động mặc định khi nhấn vào link
-    
-    if (event.target.tagName === 'A') {
-        const minPrice = event.target.getAttribute('data-min');
-        const maxPrice = event.target.getAttribute('data-max');
-
-        // Gửi yêu cầu lọc sản phẩm theo khoảng giá tới API
-        fetch(`/api/products?min_price=${minPrice}&max_price=${maxPrice}&perPage=9&page=1`)
-            .then(response => response.json())
-            .then(data => {
-                // Xử lý dữ liệu trả về từ API
-                console.log(data);
-                const searchResults = document.getElementById('searchResults');
-                searchResults.innerHTML = ''; // Xóa kết quả cũ
-
-                // Hiển thị sản phẩm được trả về
-                data.data.forEach(product => {
-                    const productItem = `
-                        <div class="product-item">
-                            <h3>${product.name}</h3>
-                            <p>Price: ${product.price}</p>
-                            <p>Stock: ${product.stock_sum_quantity}</p>
-                            <p>Category: ${product.category.name}</p>
-                        </div>
-                    `;
-                    searchResults.innerHTML += productItem;
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-});
-
-</script>
-<script>
-    document.getElementById('sortOptions').addEventListener('click', function(event) {
-    event.preventDefault();  // Ngăn chặn hành động mặc định khi nhấn vào link
-    
+// Sắp xếp sản phẩm
+document.getElementById('sortOptions').addEventListener('click', function(event) {
+    event.preventDefault();
     if (event.target.tagName === 'A') {
         const sortOption = event.target.getAttribute('data-sort');
 
-        // Gửi yêu cầu sắp xếp sản phẩm tới API
         fetch(`/api/products?sort=${sortOption}&perPage=9&page=1`)
             .then(response => response.json())
             .then(data => {
-                // Xử lý dữ liệu trả về từ API
-                console.log(data);
-                const searchResults = document.getElementById('searchResults');
-                searchResults.innerHTML = ''; // Xóa kết quả cũ
-
-                // Hiển thị sản phẩm được trả về
-                data.data.forEach(product => {
-                    const productItem = `
-                        <div class="product-item">
-                            <h3>${product.name}</h3>
-                            <p>Price: ${product.price}</p>
-                            <p>Stock: ${product.stock_sum_quantity}</p>
-                            <p>Category: ${product.category.name}</p>
-                        </div>
-                    `;
-                    searchResults.innerHTML += productItem;
-                });
+                updateProductList(data.data);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -227,51 +107,76 @@
     }
 });
 
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get all category links
-        document.querySelectorAll('.category-link').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                let categorySlug = this.getAttribute('data-slug');
+// Lọc sản phẩm theo danh mục
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.category-link').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            let categorySlug = this.getAttribute('data-slug');
 
-                // Fetch products by category using AJAX
-                fetch(`/api/category/${encodeURIComponent(categorySlug)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            // Update product list
-                            updateProductList(data.products);
-                        } else {
-                            console.error(data.message);
-                            document.getElementById('product-list').innerHTML = '<li class="list-group-item">Category not found</li>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching products:', error);
-                        document.getElementById('product-list').innerHTML = '<li class="list-group-item">Error loading products</li>';
-                    });
-            });
+            fetch(`/api/category/${encodeURIComponent(categorySlug)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateProductList(data.products);
+                    } else {
+                        console.error(data.message);
+                        document.getElementById('product-list').innerHTML = '<li class="list-group-item">Category not found</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching products:', error);
+                    document.getElementById('product-list').innerHTML = '<li class="list-group-item">Error loading products</li>';
+                });
         });
     });
+});
 
-    // Function to update product list in the DOM
-    function updateProductList(products) {
-        let productList = document.getElementById('product-list');
-        productList.innerHTML = '';  // Clear the current list
+// Hàm cập nhật danh sách sản phẩm
+function updateProductList(products) {
+    let productList = document.getElementById('product-list');
+    productList.innerHTML = '';
 
-        // Check if there are products
-        if (products.length > 0) {
-            products.forEach(product => {
-                let productItem = document.createElement('li');
-                productItem.className = 'list-group-item';
-                productItem.textContent = product.name;  // Adjust this to match your product display
-                productList.appendChild(productItem);
-            });
-        } else {
-            productList.innerHTML = '<li class="list-group-item">No products found</li>';
-        }
+    if (products.length > 0) {
+        products.forEach(product => {
+            let productItem = document.createElement('div');
+            productItem.className = 'col-md-4';
+            productItem.innerHTML = `
+                <div class="product-card">
+                    <img src="/images/products/${product.image}" alt="Product Image">
+                    <div class="product-title"><a href="#">${product.name}</a></div>
+                    <div class="product-sale-price">
+                        <span>${product.price} VND</span>
+                    </div>
+                    <div class="product-rating">
+                        <ul class="star-list">
+                            ${generateStars(product.rating)}
+                            <li><span>${product.rating} Review(s)</span></li>
+                        </ul>
+                    </div>
+                    <div class="product-buttons">
+                        <a href="#" class="btn btn-add-cart">Thêm vào giỏ hàng</a>
+                    </div>
+                </div>
+            `;
+            productList.appendChild(productItem);
+        });
+    } else {
+        productList.innerHTML = '<li class="list-group-item">No products found</li>';
     }
+}
+
+// Hàm tạo sao đánh giá
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 0; i < Math.floor(rating); i++) {
+        stars += '<li><i class="fa-solid fa-star"></i></li>';
+    }
+    for (let i = 0; i < 5 - Math.floor(rating); i++) {
+        stars += '<li><i class="fa-regular fa-star"></i></li>';
+    }
+    return stars;
+}
 </script>
+
 @endsection
