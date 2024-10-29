@@ -64,30 +64,31 @@ class ProductController extends Controller
         ]);
     
         $search = $request->input('search');
-        $perPage = $request->input('perPage', 9);
-        $page = $request->input('page', 1);
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
         $sort = $request->input('sort');
         $categoryId = $request->input('category_id');
-        $productId = $request->input('product_id');  
-        $query = Product::with('category')->withSum('stockIns', 'Quantity');
+        $productId = $request->input('product_id');
+        $perPage = $request->input('perPage', 9); //9 sp trên 1 trang
+        $page = $request->input('page', 1);
+    
+        // Thiết lập truy vấn chỉ với sản phẩm và danh mục
+        $query = Product::with('category');
     
         if ($search) {
             Log::info('Search Query', ['search_term' => $search]);
             $query->where(function($q) use ($search) {
                 $q->whereRaw('LOWER(name) LIKE ?', ["%".strtolower($search)."%"]);
             });
-            // Use direct LIKE instead of LOWER()
-            // $query->where('name', 'LIKE', "%$search%")
-            //       ->orWhere('code', 'LIKE', "%$search%");
         }
-
-        // Khởi tạo truy vấn cho các sản phẩm liên quan dựa trên danh mục
-    $query = Product::where('category_id', $categoryId)
-    ->where('id', '<>', $productId) // Loại bỏ sản phẩm hiện tại
-    ->withSum('stockIns', 'Quantity');
-
+    
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+    
+        if ($productId) {
+            $query->where('id', '<>', $productId);
+        }
     
         if ($minPrice) {
             $query->where('price', '>=', $minPrice);
@@ -113,21 +114,29 @@ class ProductController extends Controller
                     break;
             }
         }
-    
-        $products = $query->paginate($perPage, ['*'], 'page', $page);
-        return response()->json($products, 200);
+     // Get paginated results
+     $products = $query->paginate($perPage, ['*'], 'page', $page);
+        // Lấy danh sách sản phẩm dưới dạng mảng
+        $products = $query->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $products
+        ], 200);
     }
     
-    public function getRelatedProducts(Request $request, $product_id)
+    
+    
+    
+    public function getRelatedProducts(Request $request, $category_id)
     {
-        $product = Product::find($product_id);  // kiểm tra lại find() hoặc findOrFail()
+        $product = Product::find($category_id);  // kiểm tra lại find() hoặc findOrFail()
     
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
     
         $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '<>', $product_id)
+            ->where('id', '<>', $category_id)
             ->take(4)
             ->get();
     
@@ -255,25 +264,25 @@ public function detail($id) {
   }
   
   
-      // public function detail($slug){
-      //   // $sp = Product::where('slug',$slug)->first();
-      //   // return view('product.detail',compact(['sp']));
-      //    // Fetch the product by slug
-      //    $product = Product::where('slug', $slug)->first();
+    //   public function detail($slug){
+    //     // $sp = Product::where('slug',$slug)->first();
+    //     // return view('product.detail',compact(['sp']));
+    //      // Fetch the product by slug
+    //      $product = Product::where('slug', $slug)->first();
 
-      //    // Check if the product exists
-      //    if ($product) {
-      //        // Return product details as a JSON response
-      //        return response()->json([
-      //            'status' => 'success',
-      //            'product' => $product
-      //        ], 200);
-      //    } else {
-      //        // Return an error response if the product is not found
-      //        return response()->json([
-      //            'status' => 'error',
-      //            'message' => 'Product not found'
-      //        ], 404);
-      //    }
+    //      // Check if the product exists
+    //      if ($product) {
+    //          // Return product details as a JSON response
+    //          return response()->json([
+    //              'status' => 'success',
+    //              'product' => $product
+    //          ], 200);
+    //      } else {
+    //          // Return an error response if the product is not found
+    //          return response()->json([
+    //              'status' => 'error',
+    //              'message' => 'Product not found'
+    //          ], 404);
+    //      }
      
-      // }
+    //   }
