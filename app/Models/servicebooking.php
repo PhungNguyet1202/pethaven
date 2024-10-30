@@ -9,17 +9,27 @@ class ServiceBooking extends Model
 {
     use HasFactory;
 
-    protected $table = 'servicebooking'; // Chỉ định tên bảng nếu không theo quy tắc số nhiều
+    // protected $table = 'servicebooking'; // Chỉ định tên bảng nếu không theo quy tắc số nhiều
+    // protected $fillable = [
+    //         'user_id',
+    //         'pet_id',
+    //         'service_id',
+    //         'booking_date',
+    //         'phone',
+    //         'email',
+    //     ];
+    
+    protected $table = 'servicebookings'; // Tên bảng phải trùng khớp
     protected $fillable = [
-            'user_id',
-            'pet_id',
-            'service_id',
-            'booking_date',
-            'phone',
-            'email',
-        ];
-    
-    
+        'user_id',
+        'pet_id',
+        'service_id',
+        'booking_date',
+        'status',
+        'total_price',
+        'phone', // nếu bạn có trường này
+        'email'  // nếu bạn có trường này
+    ];
     /**
      * Lấy Customer mà ServiceBooking thuộc về.
      */

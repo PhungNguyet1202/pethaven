@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> @yield('title') | PET HAVENT</title>
@@ -21,7 +20,9 @@
     <link rel="stylesheet" href="{{ asset('assets/public/css/dangnhap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/sanpham.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/public/css/chitiet.css') }}">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <script src="{{ asset('js/angular.min.js') }}"></script>
 
 
@@ -44,13 +45,13 @@
                         <a class="nav-link" href="#">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('service')}}">Dịch vụ</a>
+                        <a class="nav-link" href="">Dịch vụ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('product')}}">Sản phẩm</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('news')}}">Tin tức</a>
+                        <a class="nav-link" href="#">Tin tức</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Liên hệ</a>
@@ -70,7 +71,7 @@
                         </form>
                     </li> --}}
                     <li class="nav-item">
-                      <form class="search-container" id="searchForm" method="GET" action="#">
+                      <form class="search-container" id="searchForm" method="GET" action="{{ route('product.search') }}">
                         @csrf
                           <a href="#" id="search-icon"><i class="fa-solid fa-magnifying-glass" style="color: #111212;"></i></a>
                           <div class="search-overlay" style="display: none;">
@@ -89,7 +90,7 @@
                   <div id="searchResults"></div> 
                   
                     <li class="nav-item user-relavity">
-                        <a href="{{ route('cart.show') }}" class="nav-link">
+                        <a href="#" class="nav-link">
                             <i class="fas fa-shopping-cart fa-xl"></i>
                             <span class="shopping-cart-items-count">0</span>
                         </a>
@@ -113,7 +114,7 @@
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li>
-                            <a class="dropdown-item" href="{{route('showProfile')}}">
+                            <a class="dropdown-item" href="{{route('profile')}}">
                              Hồ sơ
                          </a>
                               <a class="dropdown-item" href="{{ route('logout') }}"
