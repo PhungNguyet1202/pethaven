@@ -28,7 +28,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Các middleware khác...
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
-        '       ' => \App\Http\Middleware\AuthTokenMiddleware::class,
+        ' ' => \App\Http\Middleware\AuthTokenMiddleware::class,
     ];
 
     /**
@@ -80,4 +80,5 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+    
 }

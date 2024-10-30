@@ -9,7 +9,14 @@ class Stockin extends Model // Sửa tên class thành Stockin
 {
     use HasFactory;
 
-    protected $table = 'stockin'; // Chỉ định tên bảng (nếu cần thiết)
+    protected $table = 'stockin'; // Chỉ định tên bảsng (nếu cần thiết)
+
+    // Thêm thuộc tính fillable
+    protected $fillable = [
+        'product_id', // Thêm vào đây
+        'Quantity', // Nếu có
+        'stockin_date', // Nếu có
+    ];
 
     /**
      * Lấy User mà Stockin thuộc về.
@@ -19,15 +26,8 @@ class Stockin extends Model // Sửa tên class thành Stockin
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // public function cartItems()
-    // {
-    //     return $this->hasMany(CartItem::class, 'shoppingcart_id');
-    // }
     public function products()
     {
-
         return $this->belongsTo(Product::class, 'product_id');
-
- 
     }
 }

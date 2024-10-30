@@ -42,7 +42,7 @@ class Product extends Model
      * Lấy các StockIn thuộc về Product này.
      */
     public function stockIns() {
-        return $this->hasMany(Stockin::class, 'stockin_id'); // Sửa tên class thành Stockin
+        return $this->hasMany(Stockin::class, 'product_id'); // Sửa tên class thành Stockin
     }
     // Quan hệ giữa Product và StockIn
     // public function stockIns()

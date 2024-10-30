@@ -15,10 +15,11 @@ use App\Models\CategoryNew;
 use App\Models\News;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Models\inventory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use Carbon\Carbon;
 class AdminApiController extends Controller
 {
     public function dashboard()
@@ -934,7 +935,8 @@ public function product(Request $request)
             ]);
     
             // Đường dẫn lưu ảnh
-            $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+            $destinationPath = public_path('images/products');
+
             $imageName = 'default-image.jpg'; // Giá trị mặc định
     
             // Xử lý upload ảnh
@@ -971,7 +973,7 @@ public function product(Request $request)
         Log::info('Request data: ', $request->all());
     
         // Validate dữ liệu đầu vào
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'sometimes|required|string',
             'description' => 'nullable|string',
             'category_id' => 'sometimes|required|integer',
@@ -981,7 +983,6 @@ public function product(Request $request)
         ]);
     
         // Tìm sản phẩm theo ID
-   
         $product = Product::find($id);
         if (!$product) {
             Log::warning("Product not found for ID: $id");
@@ -1001,7 +1002,7 @@ public function product(Request $request)
         $product->sale_price = $request->sale_price ?? $product->sale_price;
     
         // Đường dẫn để lưu hình ảnh
-        $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+        $destinationPath = public_path('images/products');
     
         try {
             // Kiểm tra quyền truy cập thư mục
@@ -1010,8 +1011,8 @@ public function product(Request $request)
                 return response()->json(['message' => 'Destination path is not writable'], 500);
             }
     
+            // Chỉ cập nhật ảnh nếu có tệp 'image' trong yêu cầu
             if ($request->hasFile('image')) {
-                // Kiểm tra xem có file được gửi lên không
                 if (!$request->file('image')->isValid()) {
                     Log::error('Image upload failed for product ID: ' . $id);
                     return response()->json(['message' => 'Image upload failed'], 400);
@@ -1026,21 +1027,21 @@ public function product(Request $request)
                 $product->image = $imageName;
                 Log::info('Image updated successfully for product ID: ' . $id);
             } else {
-                Log::info('No image uploaded for product ID: ' . $id);
+                Log::info('No image uploaded for product ID: ' . $id . ', retaining current image.');
             }
     
             // Lưu sản phẩm
-            $product->save();
+            $p=$product->save();
             Log::info('Product updated successfully for product ID: ' . $id);
-    
-            return response()->json(['message' => 'Product updated successfully'], 200);
+         
+            return response()->json(['product'=>$p,'message' => 'Product updated successfully'], 200);
     
         } catch (\Exception $e) {
-            // Ghi log lỗi và trả về thông báo lỗi chi tiết
             Log::error('Failed to update product ID: ' . $id . ' Error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
         }
     }
+    
     
     
 
@@ -1104,14 +1105,14 @@ public function product(Request $request)
   // Lấy chi tiết đơn hàng dựa trên order_id
   public function orderDetail($order_id)
   {
-      // Tìm đơn hàng theo id
-      $order = Order::with('orderDetails.product', 'payment', 'shipping')->find($order_id);
-
+      // Tìm đơn hàng theo id và lấy kèm thông tin chi tiết đơn hàng, thanh toán, và vận chuyển
+      $order = Order::with(['orderDetails.product', 'payments', 'shippings'])->find($order_id);
+  
       // Nếu không tìm thấy đơn hàng
       if (!$order) {
           return response()->json(['message' => 'Order not found'], 404);
       }
-
+  
       // Định dạng lại chi tiết đơn hàng
       $formattedOrder = [
           'id' => $order->id,
@@ -1121,8 +1122,8 @@ public function product(Request $request)
           'total_money' => $order->total_money,
           'total_quantity' => $order->total_quantity,
           'status' => $order->status,
-          'payment_method' => $order->payment ? $order->payment->payment_method : null,
-          'shipping_method' => $order->shipping ? $order->shipping->shipping_method : null,
+          'payment_method' => $order->payments ? $order->payments->payment_method : null,
+          'shipping_method' => $order->shippings ? $order->shippings->shipping_method : null,
           'order_details' => $order->orderDetails->map(function ($detail) {
               return [
                   'product_id' => $detail->product_id,
@@ -1134,9 +1135,36 @@ public function product(Request $request)
           }),
           'created_at' => $order->created_at,
       ];
-
+  
       return response()->json($formattedOrder, 200);
   }
+  public function updateOrderStatus(Request $request, $id)
+{
+    // Xác thực dữ liệu cho trạng thái đơn hàng
+    $validatedData = $request->validate([
+        'status' => 'required|string|in:pending,prepare,shipping,success,cancle' // Trạng thái phải là một trong các giá trị hợp lệ
+    ]);
+
+    // Tìm đơn hàng theo ID
+    $order = Order::find($id);
+    if (!$order) {
+        return response()->json(['message' => 'Order not found'], 404); // Trả về 404 nếu không tìm thấy đơn hàng
+    }
+
+    // Cập nhật giá trị của status
+    $order->status = $validatedData['status'];
+
+    // Lưu thay đổi
+    $order->save();
+
+    // Trả về phản hồi thành công kèm theo dữ liệu đơn hàng
+    return response()->json([
+        'message' => 'Order status updated successfully',
+        'order' => $order
+    ], 200); // Trả về mã HTTP 200 cho yêu cầu thành công
+}
+
+  
   public function serviceBooking(Request $request)
   {
       // Lấy thông tin tìm kiếm và phân trang từ request
@@ -1293,7 +1321,181 @@ public function product(Request $request)
             'total' => $stockEntries->total(),
         ], 200);
     }
+    public function getProducts()
+{
+    try {
+        // Lấy tất cả sản phẩm từ database
+        $products = Product::all();
+
+        return response()->json([
+            'status' => 'success',
+            'products' => $products,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to retrieve products.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+ 
+public function gettStockinById($id)
+{
+    $stockin = Stockin::with('products')->find($id);
     
+    if (!$stockin) {
+        return response()->json(['message' => 'Sản phẩm không tồn tại'], 404);
+    }
+
+  
+
+    $stockinData = [
+        'id' => $stockin->id,
+        'quantity' => $stockin->Quantity,
+   
+        'stockin_date' =>$stockin->stockin_date, // URL đầy đủ cho hình ảnh
+        'productName' => $stockin->products ? $stockin->products->name : null,
+        'productId' => $stockin->products ? $stockin->products->id : null,
+ 
+    ];
+
+    return response()->json($stockinData, 200);
+}
+public function postStockEntry(Request $request)
+{
+    try {
+        // Xác thực dữ liệu
+        $validatedData = $request->validate([
+            'productId' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:0',
+            'stockin_date' => 'required|date',
+        ]);
+
+        // Lưu thông tin nhập kho vào bảng stockin
+        $stockinEntry = new StockIn([
+            'product_id' => $validatedData['productId'], // Sử dụng productId từ validatedData
+            'Quantity' => $validatedData['quantity'], // Kiểm tra tên trường trong bảng
+            'created_at' => now(),
+            'stockin_date' => $validatedData['stockin_date'],
+        ]);
+        $stockinEntry->save();
+
+        // Lưu thông tin nhập kho vào bảng inventory
+        $inventoryEntry = new Inventory([
+            'product_id' => $validatedData['productId'], // Sử dụng productId từ validatedData
+            'quantity_instock' => $validatedData['quantity'], // Kiểm tra tên trường trong bảng
+            'created_at' => now(),
+            'stockin_id' => $stockinEntry->id, // Lưu id nhập kho vào cột stockin_id
+        ]);
+        $inventoryEntry->save();
+
+        // Cập nhật số lượng tồn kho trong bảng sản phẩm
+        $product = Product::find($validatedData['productId']); // Sử dụng productId
+        if ($product) {
+            $product->instock += $validatedData['quantity']; // Cập nhật số lượng tồn kho
+            $product->save();
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Stock entry added successfully.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Failed to add stock entry.', 'error' => $e->getMessage()], 500);
+    }
+}
+
+public function updateStockEntry(Request $request, $id)
+{
+    try {
+        // Xác thực dữ liệu
+        $validatedData = $request->validate([
+            'productId' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:0',
+            'stockin_date' => 'required|date',
+        ]);
+
+        // Tìm mục nhập kho theo stock_in_id
+        $stockinEntry = StockIn::find($id);
+        if (!$stockinEntry) {
+            return response()->json(['status' => 'error', 'message' => 'Stock entry not found'], 404);
+        }
+
+        // Lưu lại số lượng cũ để điều chỉnh tồn kho
+        $oldQuantity = $stockinEntry->Quantity;
+
+        // Cập nhật thông tin nhập kho trong bảng stockin
+        $stockinEntry->product_id = $validatedData['productId'];
+        $stockinEntry->Quantity = $validatedData['quantity'];
+        $stockinEntry->stockin_date = $validatedData['stockin_date'];
+        $stockinEntry->updated_at = now();
+        $stockinEntry->save();
+
+        // Cập nhật hoặc tạo mới mục nhập trong bảng inventory
+        $inventoryEntry = Inventory::where('stockin_id', $stockinEntry->id)->first();
+        if ($inventoryEntry) {
+            // Cập nhật tồn kho nếu đã tồn tại
+            $inventoryEntry->quantity_instock = $validatedData['quantity'];
+            $inventoryEntry->updated_at = now();
+            $inventoryEntry->save();
+        } else {
+            // Nếu không có mục nhập trong bảng inventory, tạo mới
+            $inventoryEntry = new Inventory([
+                'product_id' => $validatedData['productId'],
+                'quantity_instock' => $validatedData['quantity'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'stockin_id' => $stockinEntry->id,
+            ]);
+            $inventoryEntry->save();
+        }
+
+        // Cập nhật số lượng tồn kho trong bảng sản phẩm
+        $product = Product::find($validatedData['productId']);
+        if ($product) {
+            // Cập nhật tồn kho
+            $product->instock = $product->instock - $oldQuantity + $validatedData['quantity'];
+            $product->save();
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Stock entry updated successfully'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Failed to update stock entry', 'error' => $e->getMessage()], 500);
+    }
+}
+
+public function deleteStockEntry($id)
+{
+    try {
+        // Tìm mục nhập trong bảng stockin theo ID
+        $stockinEntry = StockIn::find($id);
+        if (!$stockinEntry) {
+            return response()->json(['status' => 'error', 'message' => 'Stock entry not found'], 404);
+        }
+
+        // Lấy thông tin sản phẩm và số lượng đã nhập
+        $productId = $stockinEntry->product_id;
+        $quantity = $stockinEntry->Quantity;
+
+        // Xóa mục nhập tương ứng trong bảng inventory
+        Inventory::where('stockin_id', $stockinEntry->id)->delete();
+
+        // Xóa mục nhập trong bảng stockin
+        $stockinEntry->delete();
+
+        // Cập nhật số lượng tồn kho trong bảng sản phẩm
+        $product = Product::find($productId);
+        if ($product) {
+            $product->instock -= $quantity; // Trừ đi số lượng đã nhập
+            $product->save();
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Stock entry deleted successfully'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Failed to delete stock entry', 'error' => $e->getMessage()], 500);
+    }
+}
+
+
+
     /**
      * Tính tổng doanh thu của cả năm và chia doanh thu cho từng tháng.
      *
@@ -1347,7 +1549,25 @@ public function product(Request $request)
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+    //update trạng thái người dùng 
+    public function updateUserStatusBasedOnCancelledOrders()
+    {
+        // Lấy ngày hôm nay
+        $today = Carbon::now()->toDateString();
+
+        // Lấy tất cả các user_id có 5 đơn hàng hủy trưong ngày hôm nay
+        $userIds = Order::select('user_id')
+            ->where('status', 'cancle')
+            ->whereDate('created_at', $today)
+            ->groupBy('user_id')
+            ->havingRaw('COUNT(*) >= 5')
+            ->pluck('user_id');
+
+        // Cập nhật trạng thái người dùng
+        User::whereIn('id', $userIds)->update(['is_action' => 1]); // Giả sử 'isactive' là trường lưu trạng thái
+
+        return response()->json(['message' => 'User statuses updated based on cancelled orders']);
+    }
     }
     
     

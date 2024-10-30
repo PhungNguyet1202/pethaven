@@ -20,8 +20,9 @@ class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo 
 
     public function orderDetails()
     {
-        return $this->hasMany(OrderDetail::class, 'orderdetail_id');
+        return $this->hasMany(OrderDetail::class, 'order_id');
     }
+    
 
     /**
      * Lấy các Shipping thuộc về Order này.

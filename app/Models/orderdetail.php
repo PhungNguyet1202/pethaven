@@ -5,13 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class orderdetail extends Model
+class OrderDetail extends Model
 {
     use HasFactory;
+
+    protected $table = 'orderdetail'; // Chỉ định tên bảng chính xác là `orderdetail`
+
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');

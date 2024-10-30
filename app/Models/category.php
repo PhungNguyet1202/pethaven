@@ -17,11 +17,12 @@ class category extends Model
     ];
     
 
+
     /**
      * Lấy các Product thuộc về Category này.
      */
     public function products()
     {
-        return $this->hasMany(Product::class, 'product_id');
+        return $this->hasMany(Product::class, 'category_id');
     }
 }
