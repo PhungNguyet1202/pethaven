@@ -11,17 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Schema::create('servicebookings', function (Blueprint $table) {
+        //     $table->id();  // id tự động tăng
+        //     $table->date('booking_date');  // Ngày đặt
+        //     $table->string('status');  // Trạng thái của booking
+        //     $table->decimal('total_pirce', 8, 2);  // Tổng số tiền (ví dụ định dạng tiền tệ)
+
+        //     // Các khóa ngoại
+        //     $table->unsignedBigInteger('user_id');
+        //     $table->unsignedBigInteger('pet_id');
+        //     $table->unsignedBigInteger('service_id');
         Schema::create('servicebookings', function (Blueprint $table) {
             $table->id();  // id tự động tăng
             $table->date('booking_date');  // Ngày đặt
             $table->string('status');  // Trạng thái của booking
-            $table->decimal('total_pirce', 8, 2);  // Tổng số tiền (ví dụ định dạng tiền tệ)
-
-            // Các khóa ngoại
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('pet_id');
-            $table->unsignedBigInteger('service_id');
-
+            $table->decimal('total_price', 8, 2);  // Tổng số tiền
+            $table->unsignedBigInteger('user_id')->nullable(); // Khóa ngoại cho user
+            $table->unsignedBigInteger('pet_id'); // Khóa ngoại cho pet
+            $table->unsignedBigInteger('service_id'); // Khóa ngoại cho service
+            $table->string('phone')->nullable(); // Số điện thoại
+            $table->string('email')->nullable(); // Địa chỉ email
+            $table->timestamps();
+        });
+        
             // Thiết lập khóa ngoại
             // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  
             // $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade'); 
@@ -29,7 +41,7 @@ return new class extends Migration
             // $table->foreign('customer_id')->references('customers')->onDelete('cascade');
             // $table->foreign('pet_id')->references('pets')->onDelete('cascade');
             // $table->foreign('service
-        });
+        //});
     }
 
     /**

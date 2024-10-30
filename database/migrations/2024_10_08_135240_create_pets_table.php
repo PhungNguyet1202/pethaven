@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('pets', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
-            $table->integer('age');  // Thuộc tính tuổi của pet
-            $table->string('health_status');
+            //$table->string('type');
+            //$table->integer('age');  // Thuộc tính tuổi của pet
+            //$table->string('health_status');
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
