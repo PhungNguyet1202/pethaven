@@ -6,6 +6,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentAdminController;
+use App\Http\Controllers\ProductAdminController;
 use App\Http\Controllers\ServiceAdminController;
 use App\Http\Controllers\NewAdminController;
 use App\Http\Controllers\OrderAdminController;
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Auth;
 
 // Route::get('/', function () {
 //     return view('welcome');
-// });
+// });  
 Route::post('/test-csrf', function () {
     return response()->json(['message' => 'CSRF token is valid!']);
 });
@@ -52,8 +53,10 @@ Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
 // Nhongj
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/update-user-status', [AdminApiController::class, 'updateUserStatusBasedOnCancelledOrders']);
     Route::get('/product-category', [AdminApiController::class, 'productCategory'])->name('product-category'); // Form thêm sản phẩm mới    
-   
+    Route::get('/new-category', [AdminApiController::class, 'newCategory'])->name('new-category'); // Form thêm sản phẩm mới    
+    Route::get('/get-product', [AdminApiController::class, 'getProducts'])->name('get-product'); // Form thêm sản phẩm mới    
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/', [AdminApiController::class, 'dashboard'])->name('index'); // Danh sách sản phẩm
       
@@ -129,14 +132,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminApiController::class, 'service'])->name('index'); // Danh sách service
         Route::get('/{id}', [AdminApiController::class, 'getServiceById'])->name('show');
         Route::get('/create', [AdminApiController::class, 'serviceCreate'])->name('create'); // Form thêm service mới
-        Route::post('/add', [AdminApiController::class, 'serviceAdd'])->name('add'); // Thêm service mới
-        Route::put('/update/{id}', [AdminApiController::class, 'serviceUpdate'])->name('update'); // Cập nhật service
-        Route::delete('/delete/{id}', [AdminApiController::class, 'serviceDelete'])->name('delete'); // Xóa service
+        Route::post('/add', [AdminApiController::class, 'postServiceAdd'])->name('add'); // Thêm service mới
+        Route::put('/update/{id}', [AdminApiController::class, 'updateService'])->name('update'); // Cập nhật service
+        Route::delete('/delete/{id}', [AdminApiController::class, 'deleteService'])->name('delete'); // Xóa service
     });
     Route::prefix('order')->name('order.')->group(function () {
         Route::get('/', [AdminApiController::class, 'orders'])->name('index'); // Danh sách comment
-    
-        Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
+        Route::get('/{id}', [AdminApiController::class, 'orderDetail'])->name('show');
+        Route::put('/update/{id}', [AdminApiController ::class, 'updateOrderStatus'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('servicebooking')->name('servicebooking.')->group(function () {
         Route::get('/', [AdminApiController::class, 'serviceBooking'])->name('index'); // Danh sách comment
@@ -144,9 +147,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('stockin')->name('stockin.')->group(function () {
-        Route::get('/', [AdminApiController::class, 'stockin'])->name('index'); // Danh sách comment
+        Route::get('/', [AdminApiController::class, 'stockin'])->name('index');
+        Route::get('/{id}', [AdminApiController::class, 'gettStockinById'])->name('show');
+        Route::post('/add', [AdminApiController::class, 'postStockEntry'])->name('add'); // Thêm service mới
+        Route::put('/update/{id}', [AdminApiController::class, 'updateStockEntry'])->name('update'); // Cập nhật service
+        Route::delete('/delete/{id}', [AdminApiController::class, 'deleteStockEntry'])->name('delete'); // Xóa service // Danh sách comment
     
-        Route::put('/update/{id}', [AdminApiController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
+        
     });
     Route::prefix('revenue')->name('revenue.')->group(function () {
         Route::get('/{year}', [AdminApiController::class, 'getAnnualRevenue'])->name('index'); // Danh sách comment
