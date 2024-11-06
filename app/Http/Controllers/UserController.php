@@ -72,7 +72,6 @@ class UserController extends Controller
             $user->password = Hash::make($req->input('password'));
             $user->phone = $req->input('phone');
             $user->address = $req->input('address');
-            $user->dob = $req->input('dob');
             $user->save();
 
     
@@ -123,6 +122,7 @@ class UserController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'img' => $user->img,
                     'role' => $user->role // Trả về vai trò của người dùng
                 ],
                 'access_token' => $token,

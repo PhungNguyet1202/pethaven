@@ -30,7 +30,15 @@ class AdminApiController extends Controller
         $soKhachHang = User::where('role', 'user')->count();
         $doanhThu = Order::where('status', 'pending')->sum('total_money');
 
-        $dsDH = Order::orderBy('created_at', 'DESC')->limit(5)->get();
+        $dsDH = Order::selectRaw('user_fullname, COUNT(*) as order_count')
+        ->where('status', 'cancle')
+        ->groupBy('user_fullname')
+        ->orderBy('order_count', 'DESC')
+        ->limit(10)
+        ->get();
+
+ $countCancelOrders = Order::where('status', 'cancel')->count();
+
         $dsBL = Comment::orderBy('created_at', 'DESC')->limit(5)->get();
         
         return response()->json([
@@ -1217,7 +1225,32 @@ public function product(Request $request)
           'total' => $serviceBookings->total(),
       ], 200);
   }
+  public function getServiceBookingById($id)
+  {
+      // Lấy service booking với service name
+      $serviceBooking = ServiceBooking::with('service')->find($id);
 
+      // Kiểm tra nếu không tìm thấy bản ghi
+      if (!$serviceBooking) {
+          return response()->json(['message' => 'Service booking not found'], 404);
+      }
+
+      // Định dạng dữ liệu để trả về
+      $serviceBookingData = [
+          'id' => $serviceBooking->id,
+          'booking_date' => $serviceBooking->booking_date,
+          'status' => $serviceBooking->status,
+          'total_price' => $serviceBooking->total_price,
+          'user_id' => $serviceBooking->user_id,
+          'user_name' => $serviceBooking->user? $serviceBooking->user->name : null,
+          'pet_id' => $serviceBooking->pet_id,
+          'service_id' => $serviceBooking->service_id,
+          'service_name' => $serviceBooking->service ? $serviceBooking->service->name : null, // Lấy tên dịch vụ
+      ];
+
+      // Trả về JSON chứa thông tin service booking
+      return response()->json($serviceBookingData, 200);
+  }
     // // Lấy một service booking theo ID
     // public function show($id)
     // {
@@ -1552,20 +1585,16 @@ public function deleteStockEntry($id)
     //update trạng thái người dùng 
     public function updateUserStatusBasedOnCancelledOrders()
     {
-        // Lấy ngày hôm nay
-        $today = Carbon::now()->toDateString();
-
-        // Lấy tất cả các user_id có 5 đơn hàng hủy trưong ngày hôm nay
+        // Lấy tất cả các user_id có từ 5 đơn hàng bị hủy trở lên, không giới hạn ngày
         $userIds = Order::select('user_id')
             ->where('status', 'cancle')
-            ->whereDate('created_at', $today)
             ->groupBy('user_id')
             ->havingRaw('COUNT(*) >= 5')
             ->pluck('user_id');
-
+    
         // Cập nhật trạng thái người dùng
-        User::whereIn('id', $userIds)->update(['is_action' => 1]); // Giả sử 'isactive' là trường lưu trạng thái
-
+        User::whereIn('id', $userIds)->update(['is_action' => 1]);
+    
         return response()->json(['message' => 'User statuses updated based on cancelled orders']);
     }
     }

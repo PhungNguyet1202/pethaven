@@ -14,7 +14,6 @@ class Service extends Model
         'description',
         'price',
         'img',
-
         'imgdetail',
         'categories_id',
 
@@ -32,4 +31,3 @@ class Service extends Model
         return $this->belongsTo(Category::class, 'categories_id');
     }
 }
-

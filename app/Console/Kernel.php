@@ -11,12 +11,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            // Tạo một instance của UserStatusController và gọi phương thức cần thiết
-            $controller = new AdminApiController();
-            $controller->updateUserStatusBasedOnCancelledOrders();
-        })->daily(); // Chạy mỗi ngày
+        $schedule->command('user:update-status')->daily();
     }
+    
     /**
      * Register the commands for the application.
      */
