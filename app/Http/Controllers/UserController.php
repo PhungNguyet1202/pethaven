@@ -51,11 +51,8 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'required|string|size:10|regex:/^0\d{9}$/',  
                 'address' => 'nullable|string|max:255',
-             
-                
             ]);
     
-
             // Tạo người dùng mới
             User::create([
                 'name' => $req->input('name'),
@@ -64,24 +61,12 @@ class UserController extends Controller
                 'phone' => $req->input('phone'),
                 'address' => $req->input('address'),
             ]);
-
-            // Create new user
-            $user = new User();
-            $user->name = $req->input('name');
-            $user->email = $req->input('email');
-            $user->password = Hash::make($req->input('password'));
-            $user->phone = $req->input('phone');
-            $user->address = $req->input('address');
-            $user->save();
-
     
             // Trả về phản hồi thành công
             return response()->json(['success' => true, 'message' => 'Đăng ký thành công. Vui lòng đăng nhập.']);
         } catch (ValidationException $e) {
-            // Trả về thông báo lỗi xác thực
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Trả về thông báo lỗi chung
             return response()->json(['success' => false, 'message' => 'Đăng ký không thành công', 'error' => $e->getMessage()], 500);
         }
     }

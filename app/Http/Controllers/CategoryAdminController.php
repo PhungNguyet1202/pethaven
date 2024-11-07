@@ -80,6 +80,7 @@ public function postCategoryAdd(Request $request)
 
 
 
+
     // Trả về phản hồi
     return response()->json(['message' => 'Thêm danh mục thành công'], 201);
 }
@@ -119,13 +120,18 @@ public function deleteCategory($id)
         return response()->json(['message' => 'Category not found'], 404);
     }
 
-    // Xóa hình ảnh nếu có
-    if ($category->image && file_exists(public_path('images/categories/' . $category->image))) {
-        unlink(public_path('images/categories/' . $category->image));
+    // Kiểm tra xem có sản phẩm nào liên kết với danh mục này không
+    $productExists = Product::where('categories_id', $id)->exists();
+
+    if ($productExists) {
+        return response()->json(['message' => 'Danh mục đã được sử dụng không thể xóa'], 400);
     }
+
+    // Xóa hình ảnh nếu có (nếu cần)
 
     $category->delete();
 
     return response()->json(['message' => 'Category deleted successfully'], 200);
 }
+
 }

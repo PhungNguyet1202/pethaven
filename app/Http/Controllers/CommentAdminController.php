@@ -52,6 +52,7 @@ class CommentAdminController extends Controller
         $formattedComments = $comments->getCollection()->map(function ($comment) {
             return [
                 'id' => $comment->id,
+                 'rating'=>$comment->rating,
                 'content' => $comment->content,
                 'user_id' => $comment->user_id,
                 'user_name' => $comment->user ? $comment->user->name : null, // Lấy tên người dùng

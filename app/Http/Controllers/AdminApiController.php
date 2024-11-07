@@ -29,18 +29,35 @@ class AdminApiController extends Controller
         $soSanPham = Product::count();
         $soKhachHang = User::where('role', 'user')->count();
         $doanhThu = Order::where('status', 'pending')->sum('total_money');
-
+    
+        // Lấy danh sách đơn hàng bị hủy
         $dsDH = Order::selectRaw('user_fullname, COUNT(*) as order_count')
-        ->where('status', 'cancle')
-        ->groupBy('user_fullname')
-        ->orderBy('order_count', 'DESC')
-        ->limit(10)
-        ->get();
-
- $countCancelOrders = Order::where('status', 'cancel')->count();
-
-        $dsBL = Comment::orderBy('created_at', 'DESC')->limit(5)->get();
-        
+            ->where('status', 'cancle')
+            ->groupBy('user_fullname')
+            ->orderBy('order_count', 'DESC')
+            ->limit(10)
+            ->get();
+    
+        // Lấy số lượng đơn hàng hủy
+        $countCancelOrders = Order::where('status', 'cancel')->count();
+    
+        // Lấy 5 bình luận mới nhất với thông tin người dùng và sản phẩm
+        $dsBL = Comment::with(['user', 'product']) // Kết hợp với bảng user và product
+            ->orderBy('created_at', 'DESC') // Sắp xếp theo ngày tạo giảm dần
+            ->limit(5) // Lấy 5 bình luận mới nhất
+            ->get()
+            ->map(function ($comment) { // Dùng map để định dạng lại dữ liệu
+                return [
+                    'id' => $comment->id,
+                    'rating' => $comment->rating,
+                    'content' => $comment->content,
+                    'user_id' => $comment->user_id,
+                    'user_name' => $comment->user ? $comment->user->name : null, // Lấy tên người dùng
+                    'product_id' => $comment->product_id,
+                    'product_name' => $comment->product ? $comment->product->name : null, // Lấy tên sản phẩm
+                ];
+            });
+    
         return response()->json([
             'soDonHang' => $soDonHang,
             'soSanPham' => $soSanPham,
@@ -51,7 +68,6 @@ class AdminApiController extends Controller
             'dsBL' => $dsBL
         ], 200);
     }
-    
     
     
     public function category(Request $request)

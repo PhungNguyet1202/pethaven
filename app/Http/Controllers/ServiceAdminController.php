@@ -80,7 +80,7 @@ class ServiceAdminController extends Controller
             $service->save();
         
             // Đường dẫn lưu ảnh
-            $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+            $destinationPath = public_path('images/services');
         
             if ($request->hasFile('image')) {
                 $img = $request->file('image');
@@ -125,7 +125,7 @@ class ServiceAdminController extends Controller
             $service->price = $request->price ?? $service->price;
         
             // Đường dẫn lưu ảnh
-            $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+            $destinationPath = public_path('images/services');
         
             try {
                 // Kiểm tra xem có file hình ảnh được gửi lên không

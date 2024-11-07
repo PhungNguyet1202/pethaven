@@ -107,7 +107,7 @@ public function product(Request $request)
                 'name' => 'required',
                 'description' => 'required',
                 'price' => 'required|numeric',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+              
             ]);
     
             // Đường dẫn lưu ảnh
@@ -129,7 +129,7 @@ public function product(Request $request)
                 'description' => $request->input('description'),
                 'categories_id' => $request->input('category_id'),
                 'price' => $request->input('price'),
-                 'instock'=>'0',
+                 'instock'=>0,
                 'sale_price' => $request->input('sale_price'),
                 'image' => $imageName,
             ]);
@@ -144,21 +144,17 @@ public function product(Request $request)
     {
         // Log bắt đầu của hàm
         Log::info("Starting updateProduct for product ID: $id");
-        
+    
         // Ghi log tất cả dữ liệu yêu cầu
         Log::info('Request data: ', $request->all());
+    
+        // Xác thực dữ liệu
         $validatedData = $request->validate([
             'name' => 'required',
-            'description' => 'required',
+         
             'price' => 'required|numeric',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+          
         ]);
-
-        // Kiểm tra xem dữ liệu gửi lên có trống không
-        if (!$request->all()) {
-            Log::warning('Không có dữ liệu gửi lên cho API.');
-            return response()->json(['message' => 'Không có dữ liệu để cập nhật'], 400);
-        }
     
         // Tìm sản phẩm theo ID
         $product = Product::find($id);
@@ -168,36 +164,46 @@ public function product(Request $request)
         }
     
         // Cập nhật dữ liệu nếu có
-        $product->name = $request->name ?? $product->name;
-        $product->slug = $request->name ? Str::slug($request->name) : $product->slug;
-        $product->description = $request->description ?? $product->description;
+        $product->name = $request->name;
+        $product->slug = Str::slug($request->name);
+        $product->description = $request->description;
         $product->categories_id = $request->input('category_id', $product->categories_id);
-        $product->price = $request->price ?? $product->price;
+        $product->price = $request->price;
         $product->sale_price = $request->sale_price ?? $product->sale_price;
     
         // Log dữ liệu cập nhật
         Log::info('Updated product data before saving: ', $product->toArray());
     
-        // Thực hiện lưu sản phẩm và xử lý ảnh
         try {
+            // Xử lý ảnh nếu có ảnh mới
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = "{$product->id}." . $image->getClientOriginalExtension();
                 $destinationPath = public_path('images/products');
+    
+                // Xóa ảnh cũ nếu có
+                if ($product->image && file_exists("$destinationPath/{$product->image}")) {
+                    unlink("$destinationPath/{$product->image}");
+                }
+    
+                // Lưu ảnh mới
                 $image->move($destinationPath, $imageName);
                 $product->image = $imageName;
+    
+                Log::info("Updated product image: $imageName");
             }
     
+            // Lưu thay đổi vào database
             $product->save();
             Log::info("Product updated successfully for ID: $id");
     
             return response()->json(['message' => 'Product updated successfully'], 200);
+    
         } catch (\Exception $e) {
             Log::error('Failed to update product. Error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
         }
     }
-    
     
     
     

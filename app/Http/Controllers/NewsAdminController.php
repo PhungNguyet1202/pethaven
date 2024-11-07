@@ -119,11 +119,19 @@ class NewsAdminController extends Controller
             return response()->json(['message' => 'Danh mục không tồn tại'], 404);
         }
     
+        // Kiểm tra xem có bản ghi nào trong bảng news có sử dụng danh mục này không
+        $newsExists = News::where('categorynew_id', $id)->exists();
+    
+        if ($newsExists) {
+            return response()->json(['message' => 'Danh mục đang được sử dụng trong bảng tin tức, không thể xóa'], 400);
+        }
+    
         // Xóa danh mục
         $categoryNew->delete();
     
         return response()->json(['message' => 'Xóa danh mục thành công'], 200);
     }
+    
     
     public function news(Request $request)
     {
@@ -225,7 +233,7 @@ class NewsAdminController extends Controller
             $news->description2 = $validatedData['description2'];
     
             // Đường dẫn lưu ảnh
-            $destinationPath = 'D:\Dự án tốt nghiệp\UI\DUANTOTNGHIEP\pethaven\public\img1';
+            $destinationPath = public_path('images/news');
             $imgName = 'default-image.jpg'; // Giá trị mặc định
     
             // Kiểm tra và lưu hình ảnh nếu có
@@ -258,9 +266,9 @@ class NewsAdminController extends Controller
             $request->validate([
                 'title' => 'sometimes|required|string',
                 'content' => 'sometimes|required|string',
-                'categorynew_id' => 'exists:CategoryNew,id',
+                'categorynew_id' => 'exists:categorynews,id',
                 'user_id' => 'sometimes|required|exists:users,id',
-                'image' => 'sometimes|nullable|image|max:2048',
+               
                 'description1' => 'sometimes|nullable|string',
                 'description2' => 'sometimes|nullable|string|max:200',
             ]);
