@@ -36,10 +36,10 @@ class OrderAdminController extends Controller
         // Áp dụng tìm kiếm nếu có
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('user_fullname', 'like', "%{$search}%");
+                $q->where('id', 'like', "%{$search}%");
             
             });
-        }
+        }   
     
         // Lấy kết quả phân trang
         $orders = $query->paginate($perPage, ['*'], 'page', $page);

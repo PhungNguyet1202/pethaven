@@ -37,11 +37,9 @@ class StockInAdminController extends Controller
         // Áp dụng tìm kiếm nếu có từ khóa tìm kiếm
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('stockin_date', 'like', "%{$search}%") // Tìm theo ngày nhập kho
-                  ->orWhere('quantity', 'like', "%{$search}%")     // Tìm theo số lượng
-                  ->orWhereHas('product', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");  // Tìm theo tên sản phẩm
-                  });
+                $q->where('stockin_date', 'like', "%{$search}%") ;// Tìm theo ngày nhập kho
+                
+                 
             });
         }
     
