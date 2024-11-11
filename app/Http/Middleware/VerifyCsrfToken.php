@@ -15,6 +15,9 @@ class VerifyCsrfToken extends Middleware
         
             'api/*',
             'login',
+            'register',
             'admin/*',
+            'admin/product/update/*', // Thêm route bạn muốn tắt CSRF
+            'admin/service/update/*', // Thêm route bạn muốn tắt CSRF
     ];
 }

@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('address');
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
-            $table->rememberToken();
-            $table->enum('gender', ['male', 'female', 'other']);
-            $table->date('dob'); // Date of birth
-            $table->string('img'); // Profile image
+            $table->rememberToken()->nullable(); // rememberToken có thể null
+            $table->enum('gender', ['male', 'female', 'other'])->nullable(); // Gender có thể null     
+            $table->date('dob')->nullable(); // Date of birth có thể null
+            $table->string('img')->nullable(); // Profile image có thể null
             $table->boolean('is_action')->default(0); // 0: Active, 1: Blocked
             $table->timestamps();
         });

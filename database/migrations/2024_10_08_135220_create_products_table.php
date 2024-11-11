@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2); // Giá sản phẩm
             $table->decimal('sale_price', 10, 2); // Giá sản phẩm
             //$table->string('sku')->unique(); // Mã SKU, phải là duy nhất
-            $table->integer('instock');// so luong ton kho
+            $table->integer('instock')->default(0);
             $table->float('rating')->default(0); // danh gia
             //$table->boolean('status')->default(1); // Trạng thái sản phẩm (1: có sẵn, 0: ngừng bán)
             $table->unsignedBigInteger('category_id');

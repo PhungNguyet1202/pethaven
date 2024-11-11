@@ -1,8 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
 // namespace App\Http\Controllers;
 // use Illuminate\Http\Request;
+
+
+use Illuminate\Http\Request;
+    namespace App\Http\Controllers;
+
+
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
@@ -1433,6 +1440,7 @@ public function createOrder(Request $request)
         Log::error('Lỗi khi tạo đơn hàng: ' . $e->getMessage());
         return response()->json(['status' => 'error', 'message' => 'Không thể tạo đơn hàng', 'error_detail' => $e->getMessage()], 500);
     }
+
 }
 
 

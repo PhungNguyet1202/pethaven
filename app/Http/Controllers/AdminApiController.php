@@ -29,10 +29,35 @@ class AdminApiController extends Controller
         $soSanPham = Product::count();
         $soKhachHang = User::where('role', 'user')->count();
         $doanhThu = Order::where('status', 'pending')->sum('total_money');
-
-        $dsDH = Order::orderBy('created_at', 'DESC')->limit(5)->get();
-        $dsBL = Comment::orderBy('created_at', 'DESC')->limit(5)->get();
-        
+    
+        // Lấy danh sách đơn hàng bị hủy
+        $dsDH = Order::selectRaw('user_fullname, COUNT(*) as order_count')
+            ->where('status', 'cancle')
+            ->groupBy('user_fullname')
+            ->orderBy('order_count', 'DESC')
+            ->limit(10)
+            ->get();
+    
+        // Lấy số lượng đơn hàng hủy
+        $countCancelOrders = Order::where('status', 'cancel')->count();
+    
+        // Lấy 5 bình luận mới nhất với thông tin người dùng và sản phẩm
+        $dsBL = Comment::with(['user', 'product']) // Kết hợp với bảng user và product
+            ->orderBy('created_at', 'DESC') // Sắp xếp theo ngày tạo giảm dần
+            ->limit(5) // Lấy 5 bình luận mới nhất
+            ->get()
+            ->map(function ($comment) { // Dùng map để định dạng lại dữ liệu
+                return [
+                    'id' => $comment->id,
+                    'rating' => $comment->rating,
+                    'content' => $comment->content,
+                    'user_id' => $comment->user_id,
+                    'user_name' => $comment->user ? $comment->user->name : null, // Lấy tên người dùng
+                    'product_id' => $comment->product_id,
+                    'product_name' => $comment->product ? $comment->product->name : null, // Lấy tên sản phẩm
+                ];
+            });
+    
         return response()->json([
             'soDonHang' => $soDonHang,
             'soSanPham' => $soSanPham,
@@ -43,7 +68,6 @@ class AdminApiController extends Controller
             'dsBL' => $dsBL
         ], 200);
     }
-    
     
     
     public function category(Request $request)
@@ -1217,7 +1241,32 @@ public function product(Request $request)
           'total' => $serviceBookings->total(),
       ], 200);
   }
+  public function getServiceBookingById($id)
+  {
+      // Lấy service booking với service name
+      $serviceBooking = ServiceBooking::with('service')->find($id);
 
+      // Kiểm tra nếu không tìm thấy bản ghi
+      if (!$serviceBooking) {
+          return response()->json(['message' => 'Service booking not found'], 404);
+      }
+
+      // Định dạng dữ liệu để trả về
+      $serviceBookingData = [
+          'id' => $serviceBooking->id,
+          'booking_date' => $serviceBooking->booking_date,
+          'status' => $serviceBooking->status,
+          'total_price' => $serviceBooking->total_price,
+          'user_id' => $serviceBooking->user_id,
+          'user_name' => $serviceBooking->user? $serviceBooking->user->name : null,
+          'pet_id' => $serviceBooking->pet_id,
+          'service_id' => $serviceBooking->service_id,
+          'service_name' => $serviceBooking->service ? $serviceBooking->service->name : null, // Lấy tên dịch vụ
+      ];
+
+      // Trả về JSON chứa thông tin service booking
+      return response()->json($serviceBookingData, 200);
+  }
     // // Lấy một service booking theo ID
     // public function show($id)
     // {
@@ -1552,20 +1601,16 @@ public function deleteStockEntry($id)
     //update trạng thái người dùng 
     public function updateUserStatusBasedOnCancelledOrders()
     {
-        // Lấy ngày hôm nay
-        $today = Carbon::now()->toDateString();
-
-        // Lấy tất cả các user_id có 5 đơn hàng hủy trưong ngày hôm nay
+        // Lấy tất cả các user_id có từ 5 đơn hàng bị hủy trở lên, không giới hạn ngày
         $userIds = Order::select('user_id')
             ->where('status', 'cancle')
-            ->whereDate('created_at', $today)
             ->groupBy('user_id')
             ->havingRaw('COUNT(*) >= 5')
             ->pluck('user_id');
-
+    
         // Cập nhật trạng thái người dùng
-        User::whereIn('id', $userIds)->update(['is_action' => 1]); // Giả sử 'isactive' là trường lưu trạng thái
-
+        User::whereIn('id', $userIds)->update(['is_action' => 1]);
+    
         return response()->json(['message' => 'User statuses updated based on cancelled orders']);
     }
     }
