@@ -6,31 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id(); // Tạo trường id tự động tăng
-            $table->string('payment_method'); // Thuộc tính payment_method
-            $table->string('payment_status'); // Thuộc tính payment_status
-            $table->dateTime('payment_date'); // Thuộc tính payment_date
-            $table->string('transaction_id'); // Thuộc tính transaction_id
-          //  $table->unsignedBigInteger('order_id');
-           
-
-            // Khóa ngoại
-            // $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-          //  $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade'); 
-            $table->timestamps(); // Tạo các trường created_at và updated_at
-        
+            $table->id();
+            $table->string('payment_method',255); 
+            $table->string('payment_status',255); 
+            $table->dateTime('payment_date'); 
+            $table->string('transaction_id',255); 
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+   
     public function down(): void
     {
         Schema::dropIfExists('payments');

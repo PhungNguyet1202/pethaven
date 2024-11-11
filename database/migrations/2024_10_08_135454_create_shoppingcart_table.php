@@ -6,21 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+   
     public function up(): void
     {
         
         Schema::create('shoppingcarts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');  // Foreign key to Products
-            $table->unsignedBigInteger('user_id'); // Foreign key to Customers
-            $table->integer('Rating');                // Rating value
-            $table->text('Comment')->nullable();      // Review comment
-            $table->timestamps();                     // created_at and updated_at
+            $table->integer('Rating');               
+            $table->text('Comment')->nullable(); 
+            $table->unsignedBigInteger('product_id');  
+            $table->unsignedBigInteger('user_id');     
+            $table->timestamps();                    
         
-            // Foreign key constraints
+           
             // $table->foreign('product_id')->references('products');
             // $table->foreign('customer_id')->references('customers');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade'); 
@@ -29,9 +27,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+   
     public function down(): void
     {
         Schema::dropIfExists('shoppingcart');

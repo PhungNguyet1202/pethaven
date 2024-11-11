@@ -6,21 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+   
     public function up(): void
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Tựa đề tin tức
-            $table->text('content'); // Nội dung tin tức
-            $table->text('description'); // Mô tả sản phẩm
-            $table->string('image',255); // Đường dẫn hình ảnh
-            $table->string('detail')->nullable(); // Chi tiet tin tuc
+            $table->string('title',255);
+            $table->text('content'); 
+            $table->text('description1'); 
+            $table->text('description2'); 
+            $table->string('image',255); 
+            $table->string('detail')->nullable(); 
 
-            $table->foreignId('categorynew_id')->constrained()->onDelete('cascade'); // Khóa ngoại tới bảng categorynew
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Khóa ngoại tới bảng users
+            $table->foreignId('categorynew_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
             $table->timestamps();
         });
     }
