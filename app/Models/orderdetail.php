@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +9,15 @@ class OrderDetail extends Model
     use HasFactory;
 
     protected $table = 'orderdetail'; // Chỉ định tên bảng chính xác là `orderdetail`
+
+    // Thêm các cột vào mảng fillable để cho phép mass assignment
+    protected $fillable = [
+        'product_id',
+        'order_id',
+        'quantity',
+        'price',
+        'total_price',
+    ];
 
     public function product()
     {
