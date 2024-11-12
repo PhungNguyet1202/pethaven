@@ -23,9 +23,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone', // Thêm thuộc tính phone
-        'address' // Thêm thuộc tính address
+        'phone',
+        'address',
+        'img', // Thêm vào đây để có thể cập nhật ảnh đại diện
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -52,7 +54,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(ServiceBooking::class, 'user_id'); // Chỉ định khóa ngoại là user_id
     }
-    
+
 
     public function orders()
     {
@@ -86,42 +88,10 @@ class User extends Authenticatable
 
 
 
-  
 
-    public function updateProfile(Request $req) {
-        $user = Auth::user(); // Lấy người dùng hiện tại
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
-        }
 
-        // Validate dữ liệu đầu vào
-        $validatedData = $req->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'img' => 'nullable|string|max:255',
-        ]);
 
-        // Cập nhật thông tin
-        $user->name = $validatedData['name'] ?? $user->name;
-        $user->email = $validatedData['email'] ?? $user->email;
-        $user->phone = $validatedData['phone'] ?? $user->phone;
-        $user->address = $validatedData['address'] ?? $user->address;
-        $user->img = $validatedData['img'] ?? $user->img;
 
-        // Cập nhật mật khẩu nếu có
-        if (!empty($validatedData['password'])) {
-            $user->password = Hash::make($validatedData['password']);
-        }
 
-        $user->save(); // Lưu thông tin cập nhật
-
-        return response()->json(['message' => 'Cập nhật thành công!']);
-    }
-    
-
-    
 }

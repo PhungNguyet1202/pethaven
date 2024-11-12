@@ -7,8 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo quy tắc PSR-1
 {
     use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'total_money',
 
-    protected $fillable = ['user_id', 'total_money', 'total_quantity', 'status', 'created_at']; // Thêm các cột cần thiết vào đây
+        'status',
+        'created_at',
+        'payment_id',
+        'shipping_id',
+        'user_fullname',
+        'user_address',
+        'user_phone',
+        'user_email'
+    ];
+
 
     /**
      * Lấy Customer mà Order thuộc về.
@@ -22,7 +34,7 @@ class Order extends Model // Đổi tên lớp thành `Order` (viết hoa) theo 
     {
         return $this->hasMany(OrderDetail::class, 'order_id');
     }
-    
+
 
     /**
      * Lấy các Shipping thuộc về Order này.
