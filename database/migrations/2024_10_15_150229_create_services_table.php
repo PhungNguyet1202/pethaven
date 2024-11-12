@@ -6,29 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+   
     public function up(): void
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->string('name');                // Tên dịch vụ
-            $table->string('description');         // Mô tả dịch vụ
-            $table->decimal('price', 8, 2);        // Giá dịch vụ
-            $table->string('img')->nullable();     // Hình ảnh dịch vụ (nếu có)
+            $table->string('name',255);               
+            $table->string('description');         
+            $table->decimal('price', 10, 2);       
+            $table->string('img',255);     
+            $table->string('imgdetail',255);    
             $table->timestamps();
 
-            // Tạo khóa ngoại liên kết với bảng categories
-            $table->foreignId('categories_id')
-                  ->constrained('categories')
-                  ->onDelete('cascade');           // Xóa service khi xóa category
+            $table->foreignId('categories_id')->constrained('categories')->onDelete('cascade');          
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+  
     public function down(): void
     {
         Schema::dropIfExists('services');

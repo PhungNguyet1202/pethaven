@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CartItem;
 use App\Models\Product;
-use App\Models\ShoppingCart; // Đảm bảo đã import ShoppingCart
+use App\Models\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,72 +13,79 @@ class CartController extends Controller
 {
     // Lấy tất cả sản phẩm trong giỏ hàng của người dùng
     public function getCart()
-    {
+    {   
+        if (!Auth::check()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $userId = Auth::id();
-        Log::info('User ID: ' . $userId); // Ghi lại ID người dùng
+        Log::info('User ID: ' . $userId);
 
         $cartItems = CartItem::with('product')
-                             ->whereHas('shoppingcart', function($query) use ($userId) {
-                                 $query->where('user_id', $userId);
-                             })->get();
+            ->whereHas('shoppingcart', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->get();
 
-        Log::info('Cart Items: ', $cartItems->toArray()); 
+        Log::info('Cart Items: ', $cartItems->toArray());
 
         return response()->json([
             'status' => 'success',
             'cart' => $cartItems
         ]);
     }
-    
 
     // Thêm sản phẩm vào giỏ hàng
     public function addToCart(Request $request)
-    {
-        $userId = Auth::id(); // ID người dùng
-        $productId = $request->input('product_id');
-        $quantity = $request->input('quantity', 1);
+{
+    $userId = Auth::id(); // Lấy ID người dùng hiện tại
+    $productId = $request->input('product_id');
+    $quantity = $request->input('quantity', 1); // Mặc định là 1 nếu không truyền
 
-        // Tìm sản phẩm theo ID
-        $product = Product::find($productId);
-        if (!$product) {
-            return response()->json(['status' => 'error', 'message' => 'Product not found'], 404);
-        }
-
-        // Tìm giỏ hàng của người dùng hoặc tạo mới
-        $shoppingCart = ShoppingCart::firstOrCreate(['user_id' => $userId]);
-
-        // Kiểm tra sản phẩm đã có trong giỏ chưa
-        $cartItem = CartItem::where('shoppingcart_id', $shoppingCart->id)
-                            ->where('product_id', $productId)
-                            ->first();
-
-        if ($cartItem) {
-            // Nếu sản phẩm đã có, cập nhật số lượng và tổng giá
-            $cartItem->quantity += $quantity;
-            $cartItem->total_price = $cartItem->quantity * $product->price;
-            $cartItem->save();
-        } else {
-            // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
-            CartItem::create([
-                'shoppingcart_id' => $shoppingCart->id,
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'price' => $product->price,
-                'total_price' => $quantity * $product->price
-            ]);
-        }
-
-        return response()->json(['status' => 'success', 'message' => 'Product added to cart']);
+    // Kiểm tra sản phẩm có tồn tại hay không
+    $product = Product::find($productId);
+    if (!$product) {
+        return response()->json(['status' => 'error', 'message' => 'Product not found'], 404);
     }
+
+    // Tìm giỏ hàng của người dùng hoặc tạo mới nếu chưa có
+    $shoppingCart = ShoppingCart::firstOrCreate(['user_id' => $userId]);
+
+    // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+    $cartItem = CartItem::where('shoppingcart_id', $shoppingCart->id)
+                        ->where('product_id', $productId)
+                        ->first();
+
+    if ($cartItem) {
+        // Nếu sản phẩm đã tồn tại, cập nhật số lượng và tổng giá
+        $cartItem->quantity += $quantity;
+        $cartItem->total_price = $cartItem->quantity * $product->price;
+        $cartItem->save();
+    } else {
+        // Nếu chưa có, tạo mới mục giỏ hàng
+        CartItem::create([
+            'shoppingcart_id' => $shoppingCart->id,
+            'product_id' => $productId,
+            'quantity' => $quantity,
+            'price' => $product->price,
+            'total_price' => $quantity * $product->price
+        ]);
+    }
+
+    return response()->json(['status' => 'success', 'message' => 'Product added to cart']);
+}
+
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     public function updateCart(Request $request, $cartItemId)
     {
-        $userId = Auth::id();
-        $cartItem = CartItem::whereHas('shoppingcart', function($query) use ($userId) {
-                                $query->where('user_id', $userId);
-                            })->where('id', $cartItemId)->first();
+        if (!Auth::check()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
 
+        $userId = Auth::id();
+        $cartItem = CartItem::whereHas('shoppingcart', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->where('id', $cartItemId)->first();
         if (!$cartItem) {
             return response()->json(['status' => 'error', 'message' => 'Cart item not found'], 404);
         }
@@ -98,10 +105,14 @@ class CartController extends Controller
     // Xóa sản phẩm khỏi giỏ hàng
     public function removeFromCart($cartItemId)
     {
+        if (!Auth::check()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
         $userId = Auth::id();
-        $cartItem = CartItem::whereHas('shoppingcart', function($query) use ($userId) {
-                                $query->where('user_id', $userId);
-                            })->where('id', $cartItemId)->first();
+        $cartItem = CartItem::whereHas('shoppingcart', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->where('id', $cartItemId)->first();
 
         if (!$cartItem) {
             return response()->json(['status' => 'error', 'message' => 'Cart item not found'], 404);
