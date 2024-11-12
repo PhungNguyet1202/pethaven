@@ -110,7 +110,7 @@ class UserController extends Controller
                     'img' => $user->img,
                     'role' => $user->role // Trả về vai trò của người dùng
                 ],
-                'access_token' => $token,
+                'access_token' => $token,   
                 'token_type' => 'Bearer',
             ]);
         } else {
