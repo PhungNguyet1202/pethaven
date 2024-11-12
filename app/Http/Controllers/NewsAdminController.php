@@ -304,7 +304,9 @@ class NewsAdminController extends Controller
     
         // Xử lý hình ảnh mới nếu có
         if ($request->hasFile('image')) {
-            $destinationPath = public_path('img1');
+            $destinationPath = public_path('images/news');
+            $imgName = 'default-image.jpg'; // Giá trị mặc định
+    
             
             // Kiểm tra và xóa ảnh cũ nếu có
             if ($news->image && file_exists($destinationPath . '/' . $news->image)) {

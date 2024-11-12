@@ -94,73 +94,57 @@ class ServiceAdminController extends Controller
         }
         
         public function updateService(Request $request, $id)
-        {
-            // Log bắt đầu của hàm
-            Log::info("Starting updateService for service ID: $id");
-        
-            // Log giá trị request nhận được
-            Log::info('Request data: ', $request->all());
-        
-            // Validate dữ liệu đầu vào
-            $request->validate([
-                'name' => 'sometimes|required|string',
-                'description' => 'nullable|string',
-                'price' => 'sometimes|required|numeric',
-          
-            ]);
-        
-            // Tìm dịch vụ theo ID
-            $service = Service::find($id);
-            if (!$service) {
-                Log::warning("Service not found for ID: $id");
-                return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
+{
+    Log::info("Starting updateService for service ID: $id");
+    Log::info('Request data: ', $request->all());
+
+    $request->validate([
+        'name' => 'sometimes|required|string',
+        'description' => 'nullable|string',
+        'price' => 'sometimes|required|numeric',
+        'image' => 'nullable|image|max:2048',
+    ]);
+
+    $service = Service::find($id);
+    if (!$service) {
+        Log::warning("Service not found for ID: $id");
+        return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
+    }
+
+    Log::info('Original Service data: ', $service->toArray());
+
+    $service->name = $request->name ?? $service->name;
+    $service->description = $request->description ?? $service->description;
+    $service->price = $request->price ?? $service->price;
+
+    $destinationPath = public_path('images/services');
+
+    try {
+        if ($request->hasFile('image')) {
+            Log::info('img upload detected for service ID: ' . $id);
+
+            $img = $request->file('image');
+            if (!$img->isValid()) {
+                Log::error('img upload failed for service ID: ' . $id);
+                return response()->json(['message' => 'img upload failed'], 400);
             }
-        
-            // Log dữ liệu dịch vụ hiện tại trước khi cập nhật
-            Log::info('Original Service data: ', $service->toArray());
-        
-            // Cập nhật thông tin dịch vụ
-            $service->name = $request->name ?? $service->name;
-            $service->description = $request->description ?? $service->description;
-            $service->price = $request->price ?? $service->price;
-        
-            // Đường dẫn lưu ảnh
-            $destinationPath = public_path('images/services');
-        
-            try {
-                // Kiểm tra xem có file hình ảnh được gửi lên không
-                if ($request->hasFile('img')) {
-                    Log::info('img upload detected for service ID: ' . $id);
-        
-                    // Upload ảnh mới
-                    $img = $request->file('img');
-                    if (!$img->isValid()) {
-                        Log::error('img upload failed for service ID: ' . $id);
-                        return response()->json(['message' => 'img upload failed'], 400);
-                    }
-        
-                    $imgName = "{$service->id}." . $img->getClientOriginalExtension();
-                    $img->move($destinationPath, $imgName);
-                    $service->img = $imgName; // Gán tên file ảnh mới
-                    Log::info('img updated successfully for service ID: ' . $id);
-                } else {
-                    // Nếu không có tệp hình ảnh, giữ nguyên hình ảnh hiện tại
-                    Log::info('No new img uploaded for service ID: ' . $id . ', keeping the current img: ' . $service->img);
-                }
-        
-                // Lưu dịch vụ
-                $service->save();
-                Log::info('Service updated successfully for service ID: ' . $id);
-        
-                return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
-        
-            } catch (\Exception $e) {
-                // Ghi log lỗi và trả về thông báo lỗi chi tiết
-                Log::error('Failed to update service ID: ' . $id . ' Error: ' . $e->getMessage());
-                return response()->json(['message' => 'Cập nhật dịch vụ thất bại', 'error' => $e->getMessage()], 500);
-            }
+
+            $imgName = "{$service->id}." . $img->getClientOriginalExtension();
+            $img->move($destinationPath, $imgName);
+            $service->img = $imgName;
+            Log::info('img updated successfully for service ID: ' . $id);
         }
-        
+
+        $service->save();
+        Log::info('Service updated successfully for service ID: ' . $id);
+
+        return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
+    } catch (\Exception $e) {
+        Log::error('Failed to update service ID: ' . $id . ' Error: ' . $e->getMessage());
+        return response()->json(['message' => 'Cập nhật dịch vụ thất bại', 'error' => $e->getMessage()], 500);
+    }
+}
+
         
     
         

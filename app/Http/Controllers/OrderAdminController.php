@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Comment;
@@ -101,11 +102,39 @@ class OrderAdminController extends Controller
     
         return response()->json($formattedOrder, 200);
     }
+    // public function updateOrderStatus(Request $request, $id)
+    // {
+    //     // Xác thực dữ liệu cho trạng thái đơn hàng
+    //     $validatedData = $request->validate([
+    //         'status' => 'required|string|in:pending,prepare,shipping,success,cancle' // Trạng thái phải là một trong các giá trị hợp lệ
+    //     ]);
+    
+    //     // Tìm đơn hàng theo ID
+    //     $order = Order::find($id);
+    //     if (!$order) {
+    //         return response()->json(['message' => 'Order not found'], 404); // Trả về 404 nếu không tìm thấy đơn hàng
+    //     }
+    
+    //     // Cập nhật giá trị của status
+    //     $order->status = $validatedData['status'];
+    //     if ( $order->status='cancel'){
+        
+    //     }
+
+    //     // Lưu thay đổi
+    //     $order->save();
+    //     // Trả về phản hồi thành công kèm theo dữ liệu đơn hàng
+    //     return response()->json([
+    //         'message' => 'Order status updated successfully',
+    //         'order' => $order
+    //     ], 200); // Trả về mã HTTP 200 cho yêu cầu thành công
+    // }
+   
     public function updateOrderStatus(Request $request, $id)
     {
         // Xác thực dữ liệu cho trạng thái đơn hàng
         $validatedData = $request->validate([
-            'status' => 'required|string|in:pending,prepare,shipping,success,cancle' // Trạng thái phải là một trong các giá trị hợp lệ
+            'status' => 'required|string|in:pending,prepare,shipping,success,cancel' // Trạng thái phải là một trong các giá trị hợp lệ
         ]);
     
         // Tìm đơn hàng theo ID
@@ -117,7 +146,29 @@ class OrderAdminController extends Controller
         // Cập nhật giá trị của status
         $order->status = $validatedData['status'];
     
-        // Lưu thay đổi
+        // Nếu status là 'cancel', cập nhật lại số lượng sản phẩm trong Inventory
+        if ($order->status === 'cancel') {
+            // Lấy danh sách chi tiết đơn hàng của order
+            $orderDetails = $order->orderDetails;
+    
+            foreach ($orderDetails as $detail) {
+                $productId = $detail->product_id;
+                $quantity = $detail->quantity;
+    
+                // Tìm bản ghi inventory của sản phẩm theo ngày tạo cũ nhất
+                $inventory = Inventory::where('product_id', $productId)
+                                      ->orderBy('created_at', 'asc')
+                                      ->first();
+    
+                if ($inventory) {
+                    // Cộng dồn số lượng vào inventory
+                    $inventory->stockin += $quantity;
+                    $inventory->save();
+                }
+            }
+        }
+    
+        // Lưu thay đổi trạng thái đơn hàng
         $order->save();
     
         // Trả về phản hồi thành công kèm theo dữ liệu đơn hàng
@@ -127,5 +178,4 @@ class OrderAdminController extends Controller
         ], 200); // Trả về mã HTTP 200 cho yêu cầu thành công
     }
     
-
 }
