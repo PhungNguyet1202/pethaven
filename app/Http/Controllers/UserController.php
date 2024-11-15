@@ -37,6 +37,9 @@ class UserController extends Controller
 
     // Hiển thị form đăng nhập
 
+    // public function login(Request $req) {
+    //     return view('user.login'); 
+    // }
     public function login(Request $req) {
         return view('user.login');
     }
@@ -67,12 +70,82 @@ class UserController extends Controller
             // Trả về phản hồi thành công
             return response()->json(['success' => true, 'message' => 'Đăng ký thành công. Vui lòng đăng nhập.']);
         } catch (ValidationException $e) {
+            // Trả về thông báo lỗi xác thực
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
+            // Trả về thông báo lỗi chung
             return response()->json(['success' => false, 'message' => 'Đăng ký không thành công', 'error' => $e->getMessage()], 500);
         }
     }
+    
 
+    //Phương thức xử lý đăng nhập
+    // public function postlogin(Request $req) {
+
+    //     // Xác thực dữ liệu đầu vào
+    //      $req->validate([
+    //         'email' => 'required|string|email',
+    //         'password' => 'required|string',
+    //         'remember' => 'sometimes|boolean', // Xác thực remember nếu được gửi
+
+    //     ]);
+    
+    //     // Cố gắng đăng nhập
+    //     $credentials = $req->only('email', 'password');
+    //     $remember= $req->input('remember');
+
+    //     if (Auth::attempt($credentials,$remember)) {
+    //         $user = Auth::user();
+    
+    //         // Kiểm tra trạng thái tài khoản
+    //         if ($user->is_action == 1) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Tài khoản của bạn đã bị khóa.'
+    //             ], 403); // Sử dụng mã trạng thái 403 Forbidden
+    //         }
+    
+    //         // Nếu đăng nhập thành công và tài khoản không bị khóa
+    //         $token = $user->createToken('auth_token')->plainTextToken;
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Đăng nhập thành công',
+    //             'user' => [
+    //                 'id' => $user->id,
+    //                 'name' => $user->name,
+    //                 'email' => $user->email,
+    //                 'role' => $user->role // Trả về vai trò của người dùng
+    //             ],
+    //             'access_token' => $token,
+    //             'token_type' => 'Bearer',
+    //         ]);
+    //     } else {
+    //         // Trả về thông báo lỗi nếu thông tin đăng nhập không chính xác
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Email hoặc mật khẩu không đúng',
+    //         ], 401);
+    //     }
+    // }
+
+
+
+    // public function postlogin(Request $req) {
+    //     // Xác thực dữ liệu đầu vào
+    //     $req->validate([
+    //         'email' => 'required|string|email',
+    //         'password' => 'required|string',
+    //         'remember' => 'sometimes|boolean', // Xác thực remember nếu được gửi
+    //     ]);
+    
+    //     // Lấy thông tin đăng nhập và giá trị "remember"
+    //     $credentials = $req->only('email', 'password');
+    //     $remember = $req->input('remember', false); // Giá trị mặc định là false
+    
+    //     if (Auth::attempt($credentials, $remember)) { // Truyền $remember vào Auth::attempt
+    //         $user = Auth::user();
+    
     // Phương thức xử lý đăng nhập chưa check quên mk
     // public function postlogin(Request $req) {
     //     // Xác thực dữ liệu đầu vào
@@ -97,8 +170,15 @@ class UserController extends Controller
     //             ], 403);
     //         }
 
+    
     //         // Nếu đăng nhập thành công và tài khoản không bị khóa
     //         $token = $user->createToken('auth_token')->plainTextToken;
+    
+
+
+    //         // Nếu đăng nhập thành công và tài khoản không bị khóa
+    //         $token = $user->createToken('auth_token')->plainTextToken;
+
 
     //         return response()->json([
     //             'success' => true,
@@ -130,9 +210,16 @@ class UserController extends Controller
             'remember' => 'sometimes|boolean', // Xác thực remember nếu được gửi
         ]);
 
+    
         // Lấy thông tin đăng nhập và giá trị "remember"
         $credentials = $req->only('email', 'password');
         $remember = $req->input('remember', false); // Giá trị mặc định là false
+
+
+        // Lấy thông tin đăng nhập và giá trị "remember"
+        $credentials = $req->only('email', 'password');
+        $remember = $req->input('remember', false); // Giá trị mặc định là false
+
 
         // Kiểm tra thông tin đăng nhập
         if (Auth::attempt($credentials, $remember)) { // Truyền $remember vào Auth::attempt
@@ -182,6 +269,7 @@ class UserController extends Controller
             'message' => 'Email hoặc mật khẩu không đúng',
         ], 401);
     }
+
 
     public function forgotPassword(Request $req)
 {
@@ -276,6 +364,227 @@ public function resetPassword(Request $req)
 
     // public function postregister(Request $req)
 
+
+// quên mk
+// public function forgotPassword(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Tạo mã OTP ngẫu nhiên là số
+//     $otp = random_int(100000, 999999); 
+//     $user->otp_code = Hash::make($otp); // Lưu OTP dưới dạng mã hóa
+//     $user->otp_expires_at = now()->addMinutes(10);
+//     $user->save();
+
+//     // Gửi OTP qua email
+//     // try {
+//     //     Mail::send([], [], function ($message) use ($user, $otp) {
+//     //         $message->to($user->email)
+//     //                 ->subject('Mã OTP đặt lại mật khẩu')
+//     //                 ->setBody("Mã OTP của bạn là: $otp. Mã này sẽ hết hạn sau 10 phút.", 'text/html');
+//     //     });
+//     // } catch (\Exception $e) {
+//     //     return response()->json([
+//     //         'success' => false, 
+//     //         'message' => 'Không thể gửi email.',
+//     //         'error' => $e->getMessage()
+//     //     ], 500);
+//     // }
+//     try {
+//         Mail::send([], [], function ($message) use ($user, $otp) {
+//             $message->to($user->email)
+//                     ->subject('Mã OTP đặt lại mật khẩu')
+//                     ->html("Mã OTP của bạn là: <b>$otp</b>. Mã này sẽ hết hạn sau 10 phút.");
+//         });
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Không thể gửi email.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+    
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'OTP đã được gửi đến email của bạn.',
+//     ]);
+// }
+
+// public function verifyOtp(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//         'otp' => 'required|string',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Kiểm tra mã OTP đã mã hóa
+//     if (!$user || !Hash::check($req->otp, $user->otp_code) || now()->greaterThan($user->otp_expires_at)) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'OTP không hợp lệ hoặc đã hết hạn.',
+//         ], 400);
+//     }
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'OTP hợp lệ, bạn có thể đặt lại mật khẩu.',
+//     ]);
+// }
+
+// public function resetPassword(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//         'otp' => 'required|string',
+//         'password' => 'required|string|confirmed|min:8',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Kiểm tra mã OTP đã mã hóa
+//     if (!$user || !Hash::check($req->otp, $user->otp_code) || now()->greaterThan($user->otp_expires_at)) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'OTP không hợp lệ hoặc đã hết hạn.',
+//         ], 400);
+//     }
+
+//     // Cập nhật mật khẩu và xóa trường OTP
+//     $user->password = Hash::make($req->password);
+//     $user->otp_code = null; 
+//     $user->otp_expires_at = null;
+//     $user->save();
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'Mật khẩu đã được đặt lại thành công.',
+//     ]);
+// }
+
+// public function forgotPassword(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Tạo mã OTP ngẫu nhiên
+//     $otp = random_int(100000, 999999); 
+//     $user->otp_code = Hash::make($otp); // Lưu OTP dưới dạng mã hóa
+//     $user->otp_expires_at = now()->addMinutes(10);
+//     $user->save();
+
+//     // Gửi OTP qua email
+//     try {
+//         Mail::send([], [], function ($message) use ($user, $otp) {
+//             $message->to($user->email)
+//                     ->subject('Mã OTP đặt lại mật khẩu')
+//                     ->html("Mã OTP của bạn là: <b>$otp</b>. Mã này sẽ hết hạn sau 10 phút.");
+//         });
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Không thể gửi email.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'OTP đã được gửi đến email của bạn.',
+//     ]);
+// }
+
+// public function verifyOtp(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//         'otp' => 'required|string',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Kiểm tra mã OTP
+//     if (!$user || !Hash::check($req->otp, $user->otp_code) || now()->greaterThan($user->otp_expires_at)) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'OTP không hợp lệ hoặc đã hết hạn.',
+//         ], 400);
+//     }
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'OTP hợp lệ, bạn có thể đặt lại mật khẩu.',
+//     ]);
+// }
+
+// public function resetPassword(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email|exists:users,email',
+//         'otp' => 'required|string',
+//         'password' => 'required|string|confirmed|min:8',
+//     ]);
+
+//     $user = User::where('email', $req->email)->first();
+
+//     // Kiểm tra mã OTP
+//     if (!$user || !Hash::check($req->otp, $user->otp_code) || now()->greaterThan($user->otp_expires_at)) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'OTP không hợp lệ hoặc đã hết hạn.',
+//         ], 400);
+//     }
+
+//     // Cập nhật mật khẩu và xóa trường OTP
+//     $user->password = Hash::make($req->password);
+//     $user->otp_code = null; 
+//     $user->otp_expires_at = null;
+//     $user->save();
+
+//     // Đăng xuất các thiết bị khác với mật khẩu mới
+//     Auth::logoutOtherDevices($req->password);
+
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'Mật khẩu đã được đặt lại thành công.',
+//     ]);
+// }
+
+// public function login(Request $req)
+// {
+//     $req->validate([
+//         'email' => 'required|email',
+//         'password' => 'required|string',
+//     ]);
+
+//     $credentials = $req->only('email', 'password');
+
+//     if (Auth::attempt($credentials)) {
+//         $user = Auth::user();
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Đăng nhập thành công.',
+//             'user' => $user,
+//         ]);
+//     }
+
+//     return response()->json([
+//         'success' => false,
+//         'message' => 'Email hoặc mật khẩu không chính xác.',
+//     ], 401);
+// }
+
+
+    // public function postregister(Request $req)
     // {
     //     try {
     //         $req->validate([
@@ -340,6 +649,10 @@ public function resetPassword(Request $req)
 
 
         // public function postlogin(Request $req) {
+        //    $req->validate([
+        //         'email' => 'required|string|email',
+        //         'password' => 'required|string',
+        //     ]);       
 
         //     $req->validate([
         //         'email' => 'required|string|email',
@@ -358,7 +671,7 @@ public function resetPassword(Request $req)
 
 
 
-//////////
+
    // Hiển thị thông tin người dùng hiện tại
    public function profile() {
     $user = Auth::user(); // Lấy thông tin người dùng hiện tại
@@ -374,6 +687,7 @@ public function resetPassword(Request $req)
 
 //         return view('user.profile', ['user' => $user]);
 //     }
+
 // Hiển thị thông tin người dùng hiện tại dưới dạng JSON
 public function showProfile($userId)
 {
