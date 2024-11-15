@@ -15,7 +15,7 @@ use App\Models\Stockin;
 use App\Models\Category;
 use App\Models\CategoryNew;
 use App\Models\News;
-use App\Models\Pet;
+use App\Models\Review;
 use App\Models\Service;
 use App\Models\inventory;
 use Illuminate\Support\Str;
@@ -33,7 +33,7 @@ class CommentAdminController extends Controller
         $page = $request->input('page', 1);
     
         // Tạo truy vấn cơ bản cho Comment cùng với User và Product
-        $query = Comment::with(['user', 'product']);
+        $query = Review::with(['user', 'product']);
     
         // Áp dụng tìm kiếm theo nội dung bình luận hoặc tên người dùng nếu có từ khóa tìm kiếm
         if ($search) {
@@ -52,8 +52,8 @@ class CommentAdminController extends Controller
         $formattedComments = $comments->getCollection()->map(function ($comment) {
             return [
                 'id' => $comment->id,
-                 'rating'=>$comment->rating,
-                'content' => $comment->content,
+                 'rating'=>$comment->Rating,
+                'content' => $comment->Comment,
                 'user_id' => $comment->user_id,
                 'user_name' => $comment->user ? $comment->user->name : null, // Lấy tên người dùng
                 'product_id' => $comment->product_id,
@@ -71,7 +71,7 @@ class CommentAdminController extends Controller
     
     public function deleteComment($id)
     {
-        $comment = Comment::find($id);
+        $comment = Review::find($id);
         if (!$comment) {
             return response()->json(['message' => 'Bình luận không tồn tại'], 404);
         }

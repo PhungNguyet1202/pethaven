@@ -22,8 +22,8 @@ class Product extends Model
     // Quan hệ giữa Product và Category
     public function category()
     {
-        return $this->belongsTo(Category::class, 'categories_id');
-    }
+        return $this->belongsTo(Category::class, 'category_id');
+    }   
 
     // Quan hệ giữa Product và Review
     public function reviews()

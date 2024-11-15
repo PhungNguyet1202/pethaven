@@ -154,7 +154,9 @@ class UserController extends Controller
                 'message' => 'Đăng nhập thành công',
                 'user' => [
                     'id' => $user->id,
+                    'address'=>$user->address,
                     'name' => $user->name,
+                    'phone' => $user->phone,
                     'email' => $user->email,
                     'role' => $user->role
                 ],

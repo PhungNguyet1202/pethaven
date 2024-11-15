@@ -138,11 +138,11 @@ public function postStockEntry(Request $request)
         $inventoryEntry->save();
 
         // Cập nhật số lượng tồn kho trong bảng sản phẩm
-        $product = Product::find($validatedData['productId']); // Sử dụng productId
-        if ($product) {
-            $product->instock += $validatedData['quantity']; // Cập nhật số lượng tồn kho
-            $product->save();
-        }
+        // $product = Product::find($validatedData['productId']); // Sử dụng productId
+        // if ($product) {
+        //     $product->instock += $validatedData['quantity']; // Cập nhật số lượng tồn kho
+        //     $product->save();
+        // }
 
         return response()->json(['status' => 'success', 'message' => 'Stock entry added successfully.'], 200);
     } catch (\Exception $e) {
@@ -196,12 +196,12 @@ public function updateStockEntry(Request $request, $id)
         }
 
         // Cập nhật số lượng tồn kho trong bảng sản phẩm
-        $product = Product::find($validatedData['productId']);
-        if ($product) {
-            // Cập nhật tồn kho
-            $product->instock = $product->instock - $oldQuantity + $validatedData['quantity'];
-            $product->save();
-        }
+        // $product = Product::find($validatedData['productId']);
+        // if ($product) {
+        //     // Cập nhật tồn kho
+        //     $product->instock = $product->instock - $oldQuantity + $validatedData['quantity'];
+        //     $product->save();
+        // }
 
         return response()->json(['status' => 'success', 'message' => 'Stock entry updated successfully'], 200);
     } catch (\Exception $e) {
@@ -229,11 +229,11 @@ public function deleteStockEntry($id)
         $stockinEntry->delete();
 
         // Cập nhật số lượng tồn kho trong bảng sản phẩm
-        $product = Product::find($productId);
-        if ($product) {
-            $product->instock -= $quantity; // Trừ đi số lượng đã nhập
-            $product->save();
-        }
+        // $product = Product::find($productId);
+        // if ($product) {
+        //     $product->instock -= $quantity; // Trừ đi số lượng đã nhập
+        //     $product->save();
+        // }
 
         return response()->json(['status' => 'success', 'message' => 'Stock entry deleted successfully'], 200);
     } catch (\Exception $e) {

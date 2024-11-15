@@ -164,7 +164,7 @@ class NewsAdminController extends Controller
                 'created_at' => $news->created_at,
                 'updated_at' => $news->updated_at,
                 'image' => $news->image, // Thêm trường image
-                'description1' => $news->description1, // Thêm trường description
+                'description1' => $news->description, // Thêm trường description
                 'description2' => $news->description2,
             ];
         });
@@ -201,7 +201,7 @@ class NewsAdminController extends Controller
             'title' => $news->title,
             'content' => $news->content,
             'image' => $news->image ,
-            'description1'  => $news->description1,
+            'description1'  => $news->description,
             'description2'  => $news->description2,
             'categorynew_id' => $news->categorynew ? $news->categorynew->id : null,
             'category_name' => $news->categorynew ? $news->categorynew->name : null, // Lấy tên danh mục
@@ -229,7 +229,7 @@ class NewsAdminController extends Controller
             $news->content = $validatedData['content'];
             $news->categorynew_id = $validatedData['categorynew_id'];
             $news->user_id = $validatedData['user_id']; // Gán user_id cho bài viết
-            $news->description1 = $validatedData['description1'];
+            $news->description = $validatedData['description1'];
             $news->description2 = $validatedData['description2'];
     
             // Đường dẫn lưu ảnh
@@ -297,7 +297,7 @@ class NewsAdminController extends Controller
             Log::info('User ID updated to: ' . $news->user_id);
         }
     
-        $news->description1 = $request->description1 ?? $news->description1;
+        $news->description = $request->description1 ?? $news->description;
         $news->description2 = $request->description2 ?? $news->description2;
     
         Log::info('Updated News data (before save):', $news->toArray());

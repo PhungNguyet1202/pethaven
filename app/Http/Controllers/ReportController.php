@@ -415,7 +415,7 @@ public function getTotalRevenueByMonthInYear($year)
                     'orderdetail.product_id',
                     'products.name',
                     DB::raw('SUM(orderdetail.quantity) as total_quantity'),
-                    DB::raw('SUM(orderdetail.quantity * orderdetail.price) as total_revenue')
+                    DB::raw('SUM(total_price) as total_revenue')
                 )
                 ->where('orders.status', 'success')
                 ->groupBy('orderdetail.product_id', 'products.name')

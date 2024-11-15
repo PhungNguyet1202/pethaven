@@ -134,7 +134,7 @@ class OrderAdminController extends Controller
     {
         // Xác thực dữ liệu cho trạng thái đơn hàng
         $validatedData = $request->validate([
-            'status' => 'required|string|in:pending,prepare,shipping,success,cancel' // Trạng thái phải là một trong các giá trị hợp lệ
+            'status' => 'required|string|in:pending,prepare,shipping,success,cancle,return' // Trạng thái phải là một trong các giá trị hợp lệ
         ]);
     
         // Tìm đơn hàng theo ID
@@ -147,7 +147,7 @@ class OrderAdminController extends Controller
         $order->status = $validatedData['status'];
     
         // Nếu status là 'cancel', cập nhật lại số lượng sản phẩm trong Inventory
-        if ($order->status === 'cancel') {
+        if ($order->status === 'cancle' || $order->status === 'return') {
             // Lấy danh sách chi tiết đơn hàng của order
             $orderDetails = $order->orderDetails;
     
@@ -162,7 +162,7 @@ class OrderAdminController extends Controller
     
                 if ($inventory) {
                     // Cộng dồn số lượng vào inventory
-                    $inventory->stockin += $quantity;
+                    $inventory->quantity_instock += $quantity;
                     $inventory->save();
                 }
             }

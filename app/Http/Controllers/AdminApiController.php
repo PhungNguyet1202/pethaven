@@ -15,6 +15,7 @@ use App\Models\CategoryNew;
 use App\Models\News;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Models\Review;
 use App\Models\inventory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -42,15 +43,15 @@ class AdminApiController extends Controller
         $countCancelOrders = Order::where('status', 'cancel')->count();
     
         // Lấy 5 bình luận mới nhất với thông tin người dùng và sản phẩm
-        $dsBL = Comment::with(['user', 'product']) // Kết hợp với bảng user và product
+        $dsBL = Review::with(['user', 'product']) // Kết hợp với bảng user và product
             ->orderBy('created_at', 'DESC') // Sắp xếp theo ngày tạo giảm dần
             ->limit(5) // Lấy 5 bình luận mới nhất
             ->get()
             ->map(function ($comment) { // Dùng map để định dạng lại dữ liệu
                 return [
                     'id' => $comment->id,
-                    'rating' => $comment->rating,
-                    'content' => $comment->content,
+                    'rating' => $comment->Rating,
+                    'content' => $comment->Comment,
                     'user_id' => $comment->user_id,
                     'user_name' => $comment->user ? $comment->user->name : null, // Lấy tên người dùng
                     'product_id' => $comment->product_id,

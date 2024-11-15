@@ -197,6 +197,7 @@ class ServiceAdminController extends Controller
             return [
                 'id' => $booking->id,
                 'booking_date' => $booking->booking_date,
+                'booking_tỉme' => $booking->booking_time,
                 'status' => $booking->status,
                 'total_price' => $booking->total_price,
                 'user_id' => $booking->user_id,

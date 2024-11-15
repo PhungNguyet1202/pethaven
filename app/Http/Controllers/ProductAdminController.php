@@ -42,7 +42,7 @@ public function product(Request $request)
         $page = $request->input('page', 1);
     
         // Tạo truy vấn với các mối quan hệ
-        $query = Product::with('category')->withSum('stockIns', 'Quantity');
+        $query = Product::with('category')->withSum('inventories', 'quantity_instock');
     
         // Áp dụng tìm kiếm nếu có
         if ($search) {
@@ -65,8 +65,8 @@ public function product(Request $request)
                 'code' => $product->code,
                 'category_id' => $product->category_id,
                 'category_name' => $product->category ? $product->category->name : null, // Lấy tên danh mục
-                'stock_quantity' => $product->instock ?? 0,
-                // 'stock_quantity' => $product->stock_ins_sum_quantity ?? 0,  // Số lượng tồn kho
+                // 'stock_quantity' => $product->instock ?? 0,
+                'stock_quantity' => $product->inventories_sum_quantity_instock ?? 0, // Tổng số lượng tồn kho
             ];
         });
     
