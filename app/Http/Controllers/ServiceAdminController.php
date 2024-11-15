@@ -70,7 +70,7 @@ class ServiceAdminController extends Controller
                 'name' => 'required|string',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric',
-                'image' => 'nullable|image|max:2048',
+              
             ]);
         
             $service = new Service();
@@ -82,14 +82,23 @@ class ServiceAdminController extends Controller
             // Đường dẫn lưu ảnh
             $destinationPath = public_path('images/services');
         
-            if ($request->hasFile('image')) {
-                $img = $request->file('image');
-                $imgName = "{$service->id}." . $img->getClientOriginalExtension();
-                $img->move($destinationPath, $imgName);
-                $service->img = $imgName;
-                $service->save();
-            }
+           
+                if ($request->hasFile('img')) {
+                    Log::info('img upload detected for service ID: ' . $id);
         
+                    $img = $request->file('img');
+                    if (!$img->isValid()) {
+                        Log::error('img upload failed for service ID: ' . $id);
+                        return response()->json(['message' => 'img upload failed'], 400);
+                    }
+        
+                    $imgName = "{$service->id}." . $img->getClientOriginalExtension();
+                    $img->move($destinationPath, $imgName);
+                    $service->img = $imgName;
+                    Log::info('img updated successfully for service ID: ' . $id);
+                }
+        
+                $service->save();
             return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
         }
         
@@ -102,7 +111,7 @@ class ServiceAdminController extends Controller
         'name' => 'sometimes|required|string',
         'description' => 'nullable|string',
         'price' => 'sometimes|required|numeric',
-        'image' => 'nullable|image|max:2048',
+         
     ]);
 
     $service = Service::find($id);
@@ -120,10 +129,10 @@ class ServiceAdminController extends Controller
     $destinationPath = public_path('images/services');
 
     try {
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('img')) {
             Log::info('img upload detected for service ID: ' . $id);
 
-            $img = $request->file('image');
+            $img = $request->file('img');
             if (!$img->isValid()) {
                 Log::error('img upload failed for service ID: ' . $id);
                 return response()->json(['message' => 'img upload failed'], 400);
@@ -156,7 +165,7 @@ class ServiceAdminController extends Controller
         }
     
         // Xóa hình ảnh nếu có
-        if ($service->img && file_exists(public_path('images/services/' . $service->image))) {
+        if ($service->img && file_exists(public_path('images/services/' . $service->img))) {
             unlink(public_path('images/services/' . $service->img));
         }
     
