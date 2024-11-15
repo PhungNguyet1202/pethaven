@@ -21,11 +21,19 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'password',
-        'phone', // Thêm thuộc tính phone
-        'address' // Thêm thuộc tính address
+        'email', 
+        'password', 
+        'phone', 
+        'address' ,
+        'otp_code', 
+        'otp_expires_at',
     ];
+    
+    protected $dates = [
+        'otp_expires_at',
+    ];
+    
+  
 
     /**
      * The attributes that should be hidden for serialization.
@@ -79,48 +87,48 @@ class User extends Authenticatable
         return $this->hasMany(News::class, 'new_id');
     }
 
-    public function comments()
-    {
-        return $this->hasMany(Comment::class, 'comment_id');
-    }
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comment::class, 'comment_id');
+    // }
 
 
 
   
 
-    public function updateProfile(Request $req) {
-        $user = Auth::user(); // Lấy người dùng hiện tại
+    // public function updateProfile(Request $req) {
+    //     $user = Auth::user(); // Lấy người dùng hiện tại
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
-        }
+    //     if (!$user) {
+    //         return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
+    //     }
 
-        // Validate dữ liệu đầu vào
-        $validatedData = $req->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'img' => 'nullable|string|max:255',
-        ]);
+    //     // Validate dữ liệu đầu vào
+    //     $validatedData = $req->validate([
+    //         'name' => 'nullable|string|max:255',
+    //         'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
+    //         'password' => 'nullable|min:6|confirmed',
+    //         'phone' => 'nullable|string|max:15',
+    //         'address' => 'nullable|string|max:255',
+    //         'img' => 'nullable|string|max:255',
+    //     ]);
 
-        // Cập nhật thông tin
-        $user->name = $validatedData['name'] ?? $user->name;
-        $user->email = $validatedData['email'] ?? $user->email;
-        $user->phone = $validatedData['phone'] ?? $user->phone;
-        $user->address = $validatedData['address'] ?? $user->address;
-        $user->img = $validatedData['img'] ?? $user->img;
+    //     // Cập nhật thông tin
+    //     $user->name = $validatedData['name'] ?? $user->name;
+    //     $user->email = $validatedData['email'] ?? $user->email;
+    //     $user->phone = $validatedData['phone'] ?? $user->phone;
+    //     $user->address = $validatedData['address'] ?? $user->address;
+    //     $user->img = $validatedData['img'] ?? $user->img;
 
-        // Cập nhật mật khẩu nếu có
-        if (!empty($validatedData['password'])) {
-            $user->password = Hash::make($validatedData['password']);
-        }
+    //     // Cập nhật mật khẩu nếu có
+    //     if (!empty($validatedData['password'])) {
+    //         $user->password = Hash::make($validatedData['password']);
+    //     }
 
-        $user->save(); // Lưu thông tin cập nhật
+    //     $user->save(); // Lưu thông tin cập nhật
 
-        return response()->json(['message' => 'Cập nhật thành công!']);
-    }
+    //     return response()->json(['message' => 'Cập nhật thành công!']);
+    // }
     
 
     
