@@ -84,15 +84,16 @@ class CheckoutController extends Controller
         Log::info('Starting MoMo payment process for Order ID: ' . $order->id);
     
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-            $partnerCode = 'MOMOBKUN20180529';
+        $partnerCode = 'MOMOBKUN20180529';
+
             $accessKey = 'klm05TvNBzhg7h7j';
             $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
         $orderInfo = "Thanh toán qua mã QR MoMo";
         $amount = (string) $order->total_money;
         $orderId = (string) $order->id;
-        $redirectUrl = "http://localhost:3000/";
-        $ipnUrl = "http://localhost:8000/api/momo/status";
-        $extraData = "";    
+        $redirectUrl = "http://localhost:3000/Order";   
+        $ipnUrl = "http://localhost:3000/";
+        $extraData = "";        
     
         // Tạo chuỗi hash
         $requestId = time() . "";
