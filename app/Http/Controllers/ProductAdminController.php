@@ -65,7 +65,8 @@ public function product(Request $request)
                 'code' => $product->code,
                 'category_id' => $product->category_id,
                 'category_name' => $product->category ? $product->category->name : null, // Lấy tên danh mục
-                'stock_quantity' => $product->stock_ins_sum_quantity ?? 0, // Số lượng tồn kho
+                'stock_quantity' => $product->instock ?? 0,
+                // 'stock_quantity' => $product->stock_ins_sum_quantity ?? 0,  // Số lượng tồn kho
             ];
         });
     

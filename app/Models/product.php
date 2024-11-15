@@ -14,7 +14,7 @@ class Product extends Model
         'description',
         'categories_id',
         'price',
-        'instock',
+
         'sale_price',
         'image',
     ];
@@ -28,14 +28,14 @@ class Product extends Model
     // Quan hệ giữa Product và Review
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'review_id');
+        return $this->hasMany(Review::class, 'product_id');
     }
 
-    // Quan hệ giữa Product và CartItem
-    public function cartItems()
-    {
-        return $this->hasMany(CartItem::class, 'cartitem_id');
-    }
+       // Quan hệ giữa Product và CartItem
+       public function cartItems()
+       {
+           return $this->hasMany(CartItem::class, 'product_id');
+       }
 
 
     /**
@@ -54,7 +54,7 @@ class Product extends Model
     // Quan hệ giữa Product và Inventory
     public function inventories()
     {
-        return $this->hasMany(Inventory::class, 'inventory_id');
+        return $this->hasMany(Inventory::class, 'product_id');
     }
 
     // Quan hệ giữa Product và OrderDetail

@@ -18,13 +18,14 @@ class ServiceBooking extends Model
     //         'phone',
     //         'email',
     //     ];
-    
+
     protected $table = 'servicebookings'; // Tên bảng phải trùng khớp
     protected $fillable = [
         'user_id',
         'pet_id',
         'service_id',
         'booking_date',
+        'booking_time',
         'status',
         'total_price',
         'phone', // nếu bạn có trường này
@@ -47,14 +48,12 @@ class ServiceBooking extends Model
      */
     public function pet()
     {
-        return $this->belongsTo(Pet::class, 'pet_id'); // Kết nối với bảng pets thông qua pet_id
+        return $this->belongsTo(Pet::class);
     }
 
-    /**
-     * Lấy Service mà ServiceBooking thuộc về.
-     */
     public function service()
     {
-        return $this->belongsTo(Service::class, 'service_id'); // Kết nối với bảng services thông qua service_id
+        return $this->belongsTo(Service::class);
     }
+
 }

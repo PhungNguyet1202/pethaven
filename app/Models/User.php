@@ -27,6 +27,11 @@ class User extends Authenticatable
         'address' ,
         'otp_code', 
         'otp_expires_at',
+        'email',
+        'password',
+        'phone',
+        'address',
+        'img', // Thêm vào đây để có thể cập nhật ảnh đại diện
     ];
     
     protected $dates = [
@@ -34,6 +39,7 @@ class User extends Authenticatable
     ];
     
   
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -60,7 +66,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(ServiceBooking::class, 'user_id'); // Chỉ định khóa ngoại là user_id
     }
-    
+
 
     public function orders()
     {
@@ -94,7 +100,6 @@ class User extends Authenticatable
 
 
 
-  
 
     // public function updateProfile(Request $req) {
     //     $user = Auth::user(); // Lấy người dùng hiện tại
@@ -133,3 +138,4 @@ class User extends Authenticatable
 
     
 }
+
