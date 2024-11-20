@@ -31,21 +31,21 @@ class ServiceAdminController extends Controller
         $search = $request->input('search');
         $perPage = $request->input('perPage', 10); // Mặc định là 10 bản ghi trên mỗi trang
         $page = $request->input('page', 1);
-    
+
         // Tạo truy vấn cơ bản cho Service
         $query = Service::query();
-    
+
         // Áp dụng tìm kiếm theo tên dịch vụ hoặc mô tả nếu có từ khóa tìm kiếm
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
-                
+
             });
         }
-    
+
         // Lấy kết quả phân trang
         $services = $query->paginate($perPage, ['*'], 'page', $page);
-    
+
         // Trả về kết quả
         return response()->json($services, 200);
     }
@@ -53,35 +53,35 @@ class ServiceAdminController extends Controller
         {
             // Tìm sản phẩm theo ID
             $category = service::get()->find($id);
-            
+
             // Kiểm tra xem sản phẩm có tồn tại không
             if (!$category) {
                 return response()->json(['message' => 'Sản phẩm không tồn tại'], 404);
             }
-        
+
             return response()->json($category, 200);
         }
         public function postServiceAdd(Request $request)
         {
             // Log giá trị request nhận được
             Log::info('Request data for adding service: ', $request->all());
-        
+
             $request->validate([
                 'name' => 'required|string',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric',
-                'image' => 'nullable|image|max:2048',
+
             ]);
-        
+
             $service = new Service();
             $service->name = $request->name;
             $service->description = $request->description;
             $service->price = $request->price;
             $service->save();
-        
+
             // Đường dẫn lưu ảnh
             $destinationPath = public_path('images/services');
-        
+
             if ($request->hasFile('image')) {
                 $img = $request->file('image');
                 $imgName = "{$service->id}." . $img->getClientOriginalExtension();
@@ -89,10 +89,10 @@ class ServiceAdminController extends Controller
                 $service->img = $imgName;
                 $service->save();
             }
-        
+
             return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
         }
-        
+
         public function updateService(Request $request, $id)
 {
     Log::info("Starting updateService for service ID: $id");
@@ -102,7 +102,7 @@ class ServiceAdminController extends Controller
         'name' => 'sometimes|required|string',
         'description' => 'nullable|string',
         'price' => 'sometimes|required|numeric',
-        'image' => 'nullable|image|max:2048',
+
     ]);
 
     $service = Service::find($id);
@@ -145,24 +145,24 @@ class ServiceAdminController extends Controller
     }
 }
 
-        
-    
-        
+
+
+
     public function deleteService($id)
     {
         $service = Service::find($id);
         if (!$service) {
             return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
         }
-    
+
         // Xóa hình ảnh nếu có
-        if ($service->img && file_exists(public_path('images/services/' . $service->image))) {
+        if ($service->img && file_exists(public_path('images/services/' . $service->img))) {
             unlink(public_path('images/services/' . $service->img));
         }
-    
+
         // Xóa dịch vụ
         $service->delete();
-    
+
         return response()->json(['message' => 'Xóa dịch vụ thành công'], 200);
     }
     public function serviceBooking(Request $request)
@@ -171,10 +171,10 @@ class ServiceAdminController extends Controller
         $search = $request->input('search');
         $perPage = $request->input('perPage', 10); // Mặc định là 10 bản ghi trên mỗi trang
         $page = $request->input('page', 1);
-  
+
         // Tạo truy vấn cơ bản cho ServiceBooking cùng với user, pet, và service
         $query = ServiceBooking::with(['user', 'pet', 'service']);
-  
+
         // Áp dụng tìm kiếm nếu có từ khóa tìm kiếm
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -188,10 +188,10 @@ class ServiceAdminController extends Controller
                   });
             });
         }
-  
+
         // Lấy kết quả phân trang
         $serviceBookings = $query->paginate($perPage, ['*'], 'page', $page);
-  
+
         // Định dạng lại dữ liệu trả về với tên người dùng và tên thú cưng
         $formattedBookings = $serviceBookings->getCollection()->map(function ($booking) {
             return [
@@ -208,7 +208,7 @@ class ServiceAdminController extends Controller
                 'service_name' => $booking->service ? $booking->service->name : null, // Lấy tên dịch vụ
             ];
         });
-  
+
         // Trả về kết quả dưới dạng JSON
         return response()->json([
             'data' => $formattedBookings,
@@ -218,8 +218,8 @@ class ServiceAdminController extends Controller
             'total' => $serviceBookings->total(),
         ], 200);
     }
- 
-   
+
+
     public function updateStatusServicebooking(Request $request, $id)
     {
         // Xác thực dữ liệu cho trạng thái
@@ -235,7 +235,7 @@ class ServiceAdminController extends Controller
 
         // Cập nhật trạng thái của ServiceBooking
         $serviceBooking->status = $validatedData['status'];
-        
+
         // Lưu thay đổi vào cơ sở dữ liệu
         $serviceBooking->save();
 
@@ -277,5 +277,5 @@ class ServiceAdminController extends Controller
         // Trả về JSON chứa thông tin service booking
         return response()->json($serviceBookingData, 200);
     }
- 
+
 }

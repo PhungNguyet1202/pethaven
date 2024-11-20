@@ -319,25 +319,35 @@ class ProductController extends Controller
         }
     }
 
-    public function detail($id) {
-        // Tìm sản phẩm theo id
-        $product = Product::find($id);
+    public function detail($id)
+{
+    // Tìm sản phẩm theo id và lấy tổng số lượng tồn kho
+    $product = Product::withSum('inventories', 'quantity_instock')->find($id);
 
-        // Kiểm tra nếu sản phẩm tồn tại
-        if ($product) {
-            // Trả về chi tiết sản phẩm dưới dạng JSON
-            return response()->json([
-                'status' => 'success',
-                'product' => $product
-            ], 200);
-        } else {
-            // Trả về thông báo lỗi nếu không tìm thấy sản phẩm
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Product not found'
-            ], 404);
-        }
+    // Kiểm tra nếu sản phẩm tồn tại
+    if ($product) {
+        // Trả về chi tiết sản phẩm dưới dạng JSON, bao gồm description và tổng số lượng tồn kho
+        return response()->json([
+            'status' => 'success',
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'image' => $product->image,
+                'price' => $product->price,
+                'sale_price' => $product->sale_price,
+                'code' => $product->code,
+                'description' => $product->description,  // Thêm description vào đây
+                'stock_quantity' => $product->inventories_sum_quantity_instock ?? 0, // Tổng số lượng tồn kho
+            ]
+        ], 200);
+    } else {
+        // Trả về thông báo lỗi nếu không tìm thấy sản phẩm
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Product not found'
+        ], 404);
     }
+}
 
 
   }

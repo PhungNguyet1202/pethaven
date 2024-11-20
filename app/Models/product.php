@@ -12,7 +12,7 @@ class Product extends Model
         'name',
         'slug',
         'description',
-        'categories_id',
+        'category_id',
         'price',
 
         'sale_price',
@@ -23,7 +23,7 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
-    }   
+    }
 
     // Quan hệ giữa Product và Review
     public function reviews()

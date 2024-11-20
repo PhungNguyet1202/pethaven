@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="row">
-            
+
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
@@ -50,10 +50,13 @@
                                     nhập</button>
                                 <button type="button" class="btn-google"
                                     id="googleSignInBtn">
-                                    <img
+                                    {{-- <img
                                         src="{{ asset('assets/public/img/google-icon.png')}}"
                                         alt="Google Logo">Đăng nhập với
-                                    Google
+                                    Google --}}
+                                    <a href="{{ route('auth.google') }}">
+                                        <img src="{{ asset('assets/public/img/google-icon.png') }}" alt="Google Logo">Đăng nhập với Google
+                                       </a>
                                 </button>
                             </form>
                         </div>

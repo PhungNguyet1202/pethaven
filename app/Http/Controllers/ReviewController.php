@@ -45,6 +45,23 @@ class ReviewController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Đánh giá đã được thêm thành công']);
     }
+    public function getRatingSummary(Product $product)
+{
+    // Tính tổng số bình luận
+    $totalReviews = Review::where('product_id', $product->id)->count();
+
+    // Tính rating trung bình
+    $averageRating = Review::where('product_id', $product->id)->avg('rating');
+
+    // Đảm bảo trả về rating trung bình với tối đa 1 chữ số thập phân
+    $averageRating = round($averageRating, 1);
+
+    return response()->json([
+        'average_rating' => $averageRating,
+        'total_reviews' => $totalReviews,
+    ]);
+}
+
 
 }
 
