@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
@@ -35,15 +36,19 @@ class ReviewController extends Controller
         ]);
 
         // Tạo mới đánh giá
-        $review = new Review();
-        $review->user_id = $request->user_id;
-        $review->product_id = $product->id;
-        $review->rating = $request->rating;
-        $review->comment = $request->comment;
+      // Tạo mới đánh giá
+$review = new Review();
+$review->user_id = $request->user_id;
+$review->product_id = $product->id;
+$review->rating = $request->rating;
+$review->comment = $request->comment;
+$review->save();
 
-        $review->save();
+// Gọi phương thức cập nhật rating của sản phẩm
+$this->updateProductRating($product->id);
 
-        return response()->json(['success' => true, 'message' => 'Đánh giá đã được thêm thành công']);
+return response()->json(['success' => true, 'message' => 'Đánh giá đã được thêm thành công']);
+
     }
     public function getRatingSummary(Product $product)
 {
@@ -62,6 +67,18 @@ class ReviewController extends Controller
     ]);
 }
 
+
+
+public function updateProductRating($productId)
+{
+    // Tính trung bình rating từ bảng reviews
+    $averageRating = DB::table('reviews')
+        ->where('product_id', $productId)
+        ->avg('rating');
+
+    // Cập nhật cột rating trong bảng products
+    Product::where('id', $productId)->update(['rating' => round($averageRating, 1)]);
+}
 
 }
 

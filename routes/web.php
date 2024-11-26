@@ -41,7 +41,7 @@ Route::prefix('api')->group(function() {
     Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
     Route::resource('/comments', CommentCotroller::class);
     Route::post('/login', [UserController::class, 'postlogin'])->name('login');
-    Route::get('/login', [UserController::class, 'login'])->name('login');
+    // Route::get('/login', [UserController::class, 'login'])->name('login');
 
 
     Route::post('/register', [UserController::class, 'postregister']);
@@ -91,6 +91,11 @@ Route::put('orders/{order_id}/cancel', [OrderHistoryController::class, 'cancelOr
 Route::post('/orders/return/{order_id}', [OrderHistoryController::class, 'returnOrder']);
 Route::post('/contact', [ContactController::class, 'sendContact']);
 Route::get('/products/{product}/reviews/summary', [ReviewController::class, 'getRatingSummary']);
+    // Them san phẩm
+    Route::get('/products/new', [ProductController::class, 'getNewProducts']);
+    Route::get('/products/hot', [ProductController::class, 'getHotProducts']);
+    Route::get('/latest-news', [NewsController::class, 'getLatestNews']);
+
 });
 
 // Người dùng & Giỏ hàng (yêu cầu đăng nhập)

@@ -231,6 +231,41 @@ class ProductController extends Controller
 
 
 
+//san pham moi theo id
+public function getNewProducts(Request $request)
+{
+    $perPage = $request->input('perPage', 10); // Số lượng sản phẩm mặc định: 10
+
+    $products = Product::orderBy('id', 'desc')->paginate($perPage);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Danh sách sản phẩm mới',
+        'data' => $products->items(),
+        'pagination' => [
+            'current_page' => $products->currentPage(),
+            'last_page' => $products->lastPage(),
+        ],
+    ]);
+}
+
+// san pham hot theo rating
+public function getHotProducts(Request $request)
+{
+    $perPage = $request->input('perPage', 10); // Số lượng sản phẩm mặc định: 10
+
+    $products = Product::orderBy('rating', 'desc')->paginate($perPage);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Danh sách sản phẩm hot',
+        'data' => $products->items(),
+        'pagination' => [
+            'current_page' => $products->currentPage(),
+            'last_page' => $products->lastPage(),
+        ],
+    ]);
+}
 
 
 //     public function product(Request $request)

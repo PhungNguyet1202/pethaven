@@ -481,7 +481,7 @@ $booking = ServiceBooking::create([
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Đặt dịch vụ thành công',
+            'alert' => 'Đặt dịch vụ thành công',
             'data' => $booking,
         ], 201);
     } catch (\Exception $e) {
