@@ -2,7 +2,7 @@
 
 return [
 
-    'paths' => ['api/*', 'admin/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'admin/*', 'sanctum/csrf-cookie','auth/google/callback'],
 
     'allowed_methods' => ['*'], // Cho phép tất cả các phương thức HTTP
 

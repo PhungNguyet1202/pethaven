@@ -5,17 +5,22 @@ use App\Http\Controllers\CommentCotroller; // Đã sửa chính tả
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CommentAdminController;
 use App\Http\Controllers\ProductAdminController;
 use App\Http\Controllers\ServiceAdminController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\NewAdminController;
+use App\Http\Controllers\NewsAdminController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserAdminController;
 use App\Http\Controllers\StockInAdminController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ContactController;
 use App\Models\Product;
 
 
@@ -26,12 +31,23 @@ use Illuminate\Support\Facades\Auth;
 Route::post('/test-csrf', function () {
     return response()->json(['message' => 'CSRF token is valid!']);
 });
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect()->route('home');
+})->name('logout');
 
 Route::prefix('api')->group(function() {
     Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
     Route::resource('/comments', CommentCotroller::class);
     Route::post('/login', [UserController::class, 'postlogin'])->name('login');
+    // Route::get('/login', [UserController::class, 'login'])->name('login');
+
+
     Route::post('/register', [UserController::class, 'postregister']);
+    //Route::get('/register', [UserController::class, 'register']);
+
+
     Route::get('/product', [ProductController::class, 'product'])->name('product');
     Route::get('/products', [ProductController::class, 'product']);
     Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('product.detail');
@@ -48,7 +64,8 @@ Route::prefix('api')->group(function() {
 
     Route::post('/booking/{bookingId}/cancel', [ServiceController::class, 'cancelBooking']);
 
-
+    Route::post('/momo-payment', [CheckoutController::class, 'momo_payment']);
+    Route::post('/momo/status', [CheckoutController::class, 'checkTransactionStatus']);
     // Tin tức
     Route::get('/news', [NewsController::class, 'news'])->name('news');
     Route::get('/news/{id}', [NewsController::class, 'newsDetail']);
@@ -59,11 +76,26 @@ Route::prefix('api')->group(function() {
    Route::get('/products/{product}/reviews', [ReviewController::class, 'index']);
    Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
 
-   Route::post('/createOrder', [OrderController::class, 'createOrder']);
+   Route::post('/createOrder', [CheckoutController::class, 'createOrder']);
     // quên mk
     Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
     Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
     Route::post('/reset-password', [UserController::class, 'resetPassword']);
+    Route::get('/orders/pending/{user_id}', [OrderHistoryController::class, 'getPendingOrders']);
+Route::get('/orders/prepare/{user_id}', [OrderHistoryController::class, 'getPrepareOrders']);
+Route::get('/orders/shipping/{user_id}', [OrderHistoryController::class, 'getShippingOrders']);
+Route::get('/orders/success/{user_id}', [OrderHistoryController::class, 'getSuccessOrders']);
+Route::get('/orders/return/{order_id}', [OrderHistoryController::class, 'getReturnOrders']);
+Route::get('/orders/canceled/{user_id}', [OrderHistoryController::class, 'getCanceledOrders']);
+Route::put('orders/{order_id}/cancel', [OrderHistoryController::class, 'cancelOrder']);
+Route::post('/orders/return/{order_id}', [OrderHistoryController::class, 'returnOrder']);
+Route::post('/contact', [ContactController::class, 'sendContact']);
+Route::get('/products/{product}/reviews/summary', [ReviewController::class, 'getRatingSummary']);
+    // Them san phẩm
+    Route::get('/products/new', [ProductController::class, 'getNewProducts']);
+    Route::get('/products/hot', [ProductController::class, 'getHotProducts']);
+    Route::get('/latest-news', [NewsController::class, 'getLatestNews']);
+
 });
 
 // Người dùng & Giỏ hàng (yêu cầu đăng nhập)
@@ -72,11 +104,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItemId}', [CartController::class, 'updateCart'])->name('cart.update');
     Route::delete('/cart/{cartItemId}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-
+// Route để chuyển hướng đến Google login
+// Route::get('/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+// Route::get('/google/callback', [LoginController::class, 'handleGoogleCallback']);
 
     // Đảm bảo route có tham số {userId}
 
 });
+
+// Route để chuyển hướng đến Google login
+Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+
+// Route để xử lý callback từ Google
+
+Route::post('auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+
 
 // Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 // Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
@@ -153,9 +196,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Comment Routes
     Route::prefix('comment')->name('comment.')->group(function () {
-        Route::get('/', [CommentCotroller::class, 'comment'])->name('index'); // Danh sách comment
+        Route::get('/', [CommentAdminController::class, 'comment'])->name('index'); // Danh sách comment
 
-        Route::delete('/delete/{id}', [CommentCotroller::class, 'deleteComment'])->name('delete'); // Xóa comment
+        Route::delete('/delete/{id}', [CommentAdminController::class, 'deleteComment'])->name('delete'); // Xóa comment
     });
 
     // Service Routes
@@ -169,8 +212,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
     Route::prefix('order')->name('order.')->group(function () {
         Route::get('/', [OrderAdminController::class, 'orders'])->name('index'); // Danh sách comment
-
-        Route::put('/update/{id}', [OrderAdminController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
+        Route::get('/{id}', [OrderAdminController::class, 'orderDetail'])->name('show'); // Danh sách comment
+        Route::put('/update/{id}', [OrderAdminController ::class, 'updateOrderStatus'])->name('update'); // Cập nhật categoryNew
     });
     Route::prefix('servicebooking')->name('servicebooking.')->group(function () {
         Route::get('/', [ServiceAdminController::class, 'serviceBooking'])->name('index'); // Danh sách comment

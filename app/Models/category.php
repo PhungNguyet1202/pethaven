@@ -14,9 +14,10 @@ class category extends Model
         'name',
         'slug',
         'description',
+        'slug',
 
     ];
-    
+
 
 
     /**

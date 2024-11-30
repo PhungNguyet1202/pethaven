@@ -63,4 +63,11 @@ class NewsController extends Controller
 
         return response()->json($formattedNews, 200);
     }
+    public function getLatestNews()
+    {
+        // Lấy 3 tin tức mới nhất
+        $news = News::orderBy('created_at', 'desc')->take(3)->get();
+
+        return response()->json($news);
+    }
 }
