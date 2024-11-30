@@ -25,47 +25,58 @@ use Carbon\Carbon;
 class OrderAdminController extends Controller
 {
     public function orders(Request $request)
-    {
-        // Lấy thông tin tìm kiếm và phân trang từ request
-        $search = $request->input('search');
-        $perPage = $request->input('perPage', 10); // Mặc định 10 đơn hàng trên mỗi trang
-        $page = $request->input('page', 1);
-    
-        // Tạo truy vấn với các mối quan hệ
-        $query = Order::with(['user', 'payments', 'shippings']); // Đảm bảo rằng các mối quan hệ được định nghĩa đúng
-    
-        // Áp dụng tìm kiếm nếu có
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('id', 'like', "%{$search}%");
-            
-            });
-        }   
-    
-        // Lấy kết quả phân trang
-        $orders = $query->paginate($perPage, ['*'], 'page', $page);
-    
-        // Định dạng lại dữ liệu để bao gồm chi tiết người dùng, phương thức thanh toán, và vận chuyển
-        $formattedOrders = $orders->getCollection()->map(function ($order) {
-            return [
-                'id' => $order->id,
-                'user_fullname' => $order->user->name ?? null,
-                'user_email' => $order->user->email ?? null,
-                'user_phone' => $order->user->phone ?? null,
-                'total_money' => $order->total_money,
-                'total_quantity' => $order->total_quantity,
-                'status' => $order->status,
-                'payment_method' => $order->payments->payment_method ?? null, // Kiểm tra phương thức thanh toán
-                'shipping_method' => $order->shippings->shipping_method ?? null, // Kiểm tra phương thức vận chuyển
-                'created_at' => $order->created_at,
-            ];
+{
+    // Lấy thông tin tìm kiếm và phân trang từ request
+    $search = $request->input('search');
+    $fromDate = $request->input('from_date');
+    $toDate = $request->input('to_date');
+    $perPage = $request->input('perPage', 10); // Mặc định 10 đơn hàng trên mỗi trang
+    $page = $request->input('page', 1);
+
+    // Tạo truy vấn với các mối quan hệ
+    $query = Order::with(['user', 'payments', 'shippings']); // Đảm bảo rằng các mối quan hệ được định nghĩa đúng
+
+    // Áp dụng tìm kiếm nếu có
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('id', 'like', "%{$search}%");
         });
-    
-        // Cập nhật lại tổng số trang cho response
-        $orders->setCollection($formattedOrders);
-    
-        return response()->json($orders, 200);
-      }
+    }
+
+    // Lọc theo ngày nếu có
+    if ($fromDate) {
+        $query->where('created_at', '>=', $fromDate);
+    }
+
+    if ($toDate) {
+        $query->where('created_at', '<=', $toDate);
+    }
+
+    // Lấy kết quả phân trang
+    $orders = $query->paginate($perPage, ['*'], 'page', $page);
+
+    // Định dạng lại dữ liệu để bao gồm chi tiết người dùng, phương thức thanh toán, và vận chuyển
+    $formattedOrders = $orders->getCollection()->map(function ($order) {
+        return [
+            'id' => $order->id,
+            'user_fullname' => $order->user->name ?? null,
+            'user_email' => $order->user->email ?? null,
+            'user_phone' => $order->user->phone ?? null,
+            'total_money' => $order->total_money,
+            'total_quantity' => $order->total_quantity,
+            'status' => $order->status,
+            'payment_method' => $order->payments->payment_method ?? null,
+            'shipping_method' => $order->shippings->shipping_method ?? null,
+            'created_at' => $order->created_at,
+        ];
+    });
+
+    // Cập nhật lại tổng số trang cho response
+    $orders->setCollection($formattedOrders);
+
+    return response()->json($orders, 200);
+}
+
     // Lấy chi tiết đơn hàng dựa trên order_id
     public function orderDetail($order_id)
     {

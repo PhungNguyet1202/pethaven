@@ -70,7 +70,6 @@ class ServiceAdminController extends Controller
                 'name' => 'required|string',
                 'description' => 'nullable|string',
                 'price' => 'required|numeric',
-              
             ]);
         
             $service = new Service();
@@ -82,7 +81,69 @@ class ServiceAdminController extends Controller
             // Đường dẫn lưu ảnh
             $destinationPath = public_path('images/services');
         
-           
+            // Xử lý img
+            if ($request->hasFile('img')) {
+                Log::info('img upload detected for service ID: ' . $service->id);
+        
+                $img = $request->file('img');
+                if (!$img->isValid()) {
+                    Log::error('img upload failed for service ID: ' . $service->id);
+                    return response()->json(['message' => 'img upload failed'], 400);
+                }
+        
+                $imgName = "{$service->id}." . $img->getClientOriginalExtension();
+                $img->move($destinationPath, $imgName);
+                $service->img = $imgName;
+                Log::info('img updated successfully for service ID: ' . $service->id);
+            }
+        
+            // Xử lý imgdetail
+            if ($request->hasFile('imgdetail')) {
+                Log::info('imgdetail upload detected for service ID: ' . $service->id);
+        
+                $imgdetail = $request->file('imgdetail');
+                if (!$imgdetail->isValid()) {
+                    Log::error('imgdetail upload failed for service ID: ' . $service->id);
+                    return response()->json(['message' => 'imgdetail upload failed'], 400);
+                }
+        
+                $imgdetailName = "{$service->id}_detail." . $imgdetail->getClientOriginalExtension();
+                $imgdetail->move($destinationPath, $imgdetailName);
+                $service->imgdetail = $imgdetailName;
+                Log::info('imgdetail updated successfully for service ID: ' . $service->id);
+            }
+        
+            $service->save();
+            return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
+        }
+        
+        public function updateService(Request $request, $id)
+        {
+            Log::info("Starting updateService for service ID: $id");
+            Log::info('Request data: ', $request->all());
+        
+            $request->validate([
+                'name' => 'sometimes|required|string',
+                'description' => 'nullable|string',
+                'price' => 'sometimes|required|numeric',
+            ]);
+        
+            $service = Service::find($id);
+            if (!$service) {
+                Log::warning("Service not found for ID: $id");
+                return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
+            }
+        
+            Log::info('Original Service data: ', $service->toArray());
+        
+            $service->name = $request->name ?? $service->name;
+            $service->description = $request->description ?? $service->description;
+            $service->price = $request->price ?? $service->price;
+        
+            $destinationPath = public_path('images/services');
+        
+            try {
+                // Xử lý img
                 if ($request->hasFile('img')) {
                     Log::info('img upload detected for service ID: ' . $id);
         
@@ -98,61 +159,31 @@ class ServiceAdminController extends Controller
                     Log::info('img updated successfully for service ID: ' . $id);
                 }
         
-                $service->save();
-            return response()->json(['message' => 'Thêm dịch vụ thành công'], 201);
-        }
+                // Xử lý imgdetail
+                if ($request->hasFile('imgdetail')) {
+                    Log::info('imgdetail upload detected for service ID: ' . $id);
         
-        public function updateService(Request $request, $id)
-{
-    Log::info("Starting updateService for service ID: $id");
-    Log::info('Request data: ', $request->all());
-
-    $request->validate([
-        'name' => 'sometimes|required|string',
-        'description' => 'nullable|string',
-        'price' => 'sometimes|required|numeric',
-         
-    ]);
-
-    $service = Service::find($id);
-    if (!$service) {
-        Log::warning("Service not found for ID: $id");
-        return response()->json(['message' => 'Dịch vụ không tồn tại'], 404);
-    }
-
-    Log::info('Original Service data: ', $service->toArray());
-
-    $service->name = $request->name ?? $service->name;
-    $service->description = $request->description ?? $service->description;
-    $service->price = $request->price ?? $service->price;
-
-    $destinationPath = public_path('images/services');
-
-    try {
-        if ($request->hasFile('img')) {
-            Log::info('img upload detected for service ID: ' . $id);
-
-            $img = $request->file('img');
-            if (!$img->isValid()) {
-                Log::error('img upload failed for service ID: ' . $id);
-                return response()->json(['message' => 'img upload failed'], 400);
+                    $imgdetail = $request->file('imgdetail');
+                    if (!$imgdetail->isValid()) {
+                        Log::error('imgdetail upload failed for service ID: ' . $id);
+                        return response()->json(['message' => 'imgdetail upload failed'], 400);
+                    }
+        
+                    $imgdetailName = "{$service->id}_detail." . $imgdetail->getClientOriginalExtension();
+                    $imgdetail->move($destinationPath, $imgdetailName);
+                    $service->imgdetail = $imgdetailName;
+                    Log::info('imgdetail updated successfully for service ID: ' . $id);
+                }
+        
+                $service->save();
+                Log::info('Service updated successfully for service ID: ' . $id);
+        
+                return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
+            } catch (\Exception $e) {
+                Log::error('Failed to update service ID: ' . $id . ' Error: ' . $e->getMessage());
+                return response()->json(['message' => 'Cập nhật dịch vụ thất bại', 'error' => $e->getMessage()], 500);
             }
-
-            $imgName = "{$service->id}." . $img->getClientOriginalExtension();
-            $img->move($destinationPath, $imgName);
-            $service->img = $imgName;
-            Log::info('img updated successfully for service ID: ' . $id);
         }
-
-        $service->save();
-        Log::info('Service updated successfully for service ID: ' . $id);
-
-        return response()->json(['message' => 'Cập nhật dịch vụ thành công'], 200);
-    } catch (\Exception $e) {
-        Log::error('Failed to update service ID: ' . $id . ' Error: ' . $e->getMessage());
-        return response()->json(['message' => 'Cập nhật dịch vụ thất bại', 'error' => $e->getMessage()], 500);
-    }
-}
 
         
     
@@ -175,59 +206,87 @@ class ServiceAdminController extends Controller
         return response()->json(['message' => 'Xóa dịch vụ thành công'], 200);
     }
     public function serviceBooking(Request $request)
-    {
-        // Lấy thông tin tìm kiếm và phân trang từ request
-        $search = $request->input('search');
-        $perPage = $request->input('perPage', 10); // Mặc định là 10 bản ghi trên mỗi trang
-        $page = $request->input('page', 1);
-  
+{
+    try {
+        // Xác thực đầu vào
+        $validated = $request->validate([
+            'search' => 'nullable|string',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+            'perPage' => 'nullable|integer|min:1',
+            'page' => 'nullable|integer|min:1',
+        ]);
+
+        // Lấy thông tin từ request
+        $search = $validated['search'] ?? null;
+        $fromDate = $validated['from_date'] ?? null;
+        $toDate = $validated['to_date'] ?? null;
+        $perPage = $validated['perPage'] ?? 10;
+        $page = $validated['page'] ?? 1;
+
         // Tạo truy vấn cơ bản cho ServiceBooking cùng với user, pet, và service
         $query = ServiceBooking::with(['user', 'pet', 'service']);
-  
-        // Áp dụng tìm kiếm nếu có từ khóa tìm kiếm
+
+        // Áp dụng tìm kiếm nếu có từ khóa
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('booking_date', 'like', "%{$search}%") // Tìm theo ngày đặt
-                  ->orWhere('status', 'like', "%{$search}%")     // Tìm theo trạng thái
+                $q->where('booking_date', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");  // Tìm theo tên người dùng
+                      $q->where('name', 'like', "%{$search}%");
                   })
                   ->orWhereHas('pet', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");  // Tìm theo tên thú cưng
+                      $q->where('name', 'like', "%{$search}%");
                   });
             });
         }
-  
+
+        // Lọc theo khoảng ngày
+        if ($fromDate || $toDate) {
+            $query->whereBetween('booking_date', [
+                $fromDate ?? '1900-01-01', // Giá trị mặc định từ xa
+                $toDate ?? now()->toDateString() // Giá trị mặc định tới ngày hiện tại
+            ]);
+        }
+
         // Lấy kết quả phân trang
         $serviceBookings = $query->paginate($perPage, ['*'], 'page', $page);
-  
-        // Định dạng lại dữ liệu trả về với tên người dùng và tên thú cưng
-        $formattedBookings = $serviceBookings->getCollection()->map(function ($booking) {
+
+        // Định dạng dữ liệu trả về
+        $formattedBookings = $serviceBookings->map(function ($booking) {
             return [
                 'id' => $booking->id,
                 'booking_date' => $booking->booking_date,
-                'booking_tỉme' => $booking->booking_time,
+                'booking_time' => $booking->booking_time,
                 'status' => $booking->status,
                 'total_price' => $booking->total_price,
-                'user_id' => $booking->user_id,
-                'user_name' => $booking->user ? $booking->user->name : null,  // Lấy tên người dùng
-                'pet_id' => $booking->pet_id,
-                'pet_name' => $booking->pet ? $booking->pet->name : null,    // Lấy tên thú cưng
-                'service_id' => $booking->service_id,
-                'service_name' => $booking->service ? $booking->service->name : null, // Lấy tên dịch vụ
+                'user_name' => $booking->user->name ?? null,
+                'pet_name' => $booking->pet->name ?? null,
+                'service_name' => $booking->service->name ?? null,
             ];
         });
-  
-        // Trả về kết quả dưới dạng JSON
+
+        // Trả về kết quả JSON
         return response()->json([
             'data' => $formattedBookings,
-            'current_page' => $serviceBookings->currentPage(),
-            'last_page' => $serviceBookings->lastPage(),
-            'per_page' => $serviceBookings->perPage(),
-            'total' => $serviceBookings->total(),
+            'pagination' => [
+                'current_page' => $serviceBookings->currentPage(),
+                'last_page' => $serviceBookings->lastPage(),
+                'per_page' => $serviceBookings->perPage(),
+                'total' => $serviceBookings->total(),
+            ],
         ], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Trả về lỗi xác thực
+        return response()->json(['error' => $e->errors()], 422);
+    } catch (\Exception $e) {
+        // Trả về lỗi khác
+        
+        return response()->json(['error' => 'Internal Server Error'], 500);
     }
- 
+}
+
+
    
     public function updateStatusServicebooking(Request $request, $id)
     {

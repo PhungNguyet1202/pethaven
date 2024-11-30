@@ -124,11 +124,11 @@ public function product(Request $request)
             }
     
             // Lưu thông tin sản phẩm vào database
-            $product = new Product([
+            $product = new Product([    
                 'name' => $request->input('name'),
                 'slug' => Str::slug($request->input('name')),
                 'description' => $request->input('description'),
-                'categories_id' => $request->input('category_id'),
+                'category_id' => $request->input('category_id'),
                 'price' => $request->input('price'),
                  'instock'=>0,
                 'sale_price' => $request->input('sale_price'),
@@ -168,7 +168,7 @@ public function product(Request $request)
         $product->name = $request->name;
         $product->slug = Str::slug($request->name);
         $product->description = $request->description;
-        $product->categories_id = $request->input('category_id', $product->categories_id);
+        $product->category_id = $request->input('category_id', $product->category_id);
         $product->price = $request->price;
         $product->sale_price = $request->sale_price ?? $product->sale_price;
     

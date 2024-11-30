@@ -1,309 +1,214 @@
 <?php
+use App\Http\Controllers\AdminApiController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryAdminController;
+use App\Http\Controllers\CommentCotroller; // Đã sửa chính tả
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 
-namespace App\Http\Controllers;
 
-use Illuminate\Validation\ValidationException;
-use App\Models\User;
+use App\Http\Controllers\StockInAdminController;
+use App\Http\Controllers\CommentAdminController;
+use App\Http\Controllers\ProductAdminController;
+use App\Http\Controllers\ServiceAdminController;
+use App\Http\Controllers\NewsAdminController;
+use App\Http\Controllers\OrderAdminController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserAdminController;
+use App\Http\Controllers\CheckoutController;
+use App\Models\Product;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Routing\RouteGroup;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-class UserController extends Controller
-{
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-    use HasApiTokens, Notifiable;
+Route::prefix('api')->group(function() {
+    // Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
+    // Route::resource('/comments', CommentCotroller::class);
+    // Route::post('/login', [UserController::class, 'postlogin']);
+    // Route::post('/register', [UserController::class, 'postregister']);
+    // Route::get('/product', [ProductController::class, 'product'])->name('product');
+    // Route::get('/detail/{slug}', [ProductController::class,'detail'])->name('detail');
+    // Route::get('/register', [UserController::class, 'register'])->name('register');
+    // Route::get('/login', [UserController::class, 'login'])->name('login');
+    // // Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
+    // Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('category');
+    Route::get('/comments/product/{product_id}', [CommentCotroller::class, 'product']);
+    Route::resource('/comments', CommentCotroller::class);
+    Route::post('/login', [UserController::class, 'postlogin']);
+    Route::post('/register', [UserController::class, 'postregister']);
+    Route::get('/product', [ProductController::class, 'product'])->name('product');
+    Route::get('/products', [ProductController::class, 'product']);
+    Route::get('/detail/{id}', [ProductController::class, 'detail'])->name('product.detail');
+    Route::get('/register', [UserController::class, 'register'])->name('register');
+    Route::get('/login', [UserController::class, 'login'])->name('login');
+    Route::get('/category/{slug}', [ProductController::class, 'productsByCategory'])->name('api.category');
+   
+Route::post('/momo-payment', [CheckoutController::class, 'momo_payment']);
 
-    protected $fillable = [
-        'name', 'email', 'password', 'phone', 'address', 'role',
-    ];
-
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
-    // Phương thức trả về view đăng ký
-
-    // Hiển thị form đăng ký
-
-    public function register(Request $req) {
-        return view('user.register'); 
-    }
-
-    // Phương thức trả về view đăng nhập
-
-    // Hiển thị form đăng nhập
-
-    public function login(Request $req) {
-        return view('user.login'); 
-    }
-
-
-
-    public function postregister(Request $req)
-    {
-        try {
-            // Xác thực dữ liệu đầu vào
-            $req->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                'phone' => 'required|string|size:10|regex:/^0\d{9}$/',  
-                'address' => 'nullable|string|max:255',
-             
-                
-            ]);
+    Route::get('/payment/momo', 'PaymentController@momoPayment')->name('payment.momo');
+    Route::get('/payment/momo-return', 'PaymentController@momoReturn')->name('payment.momo.return');
     
 
-            // Tạo người dùng mới
-            User::create([
-                'name' => $req->input('name'),
-                'email' => $req->input('email'),
-                'password' => Hash::make($req->input('password')),
-                'phone' => $req->input('phone'),
-                'address' => $req->input('address'),
-            ]);
+Route::get('/product/search', [ProductController::class, 'product']);
+    Route::get('/product/{productId}/related', [ProductController::class, 'getRelatedProducts']);
+    Route::get('/product/{id}/related', [ProductController::class, 'getRelatedProducts']);
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
 
-            // Create new user
-            $user = new User();
-            $user->name = $req->input('name');
-            $user->email = $req->input('email');
-            $user->password = Hash::make($req->input('password'));
-            $user->phone = $req->input('phone');
-            $user->address = $req->input('address');
-            $user->dob = $req->input('dob');
-            $user->save();
+});
+// nguyet
+Route::post('/logout',function(){
+    Auth::logout();
+    return redirect()->route('register');
+})->name('logout');
+//cal
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
-    
-            // Trả về phản hồi thành công
-            return response()->json(['success' => true, 'message' => 'Đăng ký thành công. Vui lòng đăng nhập.']);
-        } catch (ValidationException $e) {
-            // Trả về thông báo lỗi xác thực
-            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            // Trả về thông báo lỗi chung
-            return response()->json(['success' => false, 'message' => 'Đăng ký không thành công', 'error' => $e->getMessage()], 500);
-        }
-    }
+Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('update.profile');
 
-    // Phương thức xử lý đăng nhập
-    public function postlogin(Request $req) {
+// Nhongj
 
-        // Xác thực dữ liệu đầu vào
+Route::prefix('admin')->name('admin.')->group(function () {
+  
 
-       
-
-        $req->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-    
-        // Cố gắng đăng nhập
-        $credentials = $req->only('email', 'password');
-    
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-    
-            // Kiểm tra trạng thái tài khoản
-            if ($user->is_action == 1) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tài khoản của bạn đã bị khóa.'
-                ], 403); // Sử dụng mã trạng thái 403 Forbidden
-            }
-    
-            // Nếu đăng nhập thành công và tài khoản không bị khóa
-            $token = $user->createToken('auth_token')->plainTextToken;
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Đăng nhập thành công',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role // Trả về vai trò của người dùng
-                ],
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ]);
-        } else {
-            // Trả về thông báo lỗi nếu thông tin đăng nhập không chính xác
-            return response()->json([
-                'success' => false,
-                'message' => 'Email hoặc mật khẩu không đúng',
-            ], 401);
-        }
-    }
-    // public function postregister(Request $req)
-
-    // {
-    //     try {
-    //         $req->validate([
-    //             'name' => 'required|string|max:255',
-    //             'email' => 'required|string|email|max:255|unique:users',
-    //             'password' => 'required|string|min:8|confirmed',
-    //             'phone' => 'required|string|size:10|regex:/^0\d{9}$/',
-    //             'address' => 'nullable|string|max:255',
-
-    //         ]);
-    
-    //         // Create new user
-    //         $user = new User();
-    //         $user->name = $req->input('name');
-    //         $user->email = $req->input('email');
-    //         $user->password = Hash::make($req->input('password'));
-    //         $user->phone = $req->input('phone');
-    //         $user->address = $req->input('address');
-
-    //         $user->save();
-    
-    //         return redirect()->route('login')->with('success', 'Đăng ký thành công. Vui lòng đăng nhập.');
-    //     } catch (\Illuminate\Validation\ValidationException $e) {
-    //         return response()->json(['errors' => $e->errors()], 422);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['message' => 'Registration failed', 'error' => $e->getMessage()], 500);
-    //     {
-    //         try {
-    //             // Validate input
-    //             $req->validate([
-    //                 'name' => 'required|string|max:255',
-    //                 'email' => 'required|string|email|max:255|unique:users',
-    //                 'password' => 'required|string|min:8|confirmed',
-    //                 'phone' => 'required|string|max:15',
-    //                 'address' => 'nullable|string|max:255',
-    //                 'dob' => 'required|date',
-                    
-    //             ]);
+    Route::get('/product-category', [AdminApiController::class, 'productCategory'])->name('product-category'); // Form thêm sản phẩm mới    
+    Route::get('/new-category', [AdminApiController::class, 'newCategory'])->name('new-category'); // Form thêm sản phẩm mới    
+    Route::get('/get-product', [StockInAdminController::class, 'getProducts'])->name('get-product'); // Form thêm sản phẩm mới    
+    Route::get('/updateaction', [AdminApiController::class, 'updateUserStatusBasedOnCancelledOrders'])->name('updateUserStatusBasedOnCancelledOrders'); // Danh sách user
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', [AdminApiController::class, 'dashboard'])->name('index'); // Danh sách sản phẩm
         
-    //             // Create new user
-    //             $user = new User();
-    //             $user->name = $req->input('name');
-    //             $user->email = $req->input('email');
-    //             $user->password = Hash::make($req->input('password'));
-    //             $user->phone = $req->input('phone');
-    //             $user->address = $req->input('address');
-    //             $user->dob = $req->input('dob');
-    //             $user->save();
-        
-    //             // Redirect to login page with success message
-    //             return redirect()->route('login')->with('success', 'Đăng ký thành công. Vui lòng đăng nhập.');
-    //         } catch (\Illuminate\Validation\ValidationException $e) {
-    //             return response()->json(['errors' => $e->errors()], 422);
-    //         } catch (\Exception $e) {
-    //             return response()->json(['message' => 'Registration failed', 'error' => $e->getMessage()], 500);
-    //         }
+    });
+
+    // Product Routes
+    Route::prefix('product')->name('product.')->group(function () {
+    Route::get('/', [ProductAdminController::class, 'product'])->name('index'); // Danh sách sản phẩm
+        Route::get('/{id}', [ProductAdminController::class, 'getProductById'])->name('show');
+        Route::post('/add', [ProductAdminController::class, 'postproductAdd'])->name('add'); // Thêm sản phẩm mới
+        Route::put('/update/{id}', [ProductAdminController::class, 'updateProduct'])->name('update'); // Cập nhật sản phẩm
+        Route::delete('/delete/{id}', [ProductAdminController::class, 'deleteProduct'])->name('delete'); // Xóa sản phẩm
+    });
+
+    // Category Routes
+    Route::prefix('category')->name('category.')->group(function () {
+        Route::get('/', [CategoryAdminController::class, 'category'])->name('index'); // Danh sách category
+        Route::get('/{id}', [CategoryAdminController::class, 'getCategoryById'])->name('show');
+        Route::get('/create', [CategoryAdminController::class, 'categoryCreate'])->name('create'); // Form thêm category mới
+        Route::post('/add', [CategoryAdminController::class, 'postCategoryAdd'])->name('add'); // Thêm category mới
+        Route::put('/update/{id}', [CategoryAdminController::class, 'updateCategory'])->name('update'); // Cập nhật category
+        Route::delete('/delete/{id}', [CategoryAdminController::class, 'deleteCategory'])->name('delete'); // Xóa category
+    });
+
+    // User Routes
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/', [UserAdminController::class, 'users'])->name('index'); // Danh sách user
+        Route::get('/{id}', [UserAdminController::class, 'getUserById'])->name('show');
+        Route::put('/update/{id}', [UserAdminController::class, 'updateUser'])->name('update'); // Cập nhật user
+      
+    });
+
+    // CategoryNew Routes
+    Route::prefix('categoryNew')->name('categoryNew.')->group(function () {
+        Route::get('/', [NewsAdminController::class, 'categoryNew'])->name('index'); // Danh sách categoryNew
+        Route::get('/{id}', [NewsAdminController::class, 'getCategoryNewById'])->name('show');
+        Route::get('/create', [NewsAdminController::class, 'categoryNewCreate'])->name('create'); // Form thêm categoryNew mới
+        Route::post('/add', [NewsAdminController::class, 'postCategoryNewAdd'])->name('add'); // Thêm categoryNew mới
+        Route::put('/update/{id}', [NewsAdminController ::class, 'updateCategoryNew'])->name('update'); // Cập nhật categoryNew
+        Route::delete('/delete/{id}', [NewsAdminController::class, 'deleteCategoryNew'])->name('delete'); // Xóa categoryNew
+    });
+
+    // News Routes
+    Route::prefix('news')->name('news.')->group(function () {
+        Route::get('/', [NewsAdminController::class, 'news'])->name('index'); // Danh sách news
+        Route::get('/{id}', [NewsAdminController::class, 'getNewById'])->name('show');
+        Route::get('/create', [NewsAdminController::class, 'newsCreate'])->name('create'); // Form thêm news mới
+        Route::post('/add', [NewsAdminController::class, 'postNewsAdd'])->name('add'); // Thêm news mới
+        Route::put('/update/{id}', [NewsAdminController::class, 'updateNews'])->name('update'); // Cập nhật news
+        Route::delete('/delete/{id}', [NewsAdminController::class, 'deleteNews'])->name('delete'); // Xóa news
+    });
+
+    // Pet Routes
+    Route::prefix('pet')->name('pet.')->group(function () {
+        Route::get('/', [AdminApiController::class, 'pet'])->name('index'); // Danh sách pet
+        Route::get('/{id}', [AdminApiController::class, 'getPetById'])->name('show');
+        Route::get('/create', [AdminApiController::class, 'petCreate'])->name('create'); // Form thêm pet mới
+        Route::post('/add', [AdminApiController::class, 'postPetAdd'])->name('add'); // Thêm pet mới
+        Route::put('/update/{id}', [AdminApiController::class, 'updatePet'])->name('update'); // Cập nhật pet
+        Route::delete('/delete/{id}', [AdminApiController::class, 'deletePet'])->name('delete'); // Xóa pet
+    });
+
+    // Comment Routes
+    Route::prefix('comment')->name('comment.')->group(function () {
+        Route::get('/', [CommentAdminController::class, 'comment'])->name('index'); // Danh sách comment
     
-    //     }
-    // }
-    // }
-        
+        Route::delete('/delete/{id}', [CommentAdminController::class, 'deleteComment'])->name('delete'); // Xóa comment
+    });
+
+    // Service Routes
+    Route::prefix('service')->name('service.')->group(function () {
+        Route::get('/', [ServiceAdminController::class, 'service'])->name('index'); // Danh sách service
+        Route::get('/{id}', [ServiceAdminController::class, 'getServiceById'])->name('show');
+        Route::get('/create', [ServiceAdminController::class, 'serviceCreate'])->name('create'); // Form thêm service mới
+        Route::post('/add', [ServiceAdminController::class, 'postServiceAdd'])->name('add'); // Thêm service mới
+        Route::put('/update/{id}', [ServiceAdminController::class, 'updateService'])->name('update'); // Cập nhật service
+        Route::delete('/delete/{id}', [ServiceAdminController::class, 'deleteService'])->name('delete'); // Xóa service
+    });
+    Route::prefix('order')->name('order.')->group(function () {
+        Route::get('/', [OrderAdminController::class, 'orders'])->name('index'); // Danh sách comment
+        Route::get('/{id}', [OrderAdminController::class, 'orderDetail'])->name('show');
+        Route::put('/update/{id}', [OrderAdminController ::class, 'updateOrder'])->name('update'); // Cập nhật categoryNew
+        Route::post('/add', [OrderAdminController::class, 'createOrder'])->name('add');
+    });
+    Route::prefix('servicebooking')->name('servicebooking.')->group(function () {
+        Route::get('/', [ServiceAdminController::class, 'serviceBooking'])->name('index'); // Danh sách comment
+        Route::get('/{id}', [ServiceAdminController::class, 'getServiceBookingById'])->name('show'); // Danh sách comment
+        Route::put('/update/{id}', [ServiceAdminController ::class, 'updateStatusServicebooking'])->name('update'); // Cập nhật categoryNew
+    });
+    Route::prefix('stockin')->name('stockin.')->group(function () {
+        Route::get('/', [StockInAdminController::class, 'stockin'])->name('index'); // Danh sách comment
+        Route::get('/{id}', [StockInAdminController::class, 'gettStockinById'])->name('show'); // Danh sách comment
+        Route::post('/add', [StockInAdminController::class, 'postStockEntry'])->name('add'); // Thêm service mới
+        Route::put('/update/{id}', [StockInAdminController::class, 'updateStockEntry'])->name('update'); // Cập nhật service
+        Route::delete('/delete/{id}', [StockInAdminController::class, 'deleteStockEntry'])->name('delete'); // Xóa service
+    });
+    Route::prefix('revenue')->name('revenue.')->group(function () {
+        Route::get('/order/year/{year}', [ReportController::class, 'getAnnualRevenue'])->name('indexorder'); // Danh sách comment
+        Route::get('/order/revenue-last-7-days', [ReportController::class, 'getRevenueLast7Days'])->name('reportorder'); // Danh sách comment
+        Route::get('/order/revenuemonth/{year}/{month}', [ReportController::class, 'getMonthlyRevenue'])->name('reportmonthorder'); // Danh sách comment
+        Route::get('/service/year/{year}', [ReportController::class, 'getAnnualServiceRevenue'])->name('indexservice'); // Danh sách comment
+        Route::get('/service/revenue-last-7-days', [ReportController::class, 'getServiceRevenueLast7Days'])->name('reportservice'); // Danh sách comment
+        Route::get('/service/revenuemonth/{year}/{month}', [ReportController::class, 'getMonthlyServiceRevenue'])->name('reportmonthservice'); // Danh sách comment
+        Route::get('/total/year/{year}', [ReportController::class, 'getTotalRevenueByMonthInYear'])->name('indextotal'); // Danh sách comment
+        Route::get('/total/revenue-last-7-days', [ReportController::class, 'getTotalRevenueLast7Days'])->name('reporttotal'); // Danh sách comment
+        Route::get('/total/revenuemonth/{year}/{month}', [ReportController::class, 'getTotalRevenueByDayInMonth'])->name('reportmonthtotal'); // Danh sách comment
+    });
+  
+
+    Route::prefix('report')->name('report.')->group(function () {
+        Route::get('/product', [ReportController::class, 'getTopSellingProducts'])->name('index'); // Danh sách comment
     
-    
-        // public function postlogin(Request $req) {
-           
-        //     $req->validate([
-        //         'email' => 'required|string|email',
-        //         'password' => 'required|string',
-        //     ]);
-        
-         
-        //     if (Auth::attempt(['email' => $req->input('email'), 'password' => $req->input('password')])) {
-                
-        //         return redirect()->route('home')->with('success', 'Đăng nhập thành công');
-        //     }
-        
-           
-        //     return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng!'])->withInput();
-        // }
-
-
-
-//////////
-   // Hiển thị thông tin người dùng hiện tại
-   public function profile() {
-    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
-    return view('user.profile', compact('user')); // Trả về view với thông tin người dùng
-}
-
-// public function profile()
-//     {
-//         $user = Auth::user(); // Lấy thông tin người dùng hiện tại
-//         if (!$user) {
-//             return response()->json(['message' => 'Unauthorized'], 401);
-//         }
-
-//         return view('user.profile', ['user' => $user]);
-//     }
-// Hiển thị thông tin người dùng hiện tại dưới dạng JSON
-public function showProfile() {
-    $user = Auth::user(); // Lấy thông tin người dùng hiện tại
-    return response()->json($user); // Trả về thông tin người dùng dưới dạng JSON
-}
-
-// Cập nhật thông tin người dùng
-public function updateProfile(Request $req) {
-    $user = Auth::user(); // Lấy người dùng hiện tại
-
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401); // Người dùng chưa đăng nhập
-    }
-
-    // Validate dữ liệu đầu vào
-    $validatedData = $req->validate([
-        'name' => 'nullable|string|max:255',
-        'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
-        'password' => 'nullable|min:6|confirmed',
-        'phone' => 'nullable|string|max:15',
-        'address' => 'nullable|string|max:255',
-        'img' => 'nullable|string|max:255',
-
-    ]);
-
-    // Cập nhật thông tin
-    $user->name = $validatedData['name'] ?? $user->name;
-    $user->email = $validatedData['email'] ?? $user->email;
-    $user->phone = $validatedData['phone'] ?? $user->phone;
-    $user->address = $validatedData['address'] ?? $user->address;
-    $user->img = $validatedData['img'] ?? $user->img;
-
-
-    // Cập nhật mật khẩu nếu có
-    if (!empty($validatedData['password'])) {
-        $user->password = Hash::make($validatedData['password']);
-    }
-
-    $user->save(); // Lưu thông tin cập nhật
-
-    return response()->json(['message' => 'User information updated successfully']);
-}
-
-
-
-}
-
+      
+    });
     
 
 
-
-
-
-
-
-
-// public function postlogin(Request $req) {
-    //     // Validate input
-    //     $req->validate([
-    //         'email' => 'required|string|email',
-    //         'password' => 'required|string',
-    //     ]);
-
-    //     // Attempt to log in
-    //     if (Auth::attempt(['email' => $req->input('email'), 'password' => $req->input('password')])) {
-    //         $user = Auth::user();
-    //         return response()->json(['message' => 'Đăng nhập thành công', 'user' => $user], 200);
-    //     }
-
-    //     return response()->json(['message' => 'Email hoặc mật khẩu không đúng!'], 401);
-    // }
+ 
+});

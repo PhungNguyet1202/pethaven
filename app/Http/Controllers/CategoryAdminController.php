@@ -74,7 +74,7 @@ public function postCategoryAdd(Request $request)
     $category = new Category();
     $category->name = $request->name;
     $category->description = $request->description;
-
+    $category->slug = Str::slug($request->name, '-'); 
     // Lưu danh mục để có được ID
     $category->save();
 

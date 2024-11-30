@@ -9,15 +9,15 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'img',
-        'imgdetail',
-        'categories_id',
+        protected $fillable = [
+            'name',
+            'description',
+            'price',
+            'img',
+            'imgdetail',
+            
 
-    ];
+        ];
 
     public function serviceBookings()
     {
@@ -26,8 +26,5 @@ class Service extends Model
 
 
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class, 'categories_id');
-    }
+  
 }
